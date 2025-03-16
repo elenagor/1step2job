@@ -11,6 +11,12 @@ from transformers.utils.logging import disable_progress_bar
 CACHE_DIR = "/var/projects/.hf_cache"
 MODEL_DIR = "/var/projects/.models"
 
+def validate_promp_template(prompt: str):
+    if "<job_description>" not in prompt:
+        raise AttributeError("<job_description> template not found in prompt text")
+    if "<resume>" not in prompt:
+        raise AttributeError("<resume> template not found in prompt text")
+
 def run_compare(tokenizer, model, prompt, resume, job):
     prompt = prompt.replace("<job_description>", job).replace("<resume>", resume)
     return run_prompt(tokenizer, model, prompt)
@@ -57,6 +63,7 @@ def cleanup(model, tokenizer):
 
 def main(model_name, prompt, resume, jobs):
     try:
+        validate_promp_template(prompt)
         (model, tokenizer) = init(model_name)
 
         print(f"Processing resume from {resume}")
