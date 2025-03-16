@@ -11,6 +11,8 @@ from transformers.utils.logging import disable_progress_bar
 CACHE_DIR = "/var/projects/.hf_cache"
 MODEL_DIR = "/var/projects/.models"
 
+verbose = False
+
 def validate_promp_template(prompt: str):
     if "<job_description>" not in prompt:
         raise AttributeError("<job_description> template not found in prompt text")
@@ -87,8 +89,9 @@ def main(model_name, prompt, resume, jobs):
 
         cleanup(model, tokenizer)
     except Exception as e:
-        print(f"❌ Fatal error:")
-        traceback.print_exc()
+        print(f"❌ Fatal error: {str(e)}")
+        if verbose:
+            traceback.print_exc()
 
 def dir_path(path):
     if os.path.isdir(path) and os.path.exists(path):
@@ -119,11 +122,15 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model", type=str, help="Qwen model name", default="Qwen2.5-14B-Instruct", metavar="FILE")
     parser.add_argument("-p", "--prompt", type=file_path, help="Prompt File Name. The prompt file should contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.")
     parser.add_argument("-r", "--resume", type=file_path, help="Resume File Name", required=True)
+    parser.add_argument("-v", "--verbose", help="Increase verbosity level", action="store_true")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-f", "--job", type=file_path, help="Job Description File Name", metavar="FILE")
     group.add_argument("-d", "--job-dir", type=dir_path, help="Job Description Directory", metavar="DIR")
     args = parser.parse_args()
+
+    if args.verbose:
+        verbose = True
 
     if args.prompt:
         prompt_file = args.prompt
