@@ -37,6 +37,10 @@ def run_prompt(tokenizer, model, prompt):
     return response
 
 def init(model_name):
+    # Set environemnt
+    disable_progress_bar()
+    os.environ["HF_HOME"] = CACHE_DIR
+
     # Model details
     model_dir = os.path.join(MODEL_DIR, model_name.lower())
 
@@ -114,9 +118,6 @@ def list_files(dir):
     return files
 
 if __name__ == "__main__":
-    # Set environemnt
-    disable_progress_bar()
-    os.environ["HF_HOME"] = CACHE_DIR
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Download Qwen model")
     parser.add_argument("-m", "--model", type=str, help="Qwen model name", default="Qwen2.5-14B-Instruct", metavar="FILE")
