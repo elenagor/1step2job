@@ -1,97 +1,55 @@
-import os, gc
-import time
-import torch
+import os
+import time, uuid
 import argparse
 import traceback
 from pathlib import Path
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from transformers.utils.logging import disable_progress_bar
-
-# Constants
-CACHE_DIR = "/var/projects/.hf_cache"
-MODEL_DIR = "/var/projects/.models"
+from ostjlib import OstjLLM
 
 verbose = False
-
-def validate_promp_template(prompt: str):
-    if "<job_description>" not in prompt:
-        raise AttributeError("<job_description> template not found in prompt text")
-    if "<resume>" not in prompt:
-        raise AttributeError("<resume> template not found in prompt text")
+ostjllm: OstjLLM = None
 
 def run_compare(tokenizer, model, prompt, resume, job):
-    prompt = prompt.replace("<job_description>", job).replace("<resume>", resume)
-    return run_prompt(tokenizer, model, prompt)
+    if resume:
+        prompt = prompt.replace("<resume>", resume)
+    if job:
+        prompt = prompt.replace("<job_description>", job)
+    return ostjllm.run_prompt(prompt)
 
-def run_prompt(tokenizer, model, prompt):
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=2028
-        )
+def save_response(response, out_dir):
+    out_file_name = os.path.join(out_dir, str(uuid.uuid4())+".txt")
+    with open(out_file_name, "w") as f:
+        f.write(response)
+    return out_file_name
 
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    if response.startswith(prompt):
-        response = response[len(prompt):].strip()
-    return response
+def run_prompt(prompt, out_dir, params):
+    start_time = time.time()
+    response = ostjllm.run_prompt(prompt, placeholders=params)
 
-def init(model_name):
-    # Set environemnt
-    disable_progress_bar()
-    os.environ["HF_HOME"] = CACHE_DIR
+    # Save response to a file in the same folder as resume and name matching job desciption
+    out_file = save_response(response, out_dir)
+    elapsed_time = time.time() - start_time
+    print(f"\tComplete, output file {out_file}. Elapsed time {round(elapsed_time)} sec")
 
-    # Model details
-    model_dir = os.path.join(MODEL_DIR, model_name.lower())
-
-    # Load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_dir,
-        cache_dir=CACHE_DIR,
-        trust_remote_code=True
-    )
-
-    # Load model
-    model = AutoModelForCausalLM.from_pretrained(
-        model_dir,
-        device_map="cpu",
-        trust_remote_code=True
-    )
-
-    return (model, tokenizer)
-
-def cleanup(model, tokenizer):
-    # Clean up
-    del model
-    del tokenizer
-    torch.cuda.empty_cache()
-    gc.collect()        
-
-def main(model_name, prompt, resume, jobs):
+def main(model_name, prompt, out_dir, resume_file_name=None, job_file_name_list=None):
     try:
-        validate_promp_template(prompt)
-        (model, tokenizer) = init(model_name)
+        global ostjllm
+        ostjllm = OstjLLM(model_name, verbose=verbose)
+        params: dict[str, str] = dict()
 
-        print(f"Processing resume from {resume}")
-        resume_text = ""
-        job_text = ""
+        print(f"Processing resume from {resume_file_name}")
+        resume_text = None
+        job_text = None
         
-        resume_text = Path(resume).read_text(encoding="UTF-8")
+        if resume_file_name:
+            params["resume"] = Path(resume_file_name).read_text(encoding="UTF-8")
 
-        for job in jobs:
-            print(f"\n\tComparing with job description from {job}")
-            start_time = time.time()
-            job_text = Path(job).read_text(encoding="UTF-8")
-            response = run_compare(tokenizer, model, prompt, resume_text, job_text)
-
-            # Save response to a file in the same folder as resume and name matching job desciption
-            out_file = os.path.join(os.path.dirname(resume), os.path.basename(job) + '.json')
-            with open(out_file, "w") as f:
-                f.write(response)
-            elapsed_time = time.time() - start_time
-            print(f"\tComplete, output file {out_file}. Elapsed time {round(elapsed_time)} sec")
-
-        cleanup(model, tokenizer)
+        if job_file_name_list:
+            for job in job_file_name_list:
+                print(f"\n\tComparing with job description from {job}")
+                params["job_description"] = Path(job).read_text(encoding="UTF-8")
+                run_prompt(prompt, out_dir, params)
+        else:
+            run_prompt(prompt, out_dir, params)
     except Exception as e:
         print(f"❌ Fatal error: {str(e)}")
         if verbose:
@@ -121,11 +79,12 @@ if __name__ == "__main__":
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Download Qwen model")
     parser.add_argument("-m", "--model", type=str, help="Qwen model name", default="Qwen2.5-14B-Instruct", metavar="FILE")
-    parser.add_argument("-p", "--prompt", type=file_path, help="Prompt File Name. The prompt file should contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.")
-    parser.add_argument("-r", "--resume", type=file_path, help="Resume File Name", required=True)
+    parser.add_argument("-p", "--prompt", type=file_path, help="Prompt File Name. The prompt file may contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.")
+    parser.add_argument("-r", "--resume", type=file_path, help="Resume File Name")
+    parser.add_argument("-o", "--out-dir", type=dir_path, help="Output directory, if not provided, current dir will be used", default=".")
     parser.add_argument("-v", "--verbose", help="Increase verbosity level", action="store_true")
 
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group()
     group.add_argument("-f", "--job", type=file_path, help="Job Description File Name", metavar="FILE")
     group.add_argument("-d", "--job-dir", type=dir_path, help="Job Description Directory", metavar="DIR")
     args = parser.parse_args()
@@ -139,7 +98,14 @@ if __name__ == "__main__":
         prompt_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompt.txt")
     prompt = Path(prompt_file).read_text(encoding="UTF-8")
 
-    if args.job:
-        main(args.model, prompt, args.resume, [args.job])
-    elif args.job_dir:
-        main(args.model, prompt, args.resume, list_files(args.job_dir))
+    if args.resume and (args.job or args.job_dir):
+        if args.job:
+            main(args.model, prompt, args.out_dir, args.resume, [args.job])
+        elif args.job_dir:
+            main(args.model, prompt, args.out_dir, args.resume, list_files(args.job_dir))
+    elif not args.resume and not args.job and not args.job_dir:
+        main(args.model, prompt, args.out_dir)
+    else:
+        print(f"❌ Fatal error: '--resume' flag requires one of '--job' or '--job-dir' are mandatory")
+        exit(1)
+ 
