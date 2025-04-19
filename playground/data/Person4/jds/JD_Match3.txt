@@ -1,0 +1,68 @@
+About the job
+Description
+
+Project Kuiper is Amazon’s initiative to launch a constellation of Low Earth Orbit communications satellites that will provide low-latency, high-speed broadband connectivity to underserved communities around the earth.
+
+The Kuiper Engineering team is seeking a detailed oriented, results-driven, customer-centric Sr. ASIC New Product Planner with experience in pre-production development and manufacture of semiconductor integrated circuit (IC) chips for digital and analog ASICs and SOCs. ASICs are the foundation of Kuiper’s innovative aerospace and terrestrial networking infrastructure equipment and data services. The Sr. ASIC new product planner is a key design engineering team member who is responsible to manage all aspects of Kuiper’s ASIC engineering sample work-order definition, execution and downstream logistical supply fulfilment from initial design release, through qualification into mass production transfer that accelerates time-to-market velocity on behalf of making life improving impact to customers around the globe.
+
+The ideal candidate possesses deep knowledge of all phases of the end-to-end semiconductor IC product lifecycle, development methodologies and manufacturing flows/dependencies/cycle-times from post-GDSII tape-out through wafer foundry, package substrate fabrication, into OSAT contract manufacturing applying module technologies such as FCBGAs, CSP, WLP, QNFs, SIPs. They combine a hands-on background of sample supply/demand operations planning with demonstrated experience executing technical interdependencies of NPI engineering builds including DFM rule checks, in-line process monitors yield data engineering review and material lot release, configuration management lot controls, assembly build instructions, and wafer probe/final class test route and binning. The successful candidate will be able to lead aligning both external vendor engineering and internal engineering teams in complex build and delivery logistics plans for on-time deployments, identify and mitigate execution schedule risks, ensure quality specification adherence, and provide status reporting and project health metrics. To be successful you are proactive, owner who is comfortable operating independently. You are passionate about semiconductors, NPI, and Kuiper’s prospective customer and societal impact. You are excited by solving difficult challenges and contributing to launching a space-craft and user terminal network that meet performance, quality, and availability objectives.
+
+Key job responsibilities
+
+In This Role You Will
+
+ Collect, consolidate, and priority allocate internal silicon engineering design and validation customer demand requirements to facilitate bring-up, DVT, qualification, characterization and down-stream PCBA factory integration.
+ Convert demand requirements into supply build plans applying line-capacity, multi-tiered yield loss, and test time constraints.
+ Communicate the build plan signal to 3rd party factory vendors, oversee and drive build plan execution, and ensure on-time delivery to fulfill customer demand and stock both semi-finished and finished goods inventory levels to service level agreement target policy.
+ Prepare product engineering build plans / assembly instruction bill of material documentation set-ups in a PLM Configuration Management. Will include defining and maintaining a product SKU naming convention, rev control and part/label schema.
+ Coordinate and drive transportation logistics and export trade compliance across a multi-node international semiconductor supply chain.
+ Drive wafer lot plans, starts, package and test lot plans and work orders, package substrate and EE parts raw materials orders
+ Will plan and raise purchase orders, will direct deployment of chip supply to customers, will coordinate all supply operations execution logistics, and
+ Will maintain end-to-end Wafer Fab TO Assembly/Test Lot traceability records for tracking as-built and as-deployed sample supply chain of custody.
+
+Export Control Requirement
+
+Due to applicable export control laws and regulations, candidates must be a U.S. citizen or national, U.S. permanent resident (i.e., current Green Card holder), or lawfully admitted into the U.S. as a refugee or granted asylum.
+
+A day in the life
+
+Here at Amazon, we embrace our differences. We are committed to furthering our culture of inclusion. Amazon has ten employee-led affinity groups, reaching 40,000 employees in over 190 chapters globally. We have innovative benefit offerings, and host annual and ongoing learning experiences. Amazon’s culture of inclusion is reinforced within our 16 Leadership Principles, which remind team members to seek diverse perspectives, learn and be curious and earn trust.
+
+Work/Life Balance
+
+Our team puts a high value on work-life balance. It isn’t about how many hours you spend at home or at work; it’s about the flow you establish that brings energy to both parts of your life. We believe striking the right balance between your personal and professional life is critical to life-long happiness and fulfillment. We offer flexibility in working hours and encourage you to find your own balance between your work and personal lives.
+
+Mentorship & Career Growth
+
+Our team is dedicated to supporting new members. We have a broad mix of experience levels and tenures, and we’re building an environment that celebrates knowledge sharing and mentorship. We care about your career growth and strive to assign projects based on what will help each team member develop into a better-rounded professional and enable them to take on more complex tasks in the future.
+
+Innovation is part of our DNA! Our goal is to be Earth's most customer-centric company, and we are just getting started. We need people who want to join an ambitious program that continues to push the state of the art in space based systems design and wireless systems.
+
+About The Team
+
+The position works in a fast-paced, dynamic start-up environment, collaborating closely with a versatile team of specialized IC industry product design engineers spanning wafer fabrication technology process, package substrates, chip module assembly, ATE test, and qualification disciplines to ensure pre-production technical manufacturing flows and sample build plans are defined and executed on schedule. They coordinate deliverable linkages across teams including NRE tooling, wafer start, to die probe test to down-stream OSAT build processing across configuration, routing instruction, cycle time, capacity and yield constraints ensuring sample supply feeds engineering validation teams with no limiters to sample availability health. As such, the Sr. ASIC new product planner will document and oversee internal and external vendor teams, set manufacturing engineering deadlines, make task ownership assignments, will drive core-team coordination meetings, will identify and mitigate execution risks, will coordinate multiple work-stream input/out dependencies, will prepare product schedules focused on manufacturing flows and timelines, drive progress toward target commit schedules, and prepare status reports for engineering executive leadership.
+
+Basic Qualifications
+
+ Bachelor's degree
+ Experience owning/driving roadmap strategy and definition
+ Experience with feature delivery and tradeoffs of a product
+ Experience contributing to engineering discussions around technology decisions and strategy related to a product
+ Experience managing technical products or online services
+ Experience in representing and advocating for a variety of critical customers and stakeholders during executive-level prioritization and planning
+
+Preferred Qualifications
+
+ Experience in using analytical tools, such as Tableau, Qlikview, QuickSight
+ Experience in building and driving adoption of new tools
+
+Amazon is committed to a diverse and inclusive workplace. Amazon is an equal opportunity employer and does not discriminate on the basis of race, national origin, gender, gender identity, sexual orientation, protected veteran status, disability, age, or other legally protected status.
+
+Los Angeles County applicants: Job duties for this position include: work safely and cooperatively with other employees, supervisors, and staff; adhere to standards of excellence despite stressful conditions; communicate effectively and respectfully with employees, supervisors, and staff to ensure exceptional customer service; and follow all federal, state, and local laws and Company policies. Criminal history may have a direct, adverse, and negative relationship with some of the material job duties of this position. These include the duties and responsibilities listed above, as well as the abilities to adhere to company policies, exercise sound judgment, effectively manage stress and work safely and respectfully with others, exhibit trustworthiness and professionalism, and safeguard business operations and the Company’s reputation. Pursuant to the Los Angeles County Fair Chance Ordinance, we will consider for employment qualified applicants with arrest and conviction records.
+
+Our inclusive culture empowers Amazonians to deliver the best results for our customers. If you have a disability and need a workplace accommodation or adjustment during the application and hiring process, including support for the interview or onboarding process, please visit https://amazon.jobs/content/en/how-we-hire/accommodations for more information. If the country/region you’re applying in isn’t listed, please contact your Recruiting Partner.
+
+Our compensation reflects the cost of labor across several US geographic markets. The base pay for this position ranges from $136,100/year in our lowest geographic market up to $235,200/year in our highest geographic market. Pay is based on a number of factors including market location and may vary depending on job-related knowledge, skills, and experience. Amazon is a total compensation company. Dependent on the position offered, equity, sign-on payments, and other forms of compensation may be provided as part of a total compensation package, in addition to a full range of medical, financial, and/or other benefits. For more information, please visit https://www.aboutamazon.com/workplace/employee-benefits. This position will remain posted until filled. Applicants should apply via our internal or external career site.
+
+
+Company - Amazon Kuiper Manufacturing Enterprises LLC

@@ -1,0 +1,70 @@
+EDUCATION  
+CARNEGIE MELLON UNIVERSITY, TEPPER SCHOOL OF BUSINESS 
+Master of Science in Product Management – MSPM 
+Pittsburgh, PA 
+• Selected Coursework: Product Marketing, Design of Artificial Intelligence (AI) Products, Business Strategy 
+JADAVPUR UNIVERSITY                  
+Bachelor of Engineering in Electronics and Telecommunication 
+EXPERIENCE  
+8.13 (top 5%)         
+12/25 
+India 
+12/19 
+SILICON LABS 
+Lead Product Engineer - IC Design 
+Hyderabad, India 
+04/24 – 12/24 
+• Market Expansion & Positioning: Aligned with product marketing to align product roadmap with market 
+needs, optimizing ultra-low power wireless chip architecture. Defined value proposition and competitive 
+positioning, expanding addressable market by 2x, securing 2 new customers, and influencing $100M in 
+revenue. 
+• Go-To-Market Strategy & Execution: Developed and refined PRDs and MRDs to streamline product 
+strategy, improving time-to-market by 70%. Led messaging and positioning efforts, established OKRs, and 
+secured senior leadership buy-in to enhance market fit and customer adoption. 
+• Technical Enablement & Customer Impact: Spearheaded cross-functional collaboration for Silicon Labs’ 
+most complex chip, aligning product features with customer pain points. Reduced feature development time by 
+50%, and validation time by 95%, accelerating GTM readiness for edge IoT products and driving improved 
+adoption through enhanced user efficiency. 
+QUALCOMM 
+Senior GPU Product Engineer 
+Cork, Ireland 
+05/23 - 04/24 
+• Global Team Leadership: Led team of 7+ experts to set GPU engineering standards and product SOPs, 
+reducing new hire ramp-up 60%, boosting productivity 40%, establishing best-in-class global frameworks. 
+• Innovation & Product Leadership: Spearheaded build-to-launch of Snapdragon X Adreno GPU power 
+management features for AI PCs, scaling silicon power management and design automation across 3 
+GPU SKUs, reducing TAT by 45%, enhancing product adaptability for AI PC compute market. 
+• Product Ownership: Led global product and engineering initiatives, defining and managing product requirements 
+to improve power efficiency and throughput by X% and expand market reach 4x to $300B. 
+• Technical Product Strategy: Redefined GPU interfaces by establishing internal IP, achieving a $5M reduction in 
+IP licensing costs and bolstering market competitiveness. 
+SAMSUNG SEMICONDUCTOR 
+Associate Staff Product Engineer 
+Senior Engineer 
+Bangalore, India & Seoul, Korea 
+10/21 - 05/23 
+06/19 - 05/21 
+• Product Optimization: Defined System on a Chip (SoC) requirements and led product lifecycle management for 
+$1B memory solutions in edge and HPC markets, directing cross-functional R&D to improve latency and secure 
+access, driving 4.5% annual revenue growth, surpassing client SLAs and solidifying market leadership. 
+• Strategic Process Improvement & Innovation: Developed scalable software roadmap for memory controllers, 
+reducing engineering turnaround time by 68% and saving $220K annually. Conducted competitive analysis to 
+enhance verification methods, presenting insights at a technical conference, contributing to 7% revenue growth. 
+• User-Centric Design: Led end-to-end lifecycle of in-house EDA software by identifying inefficiencies in silicon 
+product engineering, conducting user interviews, defining success metrics, and optimizing features. Achieved 
+100% user adoption and increased satisfaction 80%, saved $4.5M annually and accelerated product launch 
+by 60%. 
+• Process Innovation: Deployed global verification automation software, reducing testing cycle time by 70+ 
+hours and improving quality by 9% across $3-6B product lines. Championed COSMIC infrastructure across 8 
+teams, incorporating 15 features that boosted internal customer conversion rates. 
+INTEL CORPORATION 
+Silicon Hardware Engineer 
+Bangalore, India 
+05/21 - 10/21 
+• Automation of Product Lifecycle: Developed in-house EDA software product roadmap, doubling testing 
+efficiency for best-in-class imaging IP, winning one new Intel customer segment, saving $130k per chip cycle, 
+ensuring product compliance with client segment requirements. 
+ADDITIONAL INFORMATION 
+• Certifications: Product School (2024), Masters Union (2022), Marketing Management @ IIM Lucknow (2017) 
+• Volunteering and Interests: Business development and Product Marketing consultant for Lebanese NGO, 
+grew revenue 75%; Market Research and Product Marketing Consultant at various startups 

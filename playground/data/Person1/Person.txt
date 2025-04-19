@@ -1,0 +1,95 @@
+Personal Mission Statement 
+An innovative, hands-on leader inspiring others with an “anything is possible” mentality striving for creative & best 
+workable solutions. Recognized for successfully developing solid client relationships, business strategies, processes, and 
+procedures, streamlining corporate operations, improving workflow, enhancing performance, and maximizing client 
+satisfaction and loyalty. A results-oriented, big-picture thinker with the ability to see and prepare short-term and long-term 
+conditions and ramifications.  
+CAREER TRACK 
+ALTERA DIGITAL HEALTH (FORMERLY ALL SCRIPTS/ ECLIPSYS/SUNGARD/INTELUS CORPORATION) 
+VICE PRESIDENT OF PRODUCT SUPPORT, INCIDENT MGT, & CLIENT SUCCESS 
+JULY ‘98 - CURRENT 
+SEPT ‘10-CURRENT 
+Responsible for running day-to-day support operations for all Acute Clinical and Financial Application and Technical 
+products. Proactively and effectively direct operations to ensure world-class customer service. Manage the Sunrise suite 
+of products from deal-signing through to production where my teams managed all client issues. Ensure contractual 
+compliance; resolve issues promptly and efficiently to meet regulatory compliance and to meet and exceed critical 
+performance metrics. Trained, directed, and mentored the activities of 400+ support members consisting of Call Center 
+Employees, Product Support Application and Technical Consultants, DBAs, System Administrators, Client Success, 
+Operations Teams, and Remote Hosting Engineers.  
+o Develop and present reports to the executive level to apprise management of client satisfaction levels with 
+recommendations and action plans for process and operational improvements.  
+o Generated over 5 million dollars by executing on contract language to increase support fees for clients on old 
+releases of our software.  
+o Implemented Change Management to ITILv3 standards to reduce errors by 35% and implemented Incident 
+Management to lower repeatable errors by 20%. Generated $11.2 Million in additional revenue by increasing 
+sales to existing clients. 
+o Manage Client Success executives while personally cultivating and maintaining strong client relationships across 
+Acute, AMB and Financial products lines. 
+o Manage Global Tier 1-(Call Intake Center) Tier 2-(Technical/Application) and Tier 3-(Development) support 
+teams consisting of 400+ people.  
+o Built 24x7 Global Major Incident Management team and have improved first-hour resolution consistently month 
+over month over the last 18 months via a matrixed organization. 
+o Expert level knowledge in crisis and escalation management within a multi-product organization.  
+o Run day-to-day Major Incident Management team as well as Problem Management and Change Management.  
+o Aligned the Change Management team to our Incident/Problem teams to improve processes and reduced the 
+number of Major Incidents caused by change by 40%. 
+o Led implementation of third-party notification application integration into our CRM, which enabled major 
+incident communication both internally and to our clients, as well as the ability to create scenarios to call the 
+resources to Major Incidents bridges to resolve client issues. 
+o Evaluate company performance with clients, collaborated with Development, Professional Services, Hosting, 
+Marketing and Sales teams to promote new products and services and facilitate long-term relations.  
+o Ownership Service Level Agreements (SLAs) and Key Performance Indicators for Call Center. 
+o Partner with Sales, Services, Support, Development and Solutions Teams to develop and implement post-sales 
+product experience strategies based on lessons learned. 
+o Improve the Problem Management Root Cause Analysis (RCA) and Corrective Action process and 
+documentation while also reducing the time it takes to get to our clients. 
+o Work with third-party hosting vendors (ATOS and Involta) to integrate our processes to have a single view within 
+a SharePoint site for every major incident, problem management, and change management metric we track. 
+o Manage onboarding program for new employees, performance reviews, employee retention, performance 
+improvement plans and workforce reduction process. 
+o Partner with our Proactive Monitoring team to get real-time dashboards published to company SharePoint.  
+o Collaborate with Sales and Services to ensure project and SLAs are delivered. 
+o Key contributor of employee mentorship and incentive program.  
+VP TECHNICAL PRODUCT SUPPORT 
+o Managed client loyalty relationship with contracted clients for Remote Hosting division.  
+AUG ‘07-SEPT ‘10 
+o Transitioned North America Call Center to Pune, India reducing overall area cost by $2.5 million annually. 
+o Led the build-out of Product Support in Pune, India which allowed the company to expand Support operations 
+and provide better client support.  
+o Reduced overall new hire cost by 80%. 
+DIRECTOR TECHNICAL SUPPORT  
+JUNE ‘03-AUG ‘07 
+o Advised Product Management to implement design, positioning, pricing, and strategies to improve market 
+penetration and supportability of products and new offerings. 
+o Analyzed and reviewed data with key personnel to formulate future directives and responses to improve client 
+satisfaction.  
+o Coordinated 1-on-1 annual client interviews at the Annual User Conference.  
+TECH SUPPORT MANAGER  
+SEPT ‘00-JUNE ‘03 
+o Led the reorganization of the Support team into the framework of Eclipsys Corporation’s model by creating a 
+Care Center first call team and an escalation team of Product Support by region. 
+SR TECH SUPPORT ANALYST  
+MAR ‘99-SEPT ‘00 
+o Worked Sunrise Record Manager Health Information Mgt (HIM) cases for 250 clients resolving application and 
+technical problems 24x7 on-call.  
+o Worked with UNIX OS and Informix DB. Supported Oracle DB clients and their interfaces. 
+TECH SUPPORT ANALYST  
+JUL ‘98-MAR ‘00 
+o Worked Sunrise Record Manager (HIM) cases for 250 clients resolving their technical problems. Worked with 
+UNIX OS and Informix DB. 
+EDUCATION 
+BACHELOR’S DEGREE IN BUSINESS RESOURCE ECONOMICS 
+MASTERS OF SCIENCE IN INFORMATION SYSTEMS MGT 
+University of Maryland, College Park, MD 
+University of Maryland University College, College Park, MD  
+MBA 
+Additional courses, seminars, and workshops: 
+University of Maryland University College, College Park, MD  
+Six Sigma • SSPA Certified Manager • ITIL Foundation • Telephone Doctor • Oracle • SQL Server 
+COMPETENCIES 
+Salesforce • ITIL• ServiceNow • Major Incident Management • Policy / Procedural Development • Compliance • 
+Sales Support • Monitoring Event Management • Problem Management • Process Improvement • Change 
+Management • Management of Virtual Teams • Client Success • Monitoring Operations • Hospital and 
+Physician Practice workflows Altera Product Suite: Sunrise Clinicals and Financials • Call Center Management • 
+Customer Satisfaction • Strategic Planning • Business Development • Citrix • SQL • Oracle • Virtual Server • 
+TCP/IP • Visio • UNIX • Informix • Everbridge • TEAMS • xMatters 

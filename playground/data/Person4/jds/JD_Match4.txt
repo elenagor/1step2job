@@ -1,0 +1,43 @@
+Next Generation SoC Concept Engineering Program Manager
+Cupertino, California, United States
+Hardware
+Add to Favorites Next Generation SoC Concept Engineering Program Manager
+Share Next Generation SoC Concept Engineering Program Manager
+Back to search results
+Summary
+Posted: Feb 10, 2025
+Role Number:200578263
+At Apple, we craft the future of technology and make the impossible happen. From iPhones, to Macs and to the all new Apple Vision Pro; it all starts with a vision made possible through Apple Silicon. The groundbreaking A18, M4 and R1 SoCs are the result of planning and execution that were many years in the making.  Come join us to do your life's best work in this rare opportunity to help define the next big thing that will surprise and delight the world!
+
+We are looking for a versatile Engineering Program Manager who can work comfortably both within and across the SoC and system design spaces. The ideal candidate needs to be able to dig into sophisticated technical topics whilst having the ability to understand the overarching strategic objectives of the projects and the complex tradeoffs involved in technology development.
+
+In this Engineering Program Management position, you will be working closely with elite Platform, Systems, and Software architects to bring to life our next generation SoCs for all of Apple's products. You will take new ideas and drive convergence to an executable plan.
+
+This is a phenomenal opportunity to apply your technical expertise and design background, along with effective program management skills, to plan, influence, and drive program execution during the architecture and concept phases of SoC product lifecycle.
+Description
+In this role, you will drive the day-to-day activities during the SoC definition and architecture phase of SoC development. Typical responsibilities will include:
+-  Initiate and set up project infrastructures; manage program disclosure during definition phase of the program.
+-  Coordinate and drive SoC planning meetings and SoC definition reviews, facilitating SoC program definition alignment (identify criteria, dependencies, risks, and mitigation plans) between SoC architects, implementation and validation teams associated with all program definition decisions.
+-  Support key architecture multi-functional review and adoption activities.
+-  In partnership with SoC/System/SW organizations, develop program schedules and guide, rally and track cohesive support plans to set in motion and follow through a successful silicon execution.
+-  Identify critical path and dependent activities, and track/coordinate efforts across teams.
+-  Facilitate the way we make decisions with relevant partners, being key individual contributors or executive leadership and drive all open items to closure.
+Minimum Qualifications
+BS + 10 years relevant experience.
+Proven SoC Design, Integration, and/or Validation experience.
+Experience developing strategic and executable SoC and program schedules.
+Preferred Qualifications
+Experience leading end-to-end SoC development life cycle from concept to mass production.
+Validated technical program management, and organizational skills.
+Technical breadth to grasp vertical system integration challenges at the intersection of SoC/silicon, system engineering and software.
+Ability to filter and comprehend large amount of technical data, in order to distill,
+Can work collaboratively and multi-functionally across diverse teams and audiences.
+Experience to lead large multi-functional leadership forums with a collaboration mentality.
+Able to influence others without authority and build trust with other teams.
+Pay & Benefits
+At Apple, base pay is one part of our total compensation package and is determined within a range. This provides the opportunity to progress as you grow and develop within a role. The base pay range for this role is between $165,500 and $293,800, and your base pay will depend on your skills, qualifications, experience, and location.
+
+Apple employees also have the opportunity to become an Apple shareholder through participation in Apple’s discretionary employee stock programs. Apple employees are eligible for discretionary restricted stock unit awards, and can purchase Apple stock at a discount if voluntarily participating in Apple’s Employee Stock Purchase Plan. You’ll also receive benefits including: Comprehensive medical and dental coverage, retirement benefits, a range of discounted products and free services, and for formal education related to advancing your career at Apple, reimbursement for certain educational expenses — including tuition. Additionally, this role might be eligible for discretionary bonuses or commission payments as well as relocation. Learn more about Apple Benefits.
+
+Note: Apple benefit, compensation and employee stock programs are subject to eligibility requirements and other terms of the applicable plan or program.
+Apple is an equal opportunity employer that is committed to inclusion and diversity. We take affirmative action to ensure equal opportunity for all applicants without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, Veteran status, or other legally protected characteristics. Learn more about your EEO rights as an applicant.

@@ -1,0 +1,69 @@
+About the job
+Company
+
+Qualcomm Technologies, Inc.
+
+Job Area
+
+Operations Group, Operations Group > Product Management
+
+General Summary
+
+Qualcomm is a company of inventors that unlocked 5G ushering in an age of rapid acceleration in connectivity and new possibilities that will transform industries, create jobs, and enrich lives. But this is just the beginning. It takes inventive minds with diverse skills, backgrounds, and cultures to transform 5Gs potential into world-changing technologies and products. This is the Invention Age - and this is where you come in.
+
+The Compute Chipset Product Management team is part of QCT's Product Management organization. The team manages the Windows on Snapdragon portfolio; the portfolio includes all Snapdragon products used for laptops, notebooks, all-in-one devices, etc. compute devices.
+
+The team’s objective is to synthesize and prioritize technical requirements, establish an overall compute product and technology portfolio strategy and roadmap to enable QCT to maintain overall technology, product, and business leadership. Development of the compute products and technology portfolio considers technology evolution, standardization initiatives and partnerships, evolution in device related engineering and testing processes as well as market/product requirements, opportunities, and competitive landscape.
+
+This specific position is to lead compute chipset product through the entire life cycle. This entails looking at market requirements, defining product positioning / feature specifications, collaborating with engineering for identifying technology trade-offs, developing business case justifications and partnering with OEMs for portfolio design-ins / successful device launches. 
+
+Principal Requirements And Responsibilities
+
+In-depth understanding of PC (Desktop, Laptop, All-In-One, Small Form Factor etc.) processor market – key processor vendors, OEMs, ODMs, channel partners etc. Clear understanding of laptop market requirements, performance expectations, competitive vendors, industry trends, etc.
+Direct a comprehensive PC chipset processor product strategy from product conception, definition and execution through end of life.
+Identifies gaps in PC market based on complex analyses of market, customer, technology, and other ecosystem demands and provides this information to guide design and definitions conversations.
+Strategizes and promotes use of new technologies, industry-leading trends and disruptive strategizes to gain Snapdragon share in laptop / desktops / all-in-one and other compute categories.
+Directs those involved in the design, modification, and evaluation of all phases of a specific product or group of products.
+Own PC chipset product from beginning to end of the life - involvement lasts throughout all stages of a product’s lifecycle including modifications, upgrades, and maintenance of the product or product line.
+Leads team collaboration in the creation of business cases and validates cases for development of a new, complex product to ensure they are appropriate given business direction and asks appropriate questions to understand relevance of program to roadmap.
+Markets new and complex products and technologies through technical marketing opportunities such as conferences, congresses, and direct customer contact and drives product launch efforts.
+Prepares and delivers highly complex technical presentations regarding a product roadmap that explains and demonstrates products managed to customers.
+Translates customer feedback and external environment into potential changes for the differentiated product roadmap and communicates this to senior leaders – GM & EXC staff
+Directs and oversees the development of highly complex products or new products areas and services, independently; maintains communication with individuals across functional teams.
+Holds self and team(s) accountable for remaining up to date on competitors, technological advances, and the product ecosystem and taking the lead on development and design innovation of new and complex products to articulate differentiation of products to customer and identify trends.
+Communicates regularly with leadership following a communication plan to ensure cross-functional understanding of product plans for a product line.
+Ensures successful cross-functional collaboration by ensuring that agreed upon KPIs and specifications are met for a new, complex product(s), upon delivery by engineering team.
+Collaborates with key stakeholders and program sponsors to develop product goals (e.g., performance, cost, timeline, customer schedules), discuss product feasibility, and facilitate cross-functional decision making for products they own.
+
+
+Minimum Qualifications
+
+ Bachelor's degree in Engineering, Information Systems, Computer Science, Humanities, or related field.
+ 5+ years of Product Management or related work experience.
+
+
+Preferred Qualifications
+
+15+ years - PC Processors / laptop Processors Product Management. 
+In-depth experience of PC / laptop semiconductor industry & ecosystem
+Direct experience as PC silicon Product Manager experience interacting with customers, device makers and ODMs
+MBA is preferred
+
+
+Qualcomm is an equal opportunity employer. If you are an individual with a disability and need an accommodation during the application/hiring process, rest assured that Qualcomm is committed to providing an accessible process. You may e-mail disability-accomodations@qualcomm.com or call Qualcomm's toll-free number found here. Upon request, Qualcomm will provide reasonable accommodations to support individuals with disabilities to be able participate in the hiring process. Qualcomm is also committed to making our workplace accessible for individuals with disabilities. (Keep in mind that this email address is used to provide reasonable accommodations for individuals with disabilities. We will not respond here to requests for updates on applications or resume inquiries).
+
+To all Staffing and Recruiting Agencies: Our Careers Site is only for individuals seeking a job at Qualcomm. Staffing and recruiting agencies and individuals being represented by an agency are not authorized to use this site or to submit profiles, applications or resumes, and any such submissions will be considered unsolicited. Qualcomm does not accept unsolicited resumes or applications from agencies. Please do not forward resumes to our jobs alias, Qualcomm employees or any other company location. Qualcomm is not responsible for any fees related to unsolicited resumes/applications.
+
+EEO Employer: Qualcomm is an equal opportunity employer; all qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, Veteran status, or any other protected classification.
+
+Qualcomm expects its employees to abide by all applicable policies and procedures, including but not limited to security and other requirements regarding protection of Company confidential information and other confidential and/or proprietary information, to the extent those requirements are permissible under applicable law.
+
+Pay Range And Other Compensation & Benefits
+
+$189,000.00 - $284,000.00
+
+The above pay scale reflects the broad, minimum to maximum, pay scale for this job code for the location for which it has been posted. Even more importantly, please note that salary is only one component of total compensation at Qualcomm. We also offer a competitive annual discretionary bonus program and opportunity for annual RSU grants (employees on sales-incentive plans are not eligible for our annual bonus). In addition, our highly competitive benefits package is designed to support your success at work, at home, and at play. Your recruiter will be happy to discuss all that Qualcomm has to offer – and you can review more details about our US benefits at this link.
+
+If you would like more information about this role, please contact Qualcomm Careers.
+
+3062843
