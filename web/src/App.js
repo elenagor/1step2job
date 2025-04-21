@@ -1,6 +1,7 @@
 import ToDate from './Date.js';
 import './App.css';
 import { useRef, useState } from 'react';
+import getResponce from './Request.js'
 
 function App() {
   const inputRef = useRef(null);
@@ -22,20 +23,8 @@ function App() {
       setFileContent(e.target.result);
     };
     reader.readAsText(file);
-    
-    const response = await fetch('/upload', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ fileContent }),
-    });
 
-    if (response.ok) {
-      setText('File submitted successfully!');
-    } else {
-      setText('Failed to submit file.');
-    }
+    setText(getResponce(fileContent) );
   };
 
   function OneStep() {
