@@ -1,16 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 
 function App() {
-  const [resume, setResume] = useState();
   const inputRef = useRef(null);
-  const [files, setFiles] = useState([]);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    populateData();
-  }, []);
+  const [text, setText] = useState('');
+  const [fileContent, setFileContent] = useState('');
 
   const handleClick = () => {
     // 👇️ Open the file input box on click of another element
@@ -18,41 +13,28 @@ function App() {
   };
 
   const handleFileChange = async (e, index) => {
+    setText('')
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = () => {
-        const updatedFiles = [...files];
-        updatedFiles[index] = {
-            file,
-            content: reader.result.split('\n'),
-        };
-        setFiles(updatedFiles);
+      setFileContent(e.target.result);
     };
     reader.readAsText(file);
-
-    const hasFile = files.some(f => f.file !== null);
-    if (!hasFile) {
-        setError('Please upload at least one file before submitting.');
-        return;
-    }
-
-    const formData = new FormData();
-    files.forEach((f, index) => {
-        if (f.file) formData.append(`file${index}`, f.file);
-    });
-
+    
     const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fileContent }),
     });
 
     if (response.ok) {
-        alert('Files submitted successfully!');
-        populateData(); // Fetch and show the table after successful upload
+      setText('File submitted successfully!');
     } else {
-        alert('Failed to submit files.');
+      setText('Failed to submit file.');
     }
   };
 
@@ -73,33 +55,20 @@ function App() {
       <table>
         <tr>
           <td>
-          <button><OneStep/></button>
+              <button><OneStep/></button>
           </td>
           <td>
-          <button><TwoJob/></button>
+            <button><TwoJob/></button>
           </td>
         </tr>
         <tr>
-        <input
-        style={{display: 'none'}}
-        ref={inputRef}
-        type="file"
-        onChange={handleFileChange}
-      />
+          <input style={{display: 'none'}} ref={inputRef} type="file" onChange={handleFileChange} />
         </tr>
       </table>
       {/* Show error if no file uploaded */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {text && <p style={{ color: 'red' }}>{text}</p>}
     </div>
   );
-
-  async function populateData() {
-    const response = await fetch('resume');
-    if (response.ok) {
-        const data = await response.json();
-        setResume(data);
-    }
-}
 }
 
 export default App;
