@@ -1,19 +1,20 @@
 import Prompt from './Prompt.js';
+import OpenAI from 'openai';
 
 export default async function getResponce(resume){
     let prompt = new Prompt(resume);
-
-    const response = await fetch('/getname', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'plan/text',
-        },
-        body: { prompt },
+    const client = new OpenAI({
+            base_url:"http://localhost:8000/v1",
+            apiKey:"EMPTY"
+      });
+      
+    const response = await client.responses.create({
+        model: 'qwen-2.5',
+        messages:[
+            {"role": "system", "content": "You are Human Resoures expert helping to idetify candidate's resume"},
+            {"role": "user", "content": prompt}
+        ] 
       });
   
-      if (response.ok) {
-        return(response.body);
-      } else {
-        return('Failed to submit file.');
-      }
+    return(response.output_text);
 }
