@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import ToDate from './Date.js';
 import './App.css';
 import { useRef, useState } from 'react';
 
@@ -51,7 +51,9 @@ function App() {
 
   return (
     <div>
-      <h1>Welcome to our home page.</h1>
+      <div> 
+        <h1>Welcome to our home page. {ToDate()}</h1>
+      </div>
       <table>
         <tr>
           <td>
