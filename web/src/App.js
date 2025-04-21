@@ -1,7 +1,7 @@
 import ToDate from './Date.js';
 import './App.css';
 import { useRef, useState } from 'react';
-import getResponce from './Request.js'
+import {getResponce, getMatch} from './Request.js'
 
 function App() {
   const inputRef = useRef(null);
@@ -24,7 +24,7 @@ function App() {
     };
     reader.readAsText(file);
 
-    setText(getResponce(fileContent) );
+    setText( getResponce(fileContent) );
   };
 
   function OneStep() {
@@ -41,12 +41,12 @@ function App() {
   return (
     <div>
       <div> 
-        <h1>Welcome to our home page. {ToDate()}</h1>
+        <h1>{ToDate()}</h1>
       </div>
       <table>
         <tr>
           <td>
-              <button><OneStep/></button>
+            <button><OneStep/></button>
           </td>
           <td>
             <button><TwoJob/></button>
