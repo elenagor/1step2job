@@ -1,4 +1,4 @@
-import ToDate from './Date.js';
+import Clock from './Clock.js';
 import './App.css';
 import { useRef, useState } from 'react';
 import {getResponce, getMatch} from './Request.js'
@@ -41,7 +41,7 @@ function App() {
   return (
     <div>
       <div> 
-        <h1>{ToDate()}</h1>
+        <h1><Clock/></h1>
       </div>
       <table>
         <tr>
