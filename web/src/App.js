@@ -1,8 +1,6 @@
 import './App.css';
 import { useRef, useState } from 'react';
 import Clock from './Clock';
-import {UserProfileByResume, MatchResumeToJD} from './Request'
-import {useEffect} from "react";
 
 function App() {
   const inputRef = useRef(null);
