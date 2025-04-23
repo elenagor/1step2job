@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export default function Clock() {
+function Clock() {
     const [time, setTime] = useState(new Date().toLocaleTimeString())
     const today = new Date();
      
@@ -28,3 +28,5 @@ export default function Clock() {
         <p><WeekDay/>, <DateDay/>, {time}</p>
     )
 }
+
+export default Clock;

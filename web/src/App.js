@@ -1,7 +1,7 @@
-import Clock from './Clock.js';
 import './App.css';
 import { useRef, useState } from 'react';
-import {getResponce, getMatch} from './Request.js'
+import Clock from './Clock';
+import {UserProfileByResume, MatchResumeToJD} from './Request'
 
 function App() {
   const inputRef = useRef(null);
@@ -24,7 +24,7 @@ function App() {
     };
     reader.readAsText(file);
 
-    setText( getResponce(fileContent) );
+    setText( UserProfileByResume(fileContent) );
   };
 
   function OneStep() {
