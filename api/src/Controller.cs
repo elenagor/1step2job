@@ -7,8 +7,8 @@ public class Controller {
     // standard constructors
 
     @GetMapping("/user")
-    public User getUserProfile(String resume) {
-        return new User();
+    public String getUserProfile(String resume) {
+        return "lol";
     }
 
     @PostMapping("/match")

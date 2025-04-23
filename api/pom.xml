@@ -140,7 +140,7 @@
 							<outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${project.parent.basedir}/web/dist/web/</directory>
+									<directory>${project.parent.basedir}/web/target/</directory>
 								</resource>
 							</resources>
 						</configuration>

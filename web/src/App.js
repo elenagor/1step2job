@@ -2,13 +2,14 @@ import './App.css';
 import { useRef, useState } from 'react';
 import Clock from './Clock';
 import {UserProfileByResume, MatchResumeToJD} from './Request'
+import {useEffect} from "react";
 
 function App() {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
   const [fileContent, setFileContent] = useState('');
 
-  const handleClick = () => {
+  const handleOneStepButtonClick = () => {
     // 👇️ Open the file input box on click of another element
     inputRef.current.click();
   };
@@ -24,12 +25,19 @@ function App() {
     };
     reader.readAsText(file);
 
-    setText( UserProfileByResume(fileContent) );
+    fetch('http://localhost:4200/user')
+        .then((response) => response.json())
+        .then((data) => {
+          setText(data);
+        })
+        .catch((err) => {
+          setText(err.message);
+    });
   };
 
   function OneStep() {
     return (
-      <button onClick={handleClick}>  1 Step  </button>
+      <button onClick={handleOneStepButtonClick}>  1 Step  </button>
     );
   }
   function TwoJob() {
