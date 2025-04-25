@@ -5,6 +5,8 @@ import traceback
 from pathlib import Path
 import openai as openai_client
 
+SYSTEM_MARK = "{system}"
+
 client = openai_client.OpenAI(
     base_url="http://localhost:8000/v1",
     api_key="EMPTY"
@@ -33,6 +35,13 @@ def save_response(response, out_dir):
 
 def run_prompt(prompt, out_dir, params):
     start_time = time.time()
+    if SYSTEM_MARK in prompt:
+        spos = prompt.index(SYSTEM_MARK) + len(SYSTEM_MARK)
+        epos = prompt.find("\n\n")
+        sys_prompt = prompt[spos:epos]
+        prompt = prompt[epos+2:]
+    else:
+        sys_prompt = ""
     if "resume" in params:
         prompt = prompt.replace("{resume}", params["resume"])
     if "job_description" in params:
@@ -41,8 +50,8 @@ def run_prompt(prompt, out_dir, params):
     response = client.chat.completions.create(
         model="qwen-2.5", # This will depend on the model you're running locally
         messages=[
-            {"role": "system", "content": "You are Human Resoures expert helping to idetify if candidate's resume matches job description"},
-            {"role": "user", "content": prompt}
+            {"role": "system", "content": sys_prompt.strip()},
+            {"role": "user", "content": prompt.strip()}
         ])
 
     # Save response to a file in the same folder as resume and name matching job desciption
