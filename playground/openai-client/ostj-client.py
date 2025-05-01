@@ -7,6 +7,8 @@ import openai as openai_client
 
 SYSTEM_MARK = "{system}"
 
+verbose = False
+
 client = openai_client.OpenAI(
     base_url="http://localhost:8000/v1",
     api_key="EMPTY"
@@ -52,7 +54,8 @@ def run_prompt(prompt, out_dir, params):
         messages=[
             {"role": "system", "content": sys_prompt.strip()},
             {"role": "user", "content": prompt.strip()}
-        ])
+        ],
+        temperature=0.4)
 
     # Save response to a file in the same folder as resume and name matching job desciption
     out_file = save_response(response.choices[0].message.content, out_dir)
