@@ -50,7 +50,7 @@ def run_prompt(prompt, out_dir, params):
         prompt = prompt.replace("{job_description}", params["job_description"])
         
     response = client.chat.completions.create(
-        model="qwen-2.5", # This will depend on the model you're running locally
+        model="qwen", # This will depend on the model you're running locally
         messages=[
             {"role": "system", "content": sys_prompt.strip()},
             {"role": "user", "content": prompt.strip()}
