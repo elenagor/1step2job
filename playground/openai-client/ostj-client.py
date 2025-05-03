@@ -2,6 +2,7 @@ import os
 import time, uuid
 import argparse
 import traceback
+import asyncio
 from pathlib import Path
 import openai as openai_client
 
@@ -36,7 +37,7 @@ def save_response(response, out_dir):
     return out_file_name
 
 def run_prompt(prompt, out_dir, params):
-    start_time = time.time()
+    start_time = time.monotonic()
     if SYSTEM_MARK in prompt:
         spos = prompt.index(SYSTEM_MARK) + len(SYSTEM_MARK)
         epos = prompt.find("\n\n")
@@ -49,6 +50,8 @@ def run_prompt(prompt, out_dir, params):
     if "job_description" in params:
         prompt = prompt.replace("{job_description}", params["job_description"])
         
+    task_name = params["task_name"] if "task_name" in params else "Simple prompt"
+        
     response = client.chat.completions.create(
         model="qwen", # This will depend on the model you're running locally
         messages=[
@@ -59,27 +62,52 @@ def run_prompt(prompt, out_dir, params):
 
     # Save response to a file in the same folder as resume and name matching job desciption
     out_file = save_response(response.choices[0].message.content, out_dir)
-    elapsed_time = time.time() - start_time
-    print(f"\tComplete, output file {out_file}. Elapsed time {round(elapsed_time)} sec")
+    elapsed_time = time.monotonic() - start_time
+    return f"{task_name}\n\tComplete, output file {out_file}.\n\tElapsed time {round(elapsed_time)} sec"
+    
+async def worker(queue, worker_id):
+    while True:
+        (prompt, out_dir, params) = await queue.get()
+        status = await asyncio.to_thread(run_prompt, prompt, out_dir, params)
+        queue.task_done()
+        print(f"Worker_{worker_id}: {status}")
 
-def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None):
+async def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None, num_workers=1):
     try:
+        queue = asyncio.Queue(len(job_file_name_list) if job_file_name_list else 1)
         params: dict[str, str] = dict()
 
         print(f"Processing resume from {resume_file_name}")
         resume_text = None
         job_text = None
         
+        started = time.monotonic()
         if resume_file_name:
             params["resume"] = Path(resume_file_name).read_text(encoding="UTF-8")
 
         if job_file_name_list:
             for job in job_file_name_list:
-                print(f"\n\tComparing with job description from {job}")
-                params["job_description"] = Path(job).read_text(encoding="UTF-8")
-                run_prompt(prompt, out_dir, params)
+                p = params.copy()
+                p["task_name"] = f"Job description file: {job}"
+                p["job_description"] = Path(job).read_text(encoding="UTF-8")
+                queue.put_nowait((prompt, out_dir, p))
         else:
-            run_prompt(prompt, out_dir, params)
+            queue.put_nowait((prompt, out_dir, params))
+ 
+        tasks = []
+        for i in range(num_workers):
+            print(f"Staring worker {i}")
+            w = asyncio.create_task(worker(queue, i))
+            tasks.append(w)
+
+        await queue.join()
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+ 
+        print(f"Total elapsed time {round(time.monotonic() - started)} sec")
+
+        #run_prompt(prompt, out_dir, params)
     except Exception as e:
         print(f"❌ Fatal error: {str(e)}")
         if verbose:
@@ -111,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--prompt", type=file_path, help="Prompt File Name. The prompt file may contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.")
     parser.add_argument("-r", "--resume", type=file_path, help="Resume File Name")
     parser.add_argument("-o", "--out-dir", type=dir_path, help="Output directory, if not provided, current dir will be used", default=".")
+    parser.add_argument("-n", "--num-workers", type=int, metavar="INT", help="Number of concurrent workers", default=1)
     parser.add_argument("-v", "--verbose", help="Increase verbosity level", action="store_true")
 
     group = parser.add_mutually_exclusive_group()
@@ -128,12 +157,14 @@ if __name__ == "__main__":
     prompt = Path(prompt_file).read_text(encoding="UTF-8")
 
     if args.resume and (args.job or args.job_dir):
+        jobs = []
         if args.job:
-            main(prompt, args.out_dir, args.resume, [args.job])
+            jobs = [args.job]
         elif args.job_dir:
-            main(prompt, args.out_dir, args.resume, list_files(args.job_dir))
+            jobs = list_files(args.job_dir)
+        asyncio.run(main(prompt, args.out_dir, args.resume, jobs, args.num_workers))
     elif not args.resume and not args.job and not args.job_dir:
-        main(prompt, args.out_dir)
+        asyncio.run(main(prompt, args.out_dir))
     else:
         print(f"❌ Fatal error: '--resume' flag requires one of '--job' or '--job-dir' are mandatory")
         exit(1)
