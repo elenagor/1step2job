@@ -37,23 +37,28 @@ function App() {
   }
 
   return (
-    <div>
-      <div> 
+    <div >
+      <div className="title"> 
+        <h1>React</h1>
+      </div>
+      <div className="description"> 
         <h1><Clock/></h1>
       </div>
-      <table>
-        <tr>
-          <td>
-            <button><OneStep/></button>
-          </td>
-          <td>
-            <button><TwoJob/></button>
-          </td>
-        </tr>
-        <tr>
-          <input style={{display: 'none'}} ref={inputRef} type="file" onChange={handleFileChange} />
-        </tr>
-      </table>
+      <div>
+        <table>
+          <tr>
+            <td>
+              <div className="my-component"><OneStep/></div>
+            </td>
+            <td>
+            <div className="my-component"><TwoJob/></div>
+            </td>
+          </tr>
+          <tr>
+            <input style={{display: 'none'}} ref={inputRef} type="file" onChange={handleFileChange} />
+          </tr>
+        </table>
+      </div>
       {/* Show error if no file uploaded */}
       {text && <p style={{ color: 'red' }}>{text}</p>}
       {<p style={{ color: 'green' }}>{fileContent}</p>}

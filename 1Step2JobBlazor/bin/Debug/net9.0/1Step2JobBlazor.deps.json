@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "1Step2JobBlazor/1.0.0": {
+        "runtime": {
+          "1Step2JobBlazor.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "1Step2JobBlazor/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

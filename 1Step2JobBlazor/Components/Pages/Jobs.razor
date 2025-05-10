@@ -1,0 +1,60 @@
+﻿
+@page "/tojob"
+@rendermode InteractiveServer
+
+<PageTitle>Jobs</PageTitle>
+
+<h1>Jobs</h1>
+
+<p>This page demonstrates list of jobs.</p>
+
+@if (jobs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in jobs)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private JobsList[]? jobs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Job 1", "Job 2", "Job 3" };
+        jobs = Enumerable.Range(1, 5).Select(index => new JobsList
+        {
+            Date = startDate.AddDays(index),
+            Summary = summaries[Random.Shared.Next(summaries.Length)]
+        }).ToArray();
+    }
+
+    private class JobsList
+    {
+        public DateOnly Date { get; set; }
+        public string? Summary { get; set; }
+    }
+}
+
+
