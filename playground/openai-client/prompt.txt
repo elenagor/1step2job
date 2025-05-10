@@ -21,4 +21,4 @@ Resume:
 {resume}
 
 Job Description:
-{job_description}                
+{job_description}
