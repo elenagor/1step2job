@@ -1,13 +1,14 @@
 @page "/onestep"
 @inject IJSRuntime JSRuntime
 
-<PageTitle>1 Step</PageTitle>
-<div  class="top-row px-4">
-    <InputFile OnChange="LoadFiles" />
-</div>
+<PageTitle>First Step</PageTitle>
+
+<InputFile id="filePicker"></InputFile>
+
 @code {
-    public async Task LoadFiles(InputFileChangeEventArgs e)
-    {
-        await JSRuntime.InvokeVoidAsync("showAlert",  e.File.ContentType);
+    InputFile? filePicker;
+    async Task click() {
+        await JSRuntime.InvokeAsync<object>("triggerClick", filePicker?.Element);
     }
+
 }

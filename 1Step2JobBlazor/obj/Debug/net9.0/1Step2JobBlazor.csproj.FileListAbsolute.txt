@@ -78,4 +78,4 @@ C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\refint\1Step2JobBlazor.d
 C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\1Step2JobBlazor.pdb
 C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\1Step2JobBlazor.genruntimeconfig.cache
 C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\ref\1Step2JobBlazor.dll
-C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\compressed\c7adnj2kcm-qkvgwoe5v1.gz
+C:\1step2job\1step2job\1Step2JobBlazor\obj\Debug\net9.0\compressed\c7adnj2kcm-ecgtp52jzc.gz

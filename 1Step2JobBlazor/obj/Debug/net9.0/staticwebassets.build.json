@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "xPvoKQe8tZAGW2ZngvoUOxZZ+w/yMwGB4Zfnmgtvu6g=",
+  "Hash": "040EsSK+1j/spVn2alOWRKBBsWqPiLs3uD3CZ/y+cqc=",
   "Source": "1Step2JobBlazor",
   "BasePath": "_content/1Step2JobBlazor",
   "Mode": "Default",
@@ -458,12 +458,12 @@
       "OriginalItemSpec": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
     },
     {
-      "Identity": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-qkvgwoe5v1.gz",
+      "Identity": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-ecgtp52jzc.gz",
       "SourceId": "1Step2JobBlazor",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/1Step2JobBlazor",
-      "RelativePath": "index#[.{fingerprint=qkvgwoe5v1}]?.html.gz",
+      "RelativePath": "index#[.{fingerprint=ecgtp52jzc}]?.html.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -472,8 +472,8 @@
       "RelatedAsset": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\index.html",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "mjxm1bjqyh",
-      "Integrity": "UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM=",
+      "Fingerprint": "df1qa9phjj",
+      "Integrity": "R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\index.html"
@@ -1123,8 +1123,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "qkvgwoe5v1",
-      "Integrity": "Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8=",
+      "Fingerprint": "ecgtp52jzc",
+      "Integrity": "Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\index.html"
@@ -3032,13 +3032,13 @@
       ]
     },
     {
-      "Route": "index.html",
-      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-qkvgwoe5v1.gz",
+      "Route": "index.ecgtp52jzc.html",
+      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-ecgtp52jzc.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.012500000000"
+          "Quality": "0.012195121951"
         }
       ],
       "ResponseHeaders": [
@@ -3048,19 +3048,19 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "79"
+          "Value": "81"
         },
         {
           "Name": "ETag",
-          "Value": "\"UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM=\""
+          "Value": "\"R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
         },
         {
           "Name": "Cache-Control",
-          "Value": "no-cache"
+          "Value": "max-age=31536000, immutable"
         },
         {
           "Name": "Content-Encoding",
@@ -3076,18 +3076,26 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8=\""
+          "Value": "W/\"Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM=\""
         }
       ],
       "EndpointProperties": [
         {
+          "Name": "fingerprint",
+          "Value": "ecgtp52jzc"
+        },
+        {
+          "Name": "label",
+          "Value": "index.html"
+        },
+        {
           "Name": "integrity",
-          "Value": "sha256-Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8="
+          "Value": "sha256-Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM="
         }
       ]
     },
     {
-      "Route": "index.html",
+      "Route": "index.ecgtp52jzc.html",
       "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\index.html",
       "Selectors": [],
       "ResponseHeaders": [
@@ -3097,7 +3105,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "86"
+          "Value": "68"
         },
         {
           "Name": "Content-Type",
@@ -3105,121 +3113,21 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8=\""
+          "Value": "\"Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8="
-        }
-      ]
-    },
-    {
-      "Route": "index.html.gz",
-      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-qkvgwoe5v1.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "79"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/html"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM="
-        }
-      ]
-    },
-    {
-      "Route": "index.qkvgwoe5v1.html",
-      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-qkvgwoe5v1.gz",
-      "Selectors": [
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip",
-          "Quality": "0.012500000000"
-        }
-      ],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "79"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
         },
         {
           "Name": "Cache-Control",
           "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/html"
-        },
-        {
-          "Name": "ETag",
-          "Value": "W/\"Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "qkvgwoe5v1"
+          "Value": "ecgtp52jzc"
         },
         {
           "Name": "label",
@@ -3227,13 +3135,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8="
+          "Value": "sha256-Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM="
         }
       ]
     },
     {
-      "Route": "index.qkvgwoe5v1.html",
-      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\index.html",
+      "Route": "index.ecgtp52jzc.html.gz",
+      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-ecgtp52jzc.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -3242,7 +3150,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "86"
+          "Value": "81"
         },
         {
           "Name": "Content-Type",
@@ -3250,56 +3158,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8=\""
+          "Value": "\"R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "qkvgwoe5v1"
-        },
-        {
-          "Name": "label",
-          "Value": "index.html"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-Jlwzyon9nZOJ1o9dfNcjC6QRVJtrDYUC6NgI6I53YB8="
-        }
-      ]
-    },
-    {
-      "Route": "index.qkvgwoe5v1.html.gz",
-      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-qkvgwoe5v1.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "79"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/html"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 10 May 2025 16:30:11 GMT"
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -3317,7 +3180,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "qkvgwoe5v1"
+          "Value": "ecgtp52jzc"
         },
         {
           "Name": "label",
@@ -3325,7 +3188,144 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-UrC1uYIykxZjaUuPFJSzzNSOlug/7occywa31X9JDTM="
+          "Value": "sha256-R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw="
+        }
+      ]
+    },
+    {
+      "Route": "index.html",
+      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-ecgtp52jzc.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.012195121951"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM="
+        }
+      ]
+    },
+    {
+      "Route": "index.html",
+      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\wwwroot\\index.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "68"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ajt1H1cnRyuW5Fh7rCXr1gH0sKHN4/fW6+ad1F+yQXM="
+        }
+      ]
+    },
+    {
+      "Route": "index.html.gz",
+      "AssetFile": "C:\\1step2job\\1step2job\\1Step2JobBlazor\\obj\\Debug\\net9.0\\compressed\\c7adnj2kcm-ecgtp52jzc.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 10 May 2025 23:51:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-R5jz0BFGwQmfJo2l37ZzpNc2XWShuYy3dtn1IGGzaQw="
         }
       ]
     },

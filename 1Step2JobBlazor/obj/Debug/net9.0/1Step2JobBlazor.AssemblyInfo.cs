@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("1Step2JobBlazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+267959440501341e7fd2d4254cd44a858b550097")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e90eb52c303888e437eab3b2d1ad78707e35189e")]
 [assembly: System.Reflection.AssemblyProductAttribute("1Step2JobBlazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("1Step2JobBlazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

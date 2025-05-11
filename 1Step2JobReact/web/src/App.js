@@ -6,6 +6,7 @@ function App() {
   const inputRef = useRef(null);
   const [text, setText] = useState('');
   const [fileContent, setFileContent] = useState('');
+  const [fileName, setFileName] = useState('');
 
   const handleOneStepButtonClick = () => {
     // 👇️ Open the file input box on click of another element
@@ -16,13 +17,13 @@ function App() {
     setText('')
     const file = e.target.files[0];
     if (!file) return;
-
+    setFileName(file.name);
     const reader = new FileReader();
     reader.onload = () => {
       setFileContent(e.target.result);
     };
     reader.readAsText(file);
-
+    
   };
 
   function OneStep() {
@@ -59,6 +60,9 @@ function App() {
           </tr>
         </table>
       </div>
+      <div>
+        {fileName && <p>Selected file: {fileName}</p>}
+    </div>
       {/* Show error if no file uploaded */}
       {text && <p style={{ color: 'red' }}>{text}</p>}
       {<p style={{ color: 'green' }}>{fileContent}</p>}
