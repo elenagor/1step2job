@@ -37,6 +37,15 @@ def save_response(response, out_dir):
 
 def run_prompt(prompt, out_dir, params):
     start_time = time.monotonic()
+    response = run_prompt_internal(prompt, params)
+
+    # Save response to a file in the same folder as resume and name matching job desciption
+    task_name = params["task_name"] if "task_name" in params else "Simple prompt"
+    out_file = save_response(response.choices[0].message.content, out_dir)
+    elapsed_time = time.monotonic() - start_time
+    return f"{task_name}\n\tComplete, output file {out_file}.\n\tElapsed time {round(elapsed_time)} sec"
+
+def run_prompt_internal(prompt, params):
     if SYSTEM_MARK in prompt:
         spos = prompt.index(SYSTEM_MARK) + len(SYSTEM_MARK)
         epos = prompt.find("\n\n")
@@ -49,7 +58,6 @@ def run_prompt(prompt, out_dir, params):
     if "job_description" in params:
         prompt = prompt.replace("{job_description}", params["job_description"])
 
-    task_name = params["task_name"] if "task_name" in params else "Simple prompt"
 
     response = client.chat.completions.create(
         model="qwen",  # This will depend on the model you're running locally
@@ -59,11 +67,8 @@ def run_prompt(prompt, out_dir, params):
         ],
         temperature=0.4
     )
-
-    # Save response to a file in the same folder as resume and name matching job desciption
-    out_file = save_response(response.choices[0].message.content, out_dir)
-    elapsed_time = time.monotonic() - start_time
-    return f"{task_name}\n\tComplete, output file {out_file}.\n\tElapsed time {round(elapsed_time)} sec"
+    
+    return response
 
 
 async def worker(queue, worker_id):
