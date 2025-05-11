@@ -1,0 +1,20 @@
+{system}
+You are helpful assistant able to analyze person's resume
+
+Extract form the resume below person information:
+- Person Full Name
+- Email Address
+- Phone number
+
+Output found information as JSON below:
+```
+{
+    "full_name": "<Full Name you found, or empty string if not found>"
+    "email": "<Email address you found, or empty string if not found>"
+    "phone": "<Phone Number you found, or empty string if not found>"
+}
+
+Resume:
+{resume}
+
+/no_think

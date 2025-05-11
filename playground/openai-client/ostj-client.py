@@ -10,10 +10,7 @@ SYSTEM_MARK = "{system}"
 
 verbose = False
 
-client = openai_client.OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="EMPTY"
-)
+client = openai_client.OpenAI(base_url="http://localhost:8000/v1", api_key="EMPTY")
 
 # resume = Path("/Users/yackerman/projects/ostj/playground/data/Person1/Person.txt").read_text(encoding="UTF-8")
 # job_description = Path("/Users/yackerman/projects/ostj/playground/data/Person1/jds/JD_Match1.txt").read_text(encoding="UTF-8")
@@ -30,11 +27,13 @@ client = openai_client.OpenAI(
 # elapsed_time = time.time() - start_time
 # print(f"Elapsed time: {round(elapsed_time)} sec")
 
+
 def save_response(response, out_dir):
-    out_file_name = os.path.join(out_dir, str(uuid.uuid4())+".txt")
+    out_file_name = os.path.join(out_dir, str(uuid.uuid4()) + ".txt")
     with open(out_file_name, "w") as f:
         f.write(response)
     return out_file_name
+
 
 def run_prompt(prompt, out_dir, params):
     start_time = time.monotonic()
@@ -42,29 +41,31 @@ def run_prompt(prompt, out_dir, params):
         spos = prompt.index(SYSTEM_MARK) + len(SYSTEM_MARK)
         epos = prompt.find("\n\n")
         sys_prompt = prompt[spos:epos]
-        prompt = prompt[epos+2:]
+        prompt = prompt[epos + 2 :]
     else:
         sys_prompt = ""
     if "resume" in params:
         prompt = prompt.replace("{resume}", params["resume"])
     if "job_description" in params:
         prompt = prompt.replace("{job_description}", params["job_description"])
-        
+
     task_name = params["task_name"] if "task_name" in params else "Simple prompt"
-        
+
     response = client.chat.completions.create(
-        model="qwen", # This will depend on the model you're running locally
+        model="qwen",  # This will depend on the model you're running locally
         messages=[
             {"role": "system", "content": sys_prompt.strip()},
-            {"role": "user", "content": prompt.strip()}
+            {"role": "user", "content": prompt.strip()},
         ],
-        temperature=0.4)
+        temperature=0.4
+    )
 
     # Save response to a file in the same folder as resume and name matching job desciption
     out_file = save_response(response.choices[0].message.content, out_dir)
     elapsed_time = time.monotonic() - start_time
     return f"{task_name}\n\tComplete, output file {out_file}.\n\tElapsed time {round(elapsed_time)} sec"
-    
+
+
 async def worker(queue, worker_id):
     while True:
         (prompt, out_dir, params) = await queue.get()
@@ -72,7 +73,10 @@ async def worker(queue, worker_id):
         queue.task_done()
         print(f"Worker_{worker_id}: {status}")
 
-async def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None, num_workers=1):
+
+async def main(
+    prompt, out_dir, resume_file_name=None, job_file_name_list=None, num_workers=1
+):
     try:
         queue = asyncio.Queue(len(job_file_name_list) if job_file_name_list else 1)
         params: dict[str, str] = dict()
@@ -80,7 +84,7 @@ async def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None, 
         print(f"Processing resume from {resume_file_name}")
         resume_text = None
         job_text = None
-        
+
         started = time.monotonic()
         if resume_file_name:
             params["resume"] = Path(resume_file_name).read_text(encoding="UTF-8")
@@ -93,7 +97,7 @@ async def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None, 
                 queue.put_nowait((prompt, out_dir, p))
         else:
             queue.put_nowait((prompt, out_dir, params))
- 
+
         tasks = []
         for i in range(num_workers):
             print(f"Staring worker {i}")
@@ -104,27 +108,34 @@ async def main(prompt, out_dir, resume_file_name=None, job_file_name_list=None, 
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
- 
+
         print(f"Total elapsed time {round(time.monotonic() - started)} sec")
 
-        #run_prompt(prompt, out_dir, params)
+        # run_prompt(prompt, out_dir, params)
     except Exception as e:
         print(f"❌ Fatal error: {str(e)}")
         if verbose:
             traceback.print_exc()
 
+
 def dir_path(path):
     if os.path.isdir(path) and os.path.exists(path):
         return path
     else:
-        raise argparse.ArgumentTypeError(f"bad_argument: {path} is not a valid dir path")
+        raise argparse.ArgumentTypeError(
+            f"bad_argument: {path} is not a valid dir path"
+        )
+
 
 def file_path(path):
     if os.path.isfile(path) and os.path.exists(path):
         return path
     else:
-        raise argparse.ArgumentTypeError(f"bad_argument:{path} is not a valid file path")
-    
+        raise argparse.ArgumentTypeError(
+            f"bad_argument:{path} is not a valid file path"
+        )
+
+
 def list_files(dir):
     files = []
     for f in os.listdir(dir):
@@ -133,18 +144,47 @@ def list_files(dir):
             files.append(fn)
     return files
 
+
 if __name__ == "__main__":
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Download Qwen model")
-    parser.add_argument("-p", "--prompt", type=file_path, help="Prompt File Name. The prompt file may contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.")
+    parser.add_argument(
+        "-p",
+        "--prompt",
+        type=file_path,
+        help="Prompt File Name. The prompt file may contain placeholders <resume> and <job_description>, those placeholders will be replaced by respecive valued at runtime.",
+    )
     parser.add_argument("-r", "--resume", type=file_path, help="Resume File Name")
-    parser.add_argument("-o", "--out-dir", type=dir_path, help="Output directory, if not provided, current dir will be used", default=".")
-    parser.add_argument("-n", "--num-workers", type=int, metavar="INT", help="Number of concurrent workers", default=1)
-    parser.add_argument("-v", "--verbose", help="Increase verbosity level", action="store_true")
+    parser.add_argument(
+        "-o",
+        "--out-dir",
+        type=dir_path,
+        help="Output directory, if not provided, current dir will be used",
+        default=".",
+    )
+    parser.add_argument(
+        "-n",
+        "--num-workers",
+        type=int,
+        metavar="INT",
+        help="Number of concurrent workers",
+        default=1,
+    )
+    parser.add_argument(
+        "-v", "--verbose", help="Increase verbosity level", action="store_true"
+    )
 
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-f", "--job", type=file_path, help="Job Description File Name", metavar="FILE")
-    group.add_argument("-d", "--job-dir", type=dir_path, help="Job Description Directory", metavar="DIR")
+    group.add_argument(
+        "-f", "--job", type=file_path, help="Job Description File Name", metavar="FILE"
+    )
+    group.add_argument(
+        "-d",
+        "--job-dir",
+        type=dir_path,
+        help="Job Description Directory",
+        metavar="DIR",
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -153,7 +193,9 @@ if __name__ == "__main__":
     if args.prompt:
         prompt_file = args.prompt
     else:
-        prompt_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompt.txt")
+        prompt_file = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "prompt.txt"
+        )
     prompt = Path(prompt_file).read_text(encoding="UTF-8")
 
     if args.resume and (args.job or args.job_dir):
@@ -163,9 +205,8 @@ if __name__ == "__main__":
         elif args.job_dir:
             jobs = list_files(args.job_dir)
         asyncio.run(main(prompt, args.out_dir, args.resume, jobs, args.num_workers))
-    elif not args.resume and not args.job and not args.job_dir:
-        asyncio.run(main(prompt, args.out_dir))
+    elif args.resume:
+        asyncio.run(main(prompt, args.out_dir, args.resume))
     else:
-        print(f"❌ Fatal error: '--resume' flag requires one of '--job' or '--job-dir' are mandatory")
-        exit(1)
- 
+        asyncio.run(main(prompt, args.out_dir))
+    
