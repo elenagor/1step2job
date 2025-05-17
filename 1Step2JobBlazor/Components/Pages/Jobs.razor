@@ -22,11 +22,11 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in jobs)
+            @foreach (var job in jobs)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.Summary</td>
+                    <td>@job.Date.ToShortDateString()</td>
+                    <td>@job.Summary</td>
                 </tr>
             }
         </tbody>

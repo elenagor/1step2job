@@ -1,4 +1,5 @@
-.*
-bin/
-obj/
-target/
+bin
+obj
+target
+__pycache__
+.vscode
