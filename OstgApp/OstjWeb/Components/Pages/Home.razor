@@ -26,6 +26,12 @@
                             <p><strong>Email:</strong> @personInfo.Email</p>
                         </div>
                     }
+                    @if (processing)
+                    {
+                        <div class="spinner-border text-primary mt-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -48,6 +54,7 @@
     bool isFileSelected = false;
     PersonInfo? personInfo;
     string? uploadMessage;
+    bool processing = false;
 
     private class PersonInfo
     {
@@ -55,7 +62,7 @@
         public string? Name { get; set; }
         public string? Email { get; set; }
     }
- 
+
 
     private void OnInputFileChange(InputFileChangeEventArgs e)
     {
@@ -75,6 +82,7 @@
                 var fileContent = new StreamContent(stream);
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
                 content.Add(fileContent, "file", selectedFile.Name);
+                processing = true;
 
                 var response = await HttpClient.PostAsync("/api/resume/upload", content);
 
@@ -82,6 +90,7 @@
                 {
                     personInfo = await response.Content.ReadFromJsonAsync<PersonInfo>();
                 }
+                processing = false;
             }
             catch (Exception ex)
             {
