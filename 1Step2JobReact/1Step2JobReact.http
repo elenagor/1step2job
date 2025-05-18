@@ -1,6 +1,0 @@
-@_1Step2JobReact_HostAddress = http://localhost:5095
-
-GET {{_1Step2JobReact_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
