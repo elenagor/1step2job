@@ -1,4 +1,4 @@
-package com.firststeptojob.resumeprocessing;
+package com.ostj.resumeprocessing;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
