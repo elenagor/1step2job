@@ -59,6 +59,28 @@ public class App {
     public static String call_openai(String resume, String job_description, String prompt) throws Exception {
         String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
 
+        OpenAIClient client = OpenAIOkHttpClient.fromEnv();
+        Builder createParams = ChatCompletionCreateParams.builder()
+        .model("qwen")
+        .addDeveloperMessage(prompt)
+        .addUserMessage(user_content);
+
+        client.chat()
+            .completions()
+            .create(createParams.build())
+            .choices()
+            .stream()
+            .flatMap(choice -> choice.message()
+                .content()
+                .stream())
+            .forEach(System.out::println);
+
+        return response.body();
+    }
+
+    public static String call_openai(String resume, String job_description, String prompt) throws Exception {
+        String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
+
         // Create the JSON payload
         JSONObject payload = new JSONObject();
         payload.put("model", "qwen");
