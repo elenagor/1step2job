@@ -1,4 +1,4 @@
-package com.firststeptojob.resumeprocessing;
+package com.ostj.resumeprocessing;
 
 import java.util.*;
 import org.apache.commons.cli.*;
@@ -8,9 +8,19 @@ import org.apache.commons.io.IOUtils;
 import com.azure.ai.openai.*;
 import com.azure.ai.openai.models.*;
 import com.azure.core.credential.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.annotation.Value;
 
+@SpringBootApplication
 public class App {
-    private static Properties properties = new Properties();
+    @Value("${ostj.openai.apikey}")
+    String apiKey;
+
+    @Value("${ostj.openai.endpoint}")
+    String endpoint;
+
+    @Value("${ostj.openai.model}")
+    String model;
 
     public static void main(String[] args) {
         Options options = new Options();
@@ -41,7 +51,8 @@ public class App {
             String job_description = readFile(jdFilePath);
             String prompt = readFile(promptFilePath);
 
-            String response = call_openai( resume,  job_description,  prompt);
+            App main = new App();
+            String response = main.call_openai( resume,  job_description,  prompt);
             System.out.println("Response: " + response);
         }
         catch (IOException ioe){
@@ -57,16 +68,14 @@ public class App {
         return IOUtils.toString(fis, "UTF-8");
     }
 
-    public static String call_openai(String resume, String job_description, String prompt) throws Exception {
+    public String call_openai( String resume, String job_description, String prompt) throws Exception {
         String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
 
-        String apiKey = properties.getProperty("ai.openai.apikey");;
-        String endpoint = properties.getProperty("ai.openai.endpoint");;
-        String model = properties.getProperty("ai.openai.model");;
+        System.out.printf("apiKey="+apiKey+",endpoint="+endpoint+",model="+model+"\n");
 
         OpenAIClient client = new OpenAIClientBuilder()
                 .endpoint(endpoint)
-                .credential(new AzureKeyCredential(apiKey))
+                .credential(new KeyCredential(apiKey))
                 .buildClient();
 
         List<ChatRequestMessage> chatMessages = new ArrayList<>();
