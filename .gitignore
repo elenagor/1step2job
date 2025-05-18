@@ -1,5 +1,8 @@
-bin
-obj
-target
+.*
+bin/
+obj/
+target/
+
+!.gitignore
 __pycache__
 .vscode
