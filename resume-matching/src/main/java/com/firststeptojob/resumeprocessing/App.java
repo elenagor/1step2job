@@ -1,16 +1,17 @@
 package com.firststeptojob.resumeprocessing;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import org.json.JSONObject;
+import java.util.*;
 import org.apache.commons.cli.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.apache.commons.io.IOUtils;
+import com.azure.ai.openai.*;
+import com.azure.ai.openai.models.*;
+import com.azure.core.credential.*;
 
 public class App {
+    private static Properties properties = new Properties();
+
     public static void main(String[] args) {
         Options options = new Options();
 
@@ -59,51 +60,32 @@ public class App {
     public static String call_openai(String resume, String job_description, String prompt) throws Exception {
         String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
 
-        OpenAIClient client = OpenAIOkHttpClient.fromEnv();
-        Builder createParams = ChatCompletionCreateParams.builder()
-        .model("qwen")
-        .addDeveloperMessage(prompt)
-        .addUserMessage(user_content);
+        String apiKey = properties.getProperty("ai.openai.apikey");;
+        String endpoint = properties.getProperty("ai.openai.endpoint");;
+        String model = properties.getProperty("ai.openai.model");;
 
-        client.chat()
-            .completions()
-            .create(createParams.build())
-            .choices()
-            .stream()
-            .flatMap(choice -> choice.message()
-                .content()
-                .stream())
-            .forEach(System.out::println);
+        OpenAIClient client = new OpenAIClientBuilder()
+                .endpoint(endpoint)
+                .credential(new AzureKeyCredential(apiKey))
+                .buildClient();
 
-        return response.body();
+        List<ChatRequestMessage> chatMessages = new ArrayList<>();
+        chatMessages.add(new ChatRequestSystemMessage(prompt));
+        chatMessages.add(new ChatRequestUserMessage(user_content));
+        
+        ChatCompletions chatCompletions = client.getChatCompletions(model, new ChatCompletionsOptions(chatMessages));
+
+        StringBuffer sb = new StringBuffer();
+        for (ChatChoice choice : chatCompletions.getChoices()) {
+            sb.append(choice.getMessage().getContent());
+        }
+
+        //CompletionsUsage usage = chatCompletions.getUsage();
+        //System.out.printf("Usage: number of prompt token is %d, "
+        //                + "number of completion token is %d, and number of total tokens in request and response is %d.%n",
+        //        usage.getPromptTokens(), usage.getCompletionTokens(), usage.getTotalTokens());
+ 
+        return sb.toString();
     }
 
-    public static String call_openai(String resume, String job_description, String prompt) throws Exception {
-        String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
-
-        // Create the JSON payload
-        JSONObject payload = new JSONObject();
-        payload.put("model", "qwen");
-        payload.put("messages", new JSONObject[] {
-            new JSONObject().put("role", "system").put("content", prompt)
-        });
-        payload.put("messages", new JSONObject[] {
-            new JSONObject().put("role", "user").put("content", user_content)
-        });
-        String endpoint="http://localhost:8000/v1";
-        String apiKey="EMPTY";
-        // Build the HTTP request
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(endpoint))
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + apiKey)
-            .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
-            .build();
-
-        // Send the request
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
-    }
 }
