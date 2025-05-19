@@ -48,7 +48,7 @@ public class KafkaStreamConfig  {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        System.out.println("appName="+appName+",bootstrapAddress="+bootstrapAddress+",topic_name="+topic_name);
+        System.out.println("kStreamsConfig: appName="+appName+",bootstrapAddress="+bootstrapAddress+",topic_name="+topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 

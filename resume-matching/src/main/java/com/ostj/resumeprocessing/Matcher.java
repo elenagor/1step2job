@@ -17,7 +17,7 @@ import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
-import com.azure.core.credential.KeyCredential;
+import com.azure.core.credential.AzureKeyCredential;
 
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -30,10 +30,6 @@ public class Matcher {
 
     @Value(value = "${ostj.openai.model}")
     String model;
-
-    public Matcher(){
-        System.out.println("apiKey="+apiKey+",endpoint="+endpoint+",model="+model+"\n");
-    }
 
     public String run_resume_matching(String resumeFilePath, String jdFilePath, String promptFilePath) throws Exception{
         String resume = readFile(resumeFilePath);
@@ -51,11 +47,11 @@ public class Matcher {
     public String call_openai( String resume, String job_description, String prompt) throws Exception {
         String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
 
-        System.out.println("apiKey="+apiKey+",endpoint="+endpoint+",model="+model+"\n");
+        System.out.println("Matcher: apiKey="+apiKey+",endpoint="+endpoint+",model="+model+"\n");
 
         OpenAIClient client = new OpenAIClientBuilder()
                 .endpoint(endpoint)
-                .credential(new KeyCredential(apiKey))
+                .credential(new AzureKeyCredential(apiKey))
                 .buildClient();
 
         List<ChatRequestMessage> chatMessages = new ArrayList<>();
