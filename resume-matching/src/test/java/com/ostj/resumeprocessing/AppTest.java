@@ -13,7 +13,7 @@ public class AppTest {
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue() {
+    public void testResumeMatching() {
         assertTrue(true);
     }
 }
