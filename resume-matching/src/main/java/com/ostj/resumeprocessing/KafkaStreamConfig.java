@@ -56,22 +56,21 @@ public class KafkaStreamConfig  {
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
         KStream<String, String> stream = kStreamBuilder.stream(topic_name);
         stream.mapValues(value -> mapStringValueToEventRecord(value))
+        .filter((key, value) -> value != null)
         .peek((key, value) -> processMessage(key, value));
         return stream;
     }
 
     private ResumeProcessEvent mapStringValueToEventRecord(String value) {
-        System.out.println("value="+value);
-		ResumeProcessEvent record = new ResumeProcessEvent();
-
-		JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
+        System.out.println("\nvalue="+value);
+		ResumeProcessEvent record = null;
 		try {
+            JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
+            System.out.println("Message mapped Value: " + record.toString());
 		} catch (Throwable e) {
 			System.out.println("Error parsing json message " + e);
 		}
-
-		System.out.println("Message mapped Value: " + record.toString());
 		return record;
 	}
 
@@ -81,7 +80,7 @@ public class KafkaStreamConfig  {
             String response = resumeMatcher.run_resume_matching( record.resumeFilePath,  record.jdFilePath,  record.promptFilePath);
             System.out.println("Response: " + response);
         }
-        catch(Exception e){
+        catch(Throwable e){
             System.out.println("Error: " + e.toString());
         }
     }

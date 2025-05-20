@@ -47,7 +47,7 @@ public class Matcher {
     public String call_openai( String resume, String job_description, String prompt) throws Exception {
         String user_content = String.format("Resume:%s\nJob Description:%s", resume, job_description);
 
-        System.out.println("Matcher: apiKey="+apiKey+",endpoint="+endpoint+",model="+model+"\n");
+        System.out.println("Matcher: apiKey="+apiKey+",endpoint="+endpoint+",model="+model);
 
         OpenAIClient client = new OpenAIClientBuilder()
                 .endpoint(endpoint)
