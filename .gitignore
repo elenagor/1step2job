@@ -6,4 +6,4 @@ target/
 !.gitignore
 __pycache__
 .vscode
-kafka-4.0.0-src
+kafka_2.13-4.0.0
