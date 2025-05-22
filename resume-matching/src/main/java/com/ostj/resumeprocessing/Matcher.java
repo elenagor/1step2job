@@ -53,8 +53,8 @@ public class Matcher {
         log.trace("Matcher: job_description="+job_description);
         log.trace("Matcher: prompt="+prompt);
 
-        return call_openai( resume,  job_description,  prompt);
-        //return http_call_openai( resume,  job_description,  prompt);
+        //return call_openai( resume,  job_description,  prompt);
+        return http_call_openai( resume,  job_description,  prompt);
     }
 
     private static String readFile(String path) throws Exception{

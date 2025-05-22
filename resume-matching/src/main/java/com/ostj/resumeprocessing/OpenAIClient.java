@@ -42,7 +42,7 @@ public class OpenAIClient {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(endpoint))
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
+                //.header("Authorization", "Bearer " + apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .build();
                 HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
