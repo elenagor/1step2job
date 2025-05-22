@@ -1,7 +1,4 @@
 package com.ostj.resumeprocessing;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -14,6 +11,14 @@ public class AppTest {
      */
     @Test
     public void testResumeMatching() {
-        assertTrue(true);
+        try{
+            Matcher resumeMatcher = new Matcher();
+            String response = resumeMatcher.run_resume_matching( "/mnt/c/1step2job/1step2job/playground/data/Person1/Person.txt",  
+            "",  "/mnt/c/1step2job/1step2job/resume-matching/src/main/resources/prompt_get_info.txt");
+            System.out.println("Response: " + response);
+         }
+        catch(Throwable e){
+            System.out.println("Error: " + e.toString());
+        }
     }
 }

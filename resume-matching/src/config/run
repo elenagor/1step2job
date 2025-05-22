@@ -1,3 +1,4 @@
 java -Dlogging.config=resume-matching/src/main/resources/logback.xml  -jar resume-matching/target/resume-matching-1.0.0.jar
 
 { "resumeFilePath":"playground/data/Person1/Person.txt", "jdFilePath":"playground/data/Person1/jds/JD_Match1.txt","promptFilePath":"resume-matching/src/test/resources/prompt.txt"}
+{ "resumeFilePath":"playground/data/Person1/Person.txt", "jdFilePath":"","promptFilePath":"resume-matching/src/main/resources/prompt_get_info.txt"}
