@@ -54,6 +54,7 @@ public class Matcher {
         log.trace("Matcher: prompt="+prompt);
 
         return call_openai( resume,  job_description,  prompt);
+        //return http_call_openai( resume,  job_description,  prompt);
     }
 
     private static String readFile(String path) throws Exception{
@@ -62,6 +63,22 @@ public class Matcher {
         }
         FileInputStream fis = new FileInputStream(path);
         return IOUtils.toString(fis, "UTF-8");
+    }
+
+    public String http_call_openai( String resume, String job_description, String prompt) throws Exception {
+        String user_content = "";
+        if(StringUtil.isNullOrEmpty(job_description)){
+            // Replace {resume} placeholder
+            user_content = prompt.replace("{resume}", resume);
+        }
+        else{
+            user_content = prompt.replace("{resume}", resume);
+            user_content = prompt.replace("{job_description}", job_description);
+        }
+        
+        log.trace("Matcher: user message="+user_content);
+        com.ostj.resumeprocessing.OpenAIClient openai_client = new com.ostj.resumeprocessing.OpenAIClient(endpoint, apiKey, model);
+        return openai_client.getChatGPTResponse(user_content);
     }
 
     public String call_openai( String resume, String job_description, String prompt) throws Exception {
