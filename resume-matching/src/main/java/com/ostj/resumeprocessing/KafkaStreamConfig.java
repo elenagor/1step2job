@@ -7,6 +7,8 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +28,7 @@ import com.ostj.entity.ResumeProcessEvent;
 @EnableKafka
 @EnableKafkaStreams
 public class KafkaStreamConfig  {
+    private static Logger log = LoggerFactory.getLogger(KafkaStreamConfig.class);
     private static Gson gson = new GsonBuilder().registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
 
     @Value(value = "${ostj.kstream.topic}")
@@ -47,7 +50,7 @@ public class KafkaStreamConfig  {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        System.out.println("kStreamsConfig: appName="+appName+",bootstrapAddress="+bootstrapAddress+",topic_name="+topic_name);
+        log.trace("kStreamsConfig: appName="+appName+",bootstrapAddress="+bootstrapAddress+",topic_name="+topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -66,9 +69,9 @@ public class KafkaStreamConfig  {
 		try {
             JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
-            System.out.println("Message mapped Value: " + record.toString());
+            log.trace("Message mapped Value: " + record.toString());
 		} catch (Throwable e) {
-			System.out.println("Error parsing json message " + e);
+			log.error("Error parsing json message " + e);
 		}
 		return record;
 	}
@@ -77,10 +80,10 @@ public class KafkaStreamConfig  {
         System.out.println("key="+key+",value="+record);
         try{
             String response = resumeMatcher.run_resume_matching( record.resumeFilePath,  record.jdFilePath,  record.promptFilePath);
-            System.out.println("Response: " + response);
+            log.debug("Response: " + response);
         }
         catch(Throwable e){
-            System.out.println("Error: " + e.toString());
+            log.error("Error: " + e.toString());
         }
     }
     

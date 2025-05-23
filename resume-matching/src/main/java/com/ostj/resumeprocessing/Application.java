@@ -11,7 +11,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-
 @SpringBootApplication
 public class Application {
     private static Logger log = LoggerFactory.getLogger(Application.class);
@@ -23,8 +22,6 @@ public class Application {
 
 	@Value(value = "${ostj.openai.model}")
 	String model;
-
-
 
     public static void main(String[] args) {
         log.trace("Trace log message");
@@ -41,11 +38,12 @@ public class Application {
         String[] beanNames = ctx.getBeanDefinitionNames();
         Arrays.sort(beanNames);
         for (String beanName : beanNames) {
-            log.info(beanName);
+            //log.info(beanName);
         }
         };
     }
     
+    @Bean
     public Matcher getMatcher() {
     	return new Matcher(apiKey, endpoint, model);
     }
