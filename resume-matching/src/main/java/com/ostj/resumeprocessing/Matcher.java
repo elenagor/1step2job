@@ -31,8 +31,8 @@ public class Matcher {
 
 	public String run_resume_matching(String resumeFilePath, String jdFilePath, String promptFilePath)
 			throws Exception {
-		System.out.println("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
-		System.out.println("Matcher: resumeFilePath=" + resumeFilePath + ",jdFilePath=" + jdFilePath
+		log.trace("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
+		log.trace("Matcher: resumeFilePath=" + resumeFilePath + ",jdFilePath=" + jdFilePath
 				+ ",promptFilePath=" + promptFilePath);
 
 		String resume = readFile(resumeFilePath);
