@@ -57,11 +57,13 @@ public class Matcher {
 	public String call_openai(String resume, String job_description, String prompt) throws Exception {
 		String user_content = "";
 		if (StringUtils.isEmpty(job_description)) {
-			// Replace {resume} placeholder
+			//  Prompt must contents {resume} placeholder
 			user_content = prompt.replace("{resume}", resume);
 		} else {
+			// Prompt must contents {resume} placeholder
 			user_content = prompt.replace("{resume}", resume);
-			user_content = prompt.replace("{job_description}", job_description);
+			//  Prompt must contents {job_description} placeholder
+			user_content = user_content.replace("{job_description}", job_description);
 		}
 
 		log.trace("Matcher: user message=" + user_content);

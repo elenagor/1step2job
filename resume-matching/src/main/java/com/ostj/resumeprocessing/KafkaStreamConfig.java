@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ostj.entity.Job;
 import com.ostj.entity.Person;
 import com.ostj.entity.Resume;
 import com.ostj.entity.ResumeProcessEvent;
@@ -94,15 +95,30 @@ public class KafkaStreamConfig  {
                         log.debug("Found person: {}", person.toString());
                         for(Resume resume : person.resumes){
                             log.trace("Process resume: {}", resume.Content);
-                            response = resumeMatcher.call_openai( resume.Content, "", getPromt(record.promptFilePath)) ;
+                            if(record.JobId.length() > 0 ){
+                                Job job = dbConnector.getJob(record.JobId);
+                                if(job != null){
+                                    log.trace("Match with description: {}", job.description);
+                                    response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
+                                    log.trace("Response: " + response);
+                                }
+                            }
+                            else{
+                                List<Job> jobs = dbConnector.getJobs(person);
+                                for(Job job : jobs){
+                                    log.trace("Match with description: {}", job.description);
+                                    response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
+                                    log.trace("Response: " + response);
+                                }
+                            }
                         }
                     }
                 }
             }
             else{
                 response = resumeMatcher.run( record.resumeFilePath,  record.jdFilePath,  getPromt(record.promptFilePath));
+                log.debug("Response: " + response);
             }
-            log.debug("Response: " + response);
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
