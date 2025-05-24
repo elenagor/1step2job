@@ -2,6 +2,7 @@ package com.ostj.resumeprocessing;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.serialization.Serdes;
@@ -23,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ostj.entity.Person;
 import com.ostj.entity.Resume;
 import com.ostj.entity.ResumeProcessEvent;
 
@@ -86,9 +88,15 @@ public class KafkaStreamConfig  {
         try{
             String response = "";
             if(record.PersonId != -1){
-                Resume resume = dbConnector.getPersonData(record.PersonId );
-                if(resume != null){
-                    response = resumeMatcher.call_openai( resume.Content, "", getPromt(record.promptFilePath)) ;
+                List<Person> persons = dbConnector.getPersonData(record.PersonId );
+                if(persons != null){
+                    for(Person person : persons){
+                        log.debug("Found person: {}", person.toString());
+                        for(Resume resume : person.resumes){
+                            log.trace("Process resume: {}", resume.Content);
+                            response = resumeMatcher.call_openai( resume.Content, "", getPromt(record.promptFilePath)) ;
+                        }
+                    }
                 }
             }
             else{

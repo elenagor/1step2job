@@ -24,7 +24,7 @@ public class Application {
 	@Value(value = "${ostj.openai.model}")
 	String model;
 
-    @Value(value = ".db.url}")
+    @Value(value = "${ostj.db.url}")
     String jdbcUrl;
 
     @Value(value = "${ostj.db.username}")
@@ -61,7 +61,7 @@ public class Application {
         
     @Bean
     public SQLAccess getDBConnector() throws SQLException {
-        log.debug("Matcher: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+        log.debug("SQLAccess: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	return new SQLAccess(jdbcUrl, username, password);
     }
 }

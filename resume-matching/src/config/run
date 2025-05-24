@@ -1,4 +1,9 @@
+%MAVEN_HOME%\bin\mvn package -f resume-matching\pom.xml
 java -Dlogging.config=resume-matching/src/main/resources/logback.xml  -jar resume-matching/target/resume-matching-1.0.0.jar
 
-{ "resumeFilePath":"playground/data/Person1/Person.txt", "jdFilePath":"playground/data/Person1/jds/JD_Match1.txt","promptFilePath":"resume-matching/src/main/resources/prompt.txt"}
-{ "resumeFilePath":"playground/data/Person1/Person.txt", "jdFilePath":"","promptFilePath":"resume-matching/src/main/resources/prompt_get_info.txt"}
+{ "resumeFilePath":"C:/1step2job/1step2job/playground/data/Person1/Person.txt", "jdFilePath":"C:/1step2job/1step2job/playground/data/Person1/jds/JD_Match1.txt","promptFilePath":"prompt.txt"}
+{ "resumeFilePath":"playground/data/Person1/Person.txt", "jdFilePath":"","promptFilePath":"prompt_get_info.txt"}
+{ "PersonId":"1", "jdFilePath":"","promptFilePath":"prompt_get_info.txt"}
+
+C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-server-start.bat ../../config/server.properties
+C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-console-producer.bat --bootstrap-server localhost:9092 --topic ostj_user_resumes
