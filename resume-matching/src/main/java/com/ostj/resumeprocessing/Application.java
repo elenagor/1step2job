@@ -1,5 +1,6 @@
 package com.ostj.resumeprocessing;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -23,6 +24,15 @@ public class Application {
 	@Value(value = "${ostj.openai.model}")
 	String model;
 
+    @Value(value = ".db.url}")
+    String jdbcUrl;
+
+    @Value(value = "${ostj.db.username}")
+    String username;
+
+    @Value(value = "${ostj.db.password}")
+    String password;
+
     public static void main(String[] args) {
         log.trace("Trace log message");
         log.debug("Debug log message");
@@ -45,6 +55,13 @@ public class Application {
     
     @Bean
     public Matcher getMatcher() {
+        log.debug("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
     	return new Matcher(apiKey, endpoint, model);
+    }
+        
+    @Bean
+    public SQLAccess getDBConnector() throws SQLException {
+        log.debug("Matcher: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	return new SQLAccess(jdbcUrl, username, password);
     }
 }

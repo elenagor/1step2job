@@ -29,9 +29,8 @@ public class Matcher {
 		this.model = model;
 	}
 
-	public String run_resume_matching(String resumeFilePath, String jdFilePath, String promptFilePath)
+	public String run(String resumeFilePath, String jdFilePath, String promptFilePath)
 			throws Exception {
-		log.trace("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
 		log.trace("Matcher: resumeFilePath=" + resumeFilePath + ",jdFilePath=" + jdFilePath
 				+ ",promptFilePath=" + promptFilePath);
 

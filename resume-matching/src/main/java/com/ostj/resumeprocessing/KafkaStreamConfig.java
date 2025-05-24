@@ -1,8 +1,9 @@
 package com.ostj.resumeprocessing;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ostj.entity.Resume;
 import com.ostj.entity.ResumeProcessEvent;
 
 @Configuration
@@ -38,10 +40,13 @@ public class KafkaStreamConfig  {
     String bootstrapAddress;
 
     @Value(value = "${spring.application.name}")
-    String appName;
+    String appName;;
 
     @Autowired
 	Matcher resumeMatcher;
+
+    @Autowired
+	SQLAccess dbConnector;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -79,7 +84,16 @@ public class KafkaStreamConfig  {
     private void processMessage(String key, ResumeProcessEvent record) {
         System.out.println("key="+key+",value="+record);
         try{
-            String response = resumeMatcher.run_resume_matching( record.resumeFilePath,  record.jdFilePath,  record.promptFilePath);
+            String response = "";
+            if(record.PersonId != -1){
+                Resume resume = dbConnector.getPersonData(record.PersonId );
+                if(resume != null){
+                    response = resumeMatcher.call_openai( resume.Content, "", getPromt(record.promptFilePath)) ;
+                }
+            }
+            else{
+                response = resumeMatcher.run( record.resumeFilePath,  record.jdFilePath,  getPromt(record.promptFilePath));
+            }
             log.debug("Response: " + response);
         }
         catch(Throwable e){
@@ -87,4 +101,7 @@ public class KafkaStreamConfig  {
         }
     }
     
+    private String getPromt(String promptResourceName) throws IOException{
+        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(promptResourceName),  "UTF-8");
+    }
 }

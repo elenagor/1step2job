@@ -2,8 +2,6 @@ package com.ostj.resumeprocessing;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
