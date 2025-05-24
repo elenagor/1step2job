@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -97,18 +99,12 @@ public class KafkaStreamConfig  {
                             log.trace("Process resume: {}", resume.Content);
                             if(record.JobId.length() > 0 ){
                                 Job job = dbConnector.getJob(record.JobId);
-                                if(job != null){
-                                    log.trace("Match with description: {}", job.description);
-                                    response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
-                                    log.trace("Response: " + response);
-                                }
+                                response = call_openai(record, resume, job ) ;
                             }
                             else{
                                 List<Job> jobs = dbConnector.getJobs(person);
                                 for(Job job : jobs){
-                                    log.trace("Match with description: {}", job.description);
-                                    response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
-                                    log.trace("Response: " + response);
+                                    response = call_openai(record, resume, job ) ;
                                 }
                             }
                         }
@@ -123,6 +119,21 @@ public class KafkaStreamConfig  {
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
+    }
+
+    private String call_openai(ResumeProcessEvent record, Resume resume, Job job) throws Exception{
+        if(record == null)
+            throw new MissingArgumentException("record.prompt");
+        if(resume == null)
+            throw new MissingArgumentException("resume.content");
+        if(job == null)
+            throw new MissingArgumentException("job.description");
+
+        log.trace("Match with description: {}", job.description);
+        String response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
+        log.trace("Response: " + response);
+        
+        return response;
     }
     
     private String getPromt(String promptResourceName) throws IOException{
