@@ -1,12 +1,8 @@
 ﻿using System.Data.Common;
-using System.Runtime.InteropServices;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Moq;
+using Microsoft.Extensions.Options;
 using OstjApi.Data;
 using OstjApi.Models;
 using OstjApi.Services;
@@ -17,10 +13,22 @@ namespace OstjApi.Tests.Services
     {
         private readonly DbConnection _connection;
         private readonly DbContextOptions<OstjDbContext> _contextOptions;
+        private readonly ILogger<AuthService> _logger;
+        private readonly IOptions<OtcSettings> _options;
 
         #region ConstructorAndDispose
         public AuthServiceTest()
         {
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            _logger = loggerFactory.CreateLogger<AuthService>();
+
+            _options = Options.Create(new OtcSettings
+            {
+                CodeLength = 6,
+                CodeEpirationMinutes = 15,
+                MaxGenerationAttempts = 10
+            });
+
             _connection = new SqliteConnection("Filename=:memory:");
             _connection.Open();
             _contextOptions = new DbContextOptionsBuilder<OstjDbContext>()
@@ -52,7 +60,7 @@ namespace OstjApi.Tests.Services
             dbContext.Otcs.Add(new Otc { Email = "ddd@gbb.com", Code = "123456", Expires = DateTime.UtcNow.AddDays(1), IsUsed = true });
             dbContext.SaveChanges();
 
-            var authService = new AuthService(dbContext);
+            var authService = new AuthService(dbContext, _options , _logger);
 
             var result = await authService.VerifyCodeAsync(email, code);
             Assert.Equal(expetedStatus, result);
@@ -70,7 +78,7 @@ namespace OstjApi.Tests.Services
             dbContext.Otcs.Add(new Otc { Email = email, Code = code, Expires = DateTime.UtcNow.AddDays(1) });
             dbContext.SaveChanges();
 
-            var authService = new AuthService(dbContext);
+            var authService = new AuthService(dbContext, _options , _logger);
             var result = await authService.VerifyCodeAsync(email, code);
             Assert.Equal(OtcStatus.Valid, result);
 
@@ -86,7 +94,7 @@ namespace OstjApi.Tests.Services
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 
-            var authService = new AuthService(dbContext);
+            var authService = new AuthService(dbContext, _options , _logger);
 
             const string email = "aaa@bbb.com";
             var code = await authService.GenerateCodeAsync(email);
@@ -112,7 +120,7 @@ namespace OstjApi.Tests.Services
                 dbContext.Otcs.Add(new Otc { Email = email, Code = "123456", Expires = DateTime.UtcNow.AddDays(1) });
                 dbContext.Otcs.Add(new Otc { Email = email, Code = "654321", Expires = DateTime.UtcNow.AddDays(1) });
                 dbContext.SaveChanges();
-                var authService = new AuthService(dbContext);
+                var authService = new AuthService(dbContext, _options , _logger);
 
                 code = await authService.GenerateCodeAsync(email);
 
@@ -144,9 +152,16 @@ namespace OstjApi.Tests.Services
                 await dbContext.SaveChangesAsync();
             }
 
+            var options = Options.Create(new OtcSettings
+            {
+                CodeLength = 1,
+                CodeEpirationMinutes = 15,
+                MaxGenerationAttempts = 10
+            });
+
             using (var dbContext = CreateContext())
             {
-                var authService = new AuthService(dbContext, 1, 10);
+                var authService = new AuthService(dbContext, options, _logger);
                 var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await authService.GenerateCodeAsync(email));
                 Assert.Equal("Failed to generate a unique code after multiple attempts.", exception.Message);
             }

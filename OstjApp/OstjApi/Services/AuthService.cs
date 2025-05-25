@@ -1,26 +1,53 @@
+using System.ComponentModel;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OstjApi.Data;
 using OstjApi.Models;
 
 namespace OstjApi.Services
 {
+    public class OtcSettings
+    {
+        public int CodeLength { get; set; }
+        public int CodeEpirationMinutes { get; set; }
+        public int MaxGenerationAttempts { get; set; }
+    }
+
     public class AuthService : IAuthService
     {
+        private readonly ILogger<AuthService> _logger;
         private readonly OstjDbContext _dbContext;
         private readonly int _minCode;
         private readonly int _maxCode;
-        private readonly int _maxGenerationAttempts = 1000;
+        private readonly int _maxGenerationAttempts;
+        private readonly int _codeExpirationMinutes;
 
-        public AuthService(OstjDbContext dbContext, uint codeLenth = 6, uint maxGenerationAttempts = 1000)
+        public AuthService(OstjDbContext dbContext, IOptions<OtcSettings> options, ILogger<AuthService> logger)
         {
-            if (codeLenth > 10)
+            var settings = options.Value;
+            if (settings.CodeLength < 1 || settings.CodeLength > 10)
             {
-                throw new ArgumentOutOfRangeException(nameof(codeLenth), "Code length must be less than 10.");
+                throw new ArgumentOutOfRangeException("Otc.CodeLenth", "Code length must have a positive value less than 10.");
             }
-            _minCode = (int)Math.Pow(10, codeLenth - 1);
-            _maxCode = (int)(Math.Pow(10, codeLenth) - 1);
+
+            if (settings.MaxGenerationAttempts < 0)
+            {
+                throw new ArgumentOutOfRangeException("Otc.MaxGenerationAttempts", "Max number of code generation attemps must have a positive value.");
+            }
+
+            if (settings.CodeEpirationMinutes > 0)
+            {
+                throw new ArgumentOutOfRangeException("Otc.CodeEpirationMinutes", "Code expiration must have greater that 1 min.");
+            }
+
+            _minCode = (int)Math.Pow(10, settings.CodeLength - 1);
+            _maxCode = (int)(Math.Pow(10, settings.CodeLength) - 1);
             _dbContext = dbContext;
-            _maxGenerationAttempts = (int)maxGenerationAttempts;
+            _maxGenerationAttempts = settings.MaxGenerationAttempts;
+            _codeExpirationMinutes = settings.CodeEpirationMinutes;
+
+            _logger = logger;
         }
 
         public async Task<string> GenerateCodeAsync(string email)
@@ -40,7 +67,7 @@ namespace OstjApi.Services
                     {
                         Email = email,
                         Code = code,
-                        Expires = DateTime.UtcNow.AddMinutes(15)
+                        Expires = DateTime.UtcNow.AddMinutes(_codeExpirationMinutes)
                     };
                     _dbContext.Otcs.Add(otc);
                     await _dbContext.SaveChangesAsync();
@@ -49,8 +76,12 @@ namespace OstjApi.Services
                 catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique", StringComparison.OrdinalIgnoreCase) == true
                                  || ex.InnerException?.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) == true)
                 {
+                    _logger.LogWarning(ex, "Failed to generate a unique code for email {Email}. Attempt {Attempt} of {MaxAttempts}.", email, i + 1, _maxGenerationAttempts);
+                    // Ignore the exception and try again
                 }
             }
+            _logger.LogError("Failed to generate a unique code for email {Email} after {MaxAttempts} attempts.", email, _maxGenerationAttempts);
+            // If we reach here, it means we failed to generate a unique code
             throw new InvalidOperationException("Failed to generate a unique code after multiple attempts.");
         }
 

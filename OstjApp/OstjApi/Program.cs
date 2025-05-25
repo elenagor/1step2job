@@ -8,25 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OstjDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<IAIClient>(new AIClient(
-    builder.Configuration["OpenAI:Model"] ?? throw new InvalidOperationException("OpenAI:Model configuration is missing."),
-    builder.Configuration["OpenAI:ApiUri"] ?? throw new InvalidOperationException("OpenAI:ApiUri configuration is missing."),
-    builder.Configuration["OpenAI:ApiKey"] ?? throw new InvalidOperationException("OpenAI:ApiKey configuration is missing.")));
+builder.Services
+    .Configure<AIClientSettings>(builder.Configuration.GetSection("OpenAI"))
+    .Configure<EmailSettings>(builder.Configuration.GetSection("Email"))
+    .Configure<OtcSettings>(builder.Configuration.GetSection("Otc"));
+
+
+builder.Services.AddSingleton<IAIClient, AIClient>();
 
 builder.Services
     .AddScoped<IPersonService, PersonService>()
     .AddScoped<IAuthService, AuthService>()
-    .AddScoped<IEmailService>(provider =>
-    {
-        var config = provider.GetRequiredService<IConfiguration>();
-        return new EmailService(
-            config["Email:SmtpServer"] ?? throw new InvalidOperationException("Email:Host configuration is missing."),
-            config.GetValue<int?>("Email:Port") ?? throw new InvalidOperationException("Email:Port configuration is missing."),
-            config["Email:Username"] ?? throw new InvalidOperationException("Email:Username configuration is missing."),
-            config["Email:Password"] ?? throw new InvalidOperationException("Email:Password configuration is missing."),
-            config.GetValue<bool?>("Email:Ssl") ?? throw new InvalidOperationException("Email:Ssl configuration is missing.")
-        );
-    });
+    .AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

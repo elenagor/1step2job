@@ -1,17 +1,23 @@
 using System.Net;
 using System.Net.Mail;
 using System.Net.Security;
+using Microsoft.Extensions.Options;
 
 namespace OstjApi.Services
 {
-
-    public class EmailService(string smtpServer, int port, string username, string password, bool ssl = true) : IEmailService
+    public class EmailSettings
     {
-        private readonly string _smtpServer = smtpServer;
-        private readonly int _port = port;
-        private readonly string _username = username;
-        private readonly string _password = password;
-        private readonly bool _ssl = ssl;
+        public string SmtpServer { get; set; } = string.Empty;
+        public int Port { get; set; } = 587;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public bool Ssl { get; set; } = true;
+    }
+
+    public class EmailService(IOptions<EmailSettings> options, ILogger<EmailService> logger) : IEmailService
+    {
+        private readonly ILogger<EmailService> _logger = logger;
+        private readonly EmailSettings _emailSettings = options.Value;
 
         public async Task SendOtcEmailAsync(string email, string code)
         {
@@ -23,15 +29,15 @@ namespace OstjApi.Services
 
         async Task SendEmailAsync(string email, string subject, string message)
         {
-            var smtpClient = new SmtpClient(_smtpServer, _port)
+            var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port)
             {
-                Credentials = new NetworkCredential(_username, _password),
-                EnableSsl = _ssl,
+                Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password),
+                EnableSsl = _emailSettings.Ssl,
             };
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(_username),
+                From = new MailAddress(_emailSettings.Username),
                 Subject = subject,
                 Body = message,
                 IsBodyHtml = true,
@@ -40,6 +46,7 @@ namespace OstjApi.Services
             mailMessage.To.Add(email);
 
             await smtpClient.SendMailAsync(mailMessage);
+            _logger.LogDebug("OTC Email sent to {Email}", email);
         }
     }
 }
