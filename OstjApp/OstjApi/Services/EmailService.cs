@@ -12,6 +12,7 @@ namespace OstjApi.Services
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public bool Ssl { get; set; } = true;
+        public string FromAddress { get; set; } = string.Empty;
     }
 
     public class EmailService(IOptions<EmailSettings> options, ILogger<EmailService> logger) : IEmailService
@@ -37,7 +38,7 @@ namespace OstjApi.Services
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(_emailSettings.Username),
+                From = new MailAddress(_emailSettings.FromAddress),
                 Subject = subject,
                 Body = message,
                 IsBodyHtml = true,

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6d28a9be-3b07-4623-bfc4-ef28ccbb6057</UserSecretsId>
+    <ContainerRepository>ostjapi</ContainerRepository>
   </PropertyGroup>
 
   <ItemGroup>
