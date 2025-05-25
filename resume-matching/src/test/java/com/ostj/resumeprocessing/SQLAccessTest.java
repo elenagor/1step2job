@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Job;
+import com.ostj.dataentity.MatchResult;
 import com.ostj.dataentity.Person;
 
 public class SQLAccessTest {
@@ -33,5 +34,18 @@ public class SQLAccessTest {
 		Job job = dbConnector.getJob("9055748138");
 		assertTrue(job != null);
 		log.trace("Response: {}", job.description);
+	}
+
+	@Test
+	public void testInserDeleteResult() throws Exception {
+		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		MatchResult result = new MatchResult();
+		result.PersonId = 1;
+		result.ResumeId = 3;
+		result.JobId = 5;
+		result.overall_score = 0;
+		int resultId = dbConnector.saveMatchResult(result);
+		assertTrue(resultId >= 0);
+		dbConnector.deleteMatchResult(resultId);
 	}
 }

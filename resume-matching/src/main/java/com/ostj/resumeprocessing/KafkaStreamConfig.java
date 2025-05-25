@@ -28,7 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.openai.models.chat.completions.ChatCompletionMessage;
+
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Job;
 import com.ostj.dataentity.MatchResult;
@@ -53,6 +53,9 @@ public class KafkaStreamConfig  {
 
     @Value(value = "${spring.application.name}")
     String appName;;
+
+    @Value(value = "${ostj.match.treshhold}")
+    int match_treshhold;
 
     @Autowired
 	AIMatcher resumeMatcher;
@@ -123,31 +126,45 @@ public class KafkaStreamConfig  {
                 if(record.JobId.length() > 0 ){
                     Job job = dbConnector.getJob(record.JobId);
                     log.debug("Found Job: {}", job);
-                    String response = call_openai(record, resume, job ) ;
-                    convertResponce(response);
+                    processResume( record,  person,  resume,  job);
                 }
                 else{
                     List<Job> jobs = dbConnector.getJobs(person);
+                    log.debug("Found {} Jobs", jobs.size());
+                    int savedMatchResults = 0;
                     for(Job job : jobs){
-                        String response = call_openai(record, resume, job ) ;
-                        convertResponce(response);
+                       savedMatchResults = savedMatchResults + processResume( record,  person,  resume,  job);
                     }
+                    log.debug("Saved {} results", savedMatchResults);
                 }
             }
         }
     }
-
-    private MatchResult  convertResponce(String response){
+    private int processResume(ResumeProcessEvent record, Person person, Resume resume, Job job){
         try{
-            log.trace("AI Responce: {}", response);
-            JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
-            MatchResult  result = gson.fromJson(jsonValue, MatchResult .class);
-            log.debug("MatchResult: {}", result);
-            return result;
-        } catch (Throwable e) {
-			log.error("Error parsing ai responce message {}", e);
-		}
-        return null;
+            String response = call_openai(record, resume, job ) ;
+            MatchResult result = convertResponce(person, resume, job, response);
+            if(result.overall_score >= match_treshhold ){
+                log.debug("Save result to DB {}", result);
+                return dbConnector.saveMatchResult(result);
+            }
+        }
+        catch(Exception e){
+            log.error("Error on proces resumeId={} jobId={} {}", resume.Id, job.Id, e);
+        }
+        return 0;
+    }
+
+    private MatchResult  convertResponce(Person person, Resume resume, Job job, String response){
+        log.trace("AI Responce: {}", response);
+        JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+        log.trace("Json Responce: {}", jsonValue);
+        MatchResult  result = gson.fromJson(jsonValue, MatchResult .class);
+        result.PersonId = person.Id;
+        result.ResumeId = resume.Id;
+        result.JobId = job.Id;
+        log.debug("MatchResult: {}", result);
+        return result;
     }
 
     private String call_openai(ResumeProcessEvent record, Resume resume, Job job) throws Exception{

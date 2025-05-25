@@ -4,13 +4,11 @@ Extract form the resume below person information:
 - Phone number
 
 Output found information as JSON below:
-```
 {
     "Name": "<Full Name you found, or empty string if not found>"
     "Email": "<Email address you found, or empty string if not found>"
     "Phone": "<Phone Number you found, or empty string if not found>"
 }
-```
 
 Resume:
 {resume}

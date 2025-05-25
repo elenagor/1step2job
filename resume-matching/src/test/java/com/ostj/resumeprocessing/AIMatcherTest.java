@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ostj.openai.AIMatcher;
 
 
@@ -20,7 +22,7 @@ public class AIMatcherTest {
 		String prompt =  IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("prompt_get_info.txt"),  "UTF-8");
 		String response = ai_matcher.call_openai(resume, "", prompt);
 		assertTrue(response != null);
-		log.trace("Response: {}", response);
+		log.trace("AIMatcher Response: {}", response);
 		assertTrue(response.contains("Sergei Azarkhin"));
 		assertTrue(response.contains("sergei.azarkhin@gmail.com"));
 	}
@@ -33,5 +35,7 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai( resume,  job_description,  prompt);
         assertTrue(response != null);
         log.trace("AIMatcher Response: {}", response);
+		JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+		log.trace("Json Response: {}", jsonValue);
     }
 }

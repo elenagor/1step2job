@@ -1,8 +1,10 @@
 package com.ostj.dataaccess;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ostj.dataentity.Job;
+import com.ostj.dataentity.MatchResult;
 import com.ostj.dataentity.Person;
 import com.ostj.dataentity.Resume;
 
@@ -33,7 +36,9 @@ public class SQLAccess {
 
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            return new Job(rs);
+            Job job = new Job();
+            convertToObject( rs, job, job.getClass());
+            return job;
         }
         return null;
     }
@@ -44,7 +49,9 @@ public class SQLAccess {
 
         ResultSet rs = pstmt.executeQuery();
         while (rs.next()) {
-            list.add(new Job(rs));
+            Job job = new Job();
+            convertToObject( rs, job, job.getClass());
+            list.add(job);
         }
         return list;
     }
@@ -75,13 +82,64 @@ public class SQLAccess {
         return list;
     }
 
-    private Person createPerson(ResultSet rs ) throws SQLException{
-        Person person = new Person(rs);
+    private Person createPerson(ResultSet rs ) throws Exception{
+        Person person = new Person();
+        convertToObject( rs, person, person.getClass() );
         Resume resume = new Resume();
         resume.Id = rs.getInt("ResumeId");
         resume.PersonId = rs.getInt("Id");
         resume.Content = rs.getString("Content"); 
         person.resumes.add(resume);
         return person;
+    }
+
+    public int saveMatchResult(MatchResult result) throws SQLException {
+        String insertQuery = "INSERT INTO public.\"Results\"(\"PersonId\", \"ResumeId\", \"JobId\", \"MatchResultScore\")VALUES (?, ?, ?, ?);";
+        log.debug("Start query DB: {}", insertQuery);
+
+        PreparedStatement  stmt = this.conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS) ;
+        stmt.setInt(1, result.PersonId);
+        stmt.setInt(2, result.ResumeId);
+        stmt.setInt(3, result.JobId);
+        stmt.setInt(4, result.overall_score);
+
+        int insertedRow = stmt.executeUpdate();
+        if (insertedRow > 0) {
+            var rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    public void deleteMatchResult(int resultId) throws SQLException {
+        String query = "DELETE FROM public.\"Resumes\" WHERE \"Id\"=0;";
+        log.debug("Start query DB: {}", query);
+
+         PreparedStatement  stmt = this.conn.prepareStatement(query) ;
+        stmt.setInt(1, resultId);
+
+        stmt.executeQuery();
+    }
+
+    private <T> void convertToObject(ResultSet rs, T obj, Class<?> classType) throws Exception{
+        for(Field fieldname : classType.getDeclaredFields()){
+            setValue( fieldname, obj, rs);
+        }
+    }
+    private <T> void setValue(Field fieldname, T obj, ResultSet rs){
+        try{
+            fieldname.setAccessible(true);
+            if( fieldname.getType() == String.class ){
+                fieldname.set(obj, rs.getString(fieldname.getName()) );
+            } 
+            if( fieldname.getType() == int.class ){
+                fieldname.set(obj, rs.getInt(fieldname.getName()) );
+            }
+        }
+        catch(Exception e){
+            log.error("set field error {}", e);
+        }
     }
 }
