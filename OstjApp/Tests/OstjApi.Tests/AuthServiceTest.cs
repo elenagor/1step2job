@@ -59,6 +59,27 @@ namespace OstjApi.Tests.Services
         }
 
         [Fact]
+        public async Task TestCodeInvalidatedAfterUse()
+        {
+            using var dbContext = CreateContext();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+            const string email = "aaa@bbb.com";
+            const string code = "123456";
+            dbContext.Otcs.Add(new Otc { Email = email, Code = code, Expires = DateTime.UtcNow.AddDays(1) });
+            dbContext.SaveChanges();
+
+            var authService = new AuthService(dbContext);
+            var result = await authService.VerifyCodeAsync(email, code);
+            Assert.Equal(OtcStatus.Valid, result);
+
+            // Second attempt to use the same code should fail
+            result = await authService.VerifyCodeAsync(email, code);
+            Assert.Equal(OtcStatus.Used, result);
+        }
+
+        [Fact]
         public async Task TestGenerateCode()
         {
             using var dbContext = CreateContext();
