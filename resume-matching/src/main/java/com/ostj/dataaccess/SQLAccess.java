@@ -114,10 +114,10 @@ public class SQLAccess {
     }
 
     public void deleteMatchResult(int resultId) throws SQLException {
-        String query = "DELETE FROM public.\"Resumes\" WHERE \"Id\"=0;";
+        String query = "DELETE FROM public.\"Results\" WHERE \"Id\"= ? ;";
         log.debug("Start query DB: {}", query);
 
-         PreparedStatement  stmt = this.conn.prepareStatement(query) ;
+        PreparedStatement  stmt = this.conn.prepareStatement(query) ;
         stmt.setInt(1, resultId);
 
         stmt.executeQuery();

@@ -126,14 +126,17 @@ public class KafkaStreamConfig  {
                 if(record.JobId.length() > 0 ){
                     Job job = dbConnector.getJob(record.JobId);
                     log.debug("Found Job: {}", job);
-                    processResume( record,  person,  resume,  job);
+                    int savedMatchResults = processResume( record,  person,  resume,  job);
+                    log.debug("Saved resultId: {} ", savedMatchResults);
                 }
                 else{
                     List<Job> jobs = dbConnector.getJobs(person);
                     log.debug("Found {} Jobs", jobs.size());
                     int savedMatchResults = 0;
                     for(Job job : jobs){
-                       savedMatchResults = savedMatchResults + processResume( record,  person,  resume,  job);
+                        if( processResume( record,  person,  resume,  job) >= 0 ){
+                            savedMatchResults++;
+                        }
                     }
                     log.debug("Saved {} results", savedMatchResults);
                 }
@@ -146,13 +149,14 @@ public class KafkaStreamConfig  {
             MatchResult result = convertResponce(person, resume, job, response);
             if(result.overall_score >= match_treshhold ){
                 log.debug("Save result to DB {}", result);
-                return dbConnector.saveMatchResult(result);
+                result.Id = dbConnector.saveMatchResult(result);
+                return result.Id;
             }
         }
         catch(Exception e){
             log.error("Error on proces resumeId={} jobId={} {}", resume.Id, job.Id, e);
         }
-        return 0;
+        return -1;
     }
 
     private MatchResult  convertResponce(Person person, Resume resume, Job job, String response){
