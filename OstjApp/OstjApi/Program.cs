@@ -7,11 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Register DbContext and ResumeService
 builder.Services.AddDbContext<OstjDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddSingleton<IAIClient>(new AIClient(
     builder.Configuration["OpenAI:Model"] ?? throw new InvalidOperationException("OpenAI:Model configuration is missing."),
     builder.Configuration["OpenAI:ApiUri"] ?? throw new InvalidOperationException("OpenAI:ApiUri configuration is missing."),
     builder.Configuration["OpenAI:ApiKey"] ?? throw new InvalidOperationException("OpenAI:ApiKey configuration is missing.")));
-builder.Services.AddScoped<IPersonService, PersonService>();
+
+builder.Services
+    .AddScoped<IPersonService, PersonService>()
+    .AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
