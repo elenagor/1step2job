@@ -15,7 +15,18 @@ builder.Services.AddSingleton<IAIClient>(new AIClient(
 
 builder.Services
     .AddScoped<IPersonService, PersonService>()
-    .AddScoped<IAuthService, AuthService>();
+    .AddScoped<IAuthService, AuthService>()
+    .AddScoped<IEmailService>(provider =>
+    {
+        var config = provider.GetRequiredService<IConfiguration>();
+        return new EmailService(
+            config["Email:SmtpServer"] ?? throw new InvalidOperationException("Email:Host configuration is missing."),
+            config.GetValue<int?>("Email:Port") ?? throw new InvalidOperationException("Email:Port configuration is missing."),
+            config["Email:Username"] ?? throw new InvalidOperationException("Email:Username configuration is missing."),
+            config["Email:Password"] ?? throw new InvalidOperationException("Email:Password configuration is missing."),
+            config.GetValue<bool?>("Email:Ssl") ?? throw new InvalidOperationException("Email:Ssl configuration is missing.")
+        );
+    });
 
 var app = builder.Build();
 
@@ -47,6 +58,21 @@ app.MapPost("/api/resume/upload", async (HttpRequest request, IPersonService per
     );
 
     return Results.Ok(new { person.Id, person.Name, person.Email });
+});
+
+app.MapPost("/api/auth/sendotc", async (HttpRequest request, IAuthService authService, IEmailService emailService) =>
+{
+    if (!request.HasFormContentType)
+        return Results.BadRequest("No form data.");
+
+    var form = await request.ReadFormAsync();
+    var email = form["email"].ToString();
+    if (string.IsNullOrEmpty(email))
+        return Results.BadRequest("Email is required.");
+        
+    var code = await authService.GenerateCodeAsync(email);
+    await emailService.SendOtcEmailAsync(email, code);
+    return Results.Ok();
 });
 
 app.Run();
