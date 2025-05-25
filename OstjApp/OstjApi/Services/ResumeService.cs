@@ -8,10 +8,11 @@ using System.Text.Json;
 
 namespace OstjApi.Services
 {
-    public class PersonService(OstjDbContext dbContext, IAIClient aiClient) : IPersonService
+    public class PersonService(OstjDbContext dbContext, IAIClient aiClient, ILogger<PersonService> logger) : IPersonService
     {
         private readonly OstjDbContext _dbContext = dbContext;
         private readonly IAIClient _aiClient = aiClient;
+        private readonly ILogger<PersonService> _logger = logger;
 
         public async ValueTask<Person?> GetPersonAsync(int id)
         {
