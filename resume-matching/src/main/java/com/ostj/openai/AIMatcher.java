@@ -1,7 +1,10 @@
-package com.ostj.resumeprocessing;
+package com.ostj.openai;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,18 +14,18 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionMessage;
 
 import kotlin.text.Charsets;
 
-public class Matcher {
-	private static Logger log = LoggerFactory.getLogger(Matcher.class);
+public class AIMatcher {
+	private static Logger log = LoggerFactory.getLogger(AIMatcher.class);
 
 	String apiKey;
 	String endpoint;
 	String model;
 
-	
-	public Matcher(String apiKey, String endpoint, String model) {
+	public AIMatcher(String apiKey, String endpoint, String model) {
 		super();
 		this.apiKey = apiKey;
 		this.endpoint = endpoint;
@@ -31,27 +34,18 @@ public class Matcher {
 
 	public String run(String resumeFilePath, String jdFilePath, String promptFilePath)
 			throws Exception {
-		log.trace("Matcher: resumeFilePath=" + resumeFilePath + ",jdFilePath=" + jdFilePath
-				+ ",promptFilePath=" + promptFilePath);
+		log.trace("AIMatcher: resumeFilePath={}, jdFilePath={}, promptFilePath=", resumeFilePath, jdFilePath, promptFilePath);
 
 		String resume = readFile(resumeFilePath);
 		String job_description = readFile(jdFilePath);
 		String prompt = readFile(promptFilePath);
 
-		log.trace("Matcher: resume=" + resume);
-		log.trace("Matcher: job_description=" + job_description);
-		log.trace("Matcher: prompt=" + prompt);
+		log.trace("AIMatcher: resume={}", resume);
+		log.trace("AIMatcher: job_description={}", job_description);
+		log.trace("AIMatcher: prompt={}", prompt);
 
 		// return call_openai( resume, job_description, prompt);
 		return call_openai(resume, job_description, prompt);
-	}
-
-	private static String readFile(String path) throws Exception {
-		if (StringUtils.isEmpty(path)) {
-			return "";
-		}
-
-		return Files.readString(Path.of(path), Charsets.UTF_8);
 	}
 
 	public String call_openai(String resume, String job_description, String prompt) throws Exception {
@@ -66,7 +60,7 @@ public class Matcher {
 			user_content = user_content.replace("{job_description}", job_description);
 		}
 
-		log.trace("Matcher: user message=" + user_content);
+		log.trace("AIMatcher: user message={}", user_content);
 
 		OpenAIClient client = OpenAIOkHttpClient.builder()
 			    .apiKey(apiKey)
@@ -80,6 +74,27 @@ public class Matcher {
 			    .model(model)
 			    .build();
 		ChatCompletion chatCompletion = client.chat().completions().create(params);
-		return chatCompletion.choices().get(0).message().toString();
+		return getJsonContextAsString( chatCompletion.choices().get(0).message() );
+	}
+
+	private String getJsonContextAsString(ChatCompletionMessage  message){
+		Optional<String> content = message.content();
+		return getJsonContextAsString(content.get() );
+	}
+
+	private String getJsonContextAsString(String text) {
+        Pattern compiledPattern = Pattern.compile("<\\/think>(.+?)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Matcher matcher = compiledPattern.matcher(text);
+        if (matcher.find()) {
+           return matcher.group(1);
+        }
+        return null;
+    }
+	
+	private static String readFile(String path) throws Exception {
+		if (StringUtils.isEmpty(path)) {
+			return "";
+		}
+		return Files.readString(Path.of(path), Charsets.UTF_8);
 	}
 }

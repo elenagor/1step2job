@@ -8,8 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ostj.entity.Job;
-import com.ostj.entity.Person;
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.dataentity.Job;
+import com.ostj.dataentity.Person;
 
 public class SQLAccessTest {
     private static Logger log = LoggerFactory.getLogger(SQLAccessTest.class);
@@ -22,7 +23,7 @@ public class SQLAccessTest {
 		assertTrue(persons.size() > 0);
 		assertTrue(persons.get(0).resumes != null);
 		assertTrue(persons.get(0).resumes.size() != 0);
-		log.trace("Response: " + persons.get(0).resumes.get(0).Content);
+		log.trace("Response: {}", persons.get(0).resumes.get(0).Content);
 		assertTrue(persons.get(0).resumes.get(0).PersonId == 1);
 	}
 
@@ -31,6 +32,6 @@ public class SQLAccessTest {
 		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
 		Job job = dbConnector.getJob("9055748138");
 		assertTrue(job != null);
-		log.trace("Response: " + job.description);
+		log.trace("Response: {}", job.description);
 	}
 }

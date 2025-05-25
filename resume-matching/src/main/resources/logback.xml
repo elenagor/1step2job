@@ -45,7 +45,7 @@
 	<root level="WARN">
 		<appender-ref ref="stderr" />
 	</root>
-	<logger name="com.ostj" level="DEBUG">
+	<logger name="com.ostj" level="TRACE">
 		<appender-ref ref="stdout-trace" />
 		<appender-ref ref="stdout-debug" />
 		<appender-ref ref="stdout-info" />

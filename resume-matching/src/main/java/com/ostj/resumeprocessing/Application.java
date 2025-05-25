@@ -12,6 +12,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.openai.AIMatcher;
+
 @SpringBootApplication
 public class Application {
     private static Logger log = LoggerFactory.getLogger(Application.class);
@@ -54,9 +57,9 @@ public class Application {
     }
     
     @Bean
-    public Matcher getMatcher() {
+    public AIMatcher getMatcher() {
         log.debug("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
-    	return new Matcher(apiKey, endpoint, model);
+    	return new AIMatcher(apiKey, endpoint, model);
     }
         
     @Bean

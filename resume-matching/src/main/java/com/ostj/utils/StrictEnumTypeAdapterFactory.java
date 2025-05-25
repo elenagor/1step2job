@@ -1,4 +1,4 @@
-package com.ostj.resumeprocessing;
+package com.ostj.utils;
 
 import java.io.IOException;
 import java.io.StringReader;

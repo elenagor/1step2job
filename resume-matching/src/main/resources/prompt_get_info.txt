@@ -10,6 +10,7 @@ Output found information as JSON below:
     "Email": "<Email address you found, or empty string if not found>"
     "Phone": "<Phone Number you found, or empty string if not found>"
 }
+```
 
 Resume:
 {resume}

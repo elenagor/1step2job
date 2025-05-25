@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.io.IOUtils;
@@ -26,10 +28,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ostj.entity.Job;
-import com.ostj.entity.Person;
-import com.ostj.entity.Resume;
-import com.ostj.entity.ResumeProcessEvent;
+import com.openai.models.chat.completions.ChatCompletionMessage;
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.dataentity.Job;
+import com.ostj.dataentity.MatchResult;
+import com.ostj.dataentity.Person;
+import com.ostj.dataentity.Resume;
+import com.ostj.openai.AIMatcher;
+import com.ostj.resumeprocessing.events.ResumeProcessEvent;
+import com.ostj.utils.StrictEnumTypeAdapterFactory;
 
 @Configuration
 @EnableKafka
@@ -48,7 +55,7 @@ public class KafkaStreamConfig  {
     String appName;;
 
     @Autowired
-	Matcher resumeMatcher;
+	AIMatcher resumeMatcher;
 
     @Autowired
 	SQLAccess dbConnector;
@@ -60,7 +67,7 @@ public class KafkaStreamConfig  {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        log.trace("kStreamsConfig: appName="+appName+",bootstrapAddress="+bootstrapAddress+",topic_name="+topic_name);
+        log.trace("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -74,51 +81,73 @@ public class KafkaStreamConfig  {
     }
 
     private ResumeProcessEvent mapStringValueToEventRecord(String value) {
-        System.out.println("\nvalue="+value);
+        log.info("\nvalue={}",value);
 		ResumeProcessEvent record = null;
 		try {
             JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
-            log.trace("Message mapped Value: " + record.toString());
+            log.trace("Message mapped Value: {}", record.toString());
 		} catch (Throwable e) {
-			log.error("Error parsing json message " + e);
+			log.error("Error parsing json message {}", e);
 		}
 		return record;
 	}
 
-    private void processMessage(String key, ResumeProcessEvent record) {
-        System.out.println("key="+key+",value="+record);
+    public void processMessage(String key, ResumeProcessEvent record) {
+        log.debug("key={}, value={}", key, record);
         try{
-            String response = "";
             if(record.PersonId != -1){
-                List<Person> persons = dbConnector.getPersonData(record.PersonId );
-                if(persons != null){
-                    for(Person person : persons){
-                        log.debug("Found person: {}", person.toString());
-                        for(Resume resume : person.resumes){
-                            log.trace("Process resume: {}", resume.Content);
-                            if(record.JobId.length() > 0 ){
-                                Job job = dbConnector.getJob(record.JobId);
-                                response = call_openai(record, resume, job ) ;
-                            }
-                            else{
-                                List<Job> jobs = dbConnector.getJobs(person);
-                                for(Job job : jobs){
-                                    response = call_openai(record, resume, job ) ;
-                                }
-                            }
-                        }
-                    }
-                }
+                 processPersonMessage(record);
             }
             else{
-                response = resumeMatcher.run( record.resumeFilePath,  record.jdFilePath,  getPromt(record.promptFilePath));
+                // backdoor: work with files from folder, but not db
+                String response = resumeMatcher.run( record.resumeFilePath,  record.jdFilePath,  getPromt(record.promptFilePath));
                 log.debug("Response: " + response);
             }
+            
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
+    }
+
+    private void processPersonMessage(ResumeProcessEvent record) throws Exception{
+        List<Person> persons = dbConnector.getPersonData(record.PersonId );
+        if(persons == null){
+            throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
+        }
+        for(Person person : persons){
+            log.debug("Processed person: {}", person.toString());
+            for(Resume resume : person.resumes){
+                log.trace("Processed resume: {}", resume.Content);
+                if(record.JobId.length() > 0 ){
+                    Job job = dbConnector.getJob(record.JobId);
+                    log.debug("Found Job: {}", job);
+                    String response = call_openai(record, resume, job ) ;
+                    convertResponce(response);
+                }
+                else{
+                    List<Job> jobs = dbConnector.getJobs(person);
+                    for(Job job : jobs){
+                        String response = call_openai(record, resume, job ) ;
+                        convertResponce(response);
+                    }
+                }
+            }
+        }
+    }
+
+    private MatchResult  convertResponce(String response){
+        try{
+            log.trace("AI Responce: {}", response);
+            JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+            MatchResult  result = gson.fromJson(jsonValue, MatchResult .class);
+            log.debug("MatchResult: {}", result);
+            return result;
+        } catch (Throwable e) {
+			log.error("Error parsing ai responce message {}", e);
+		}
+        return null;
     }
 
     private String call_openai(ResumeProcessEvent record, Resume resume, Job job) throws Exception{
@@ -131,8 +160,8 @@ public class KafkaStreamConfig  {
 
         log.trace("Match with description: {}", job.description);
         String response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
-        log.trace("Response: " + response);
-        
+        log.trace("AI Response: {}", response);
+
         return response;
     }
     
