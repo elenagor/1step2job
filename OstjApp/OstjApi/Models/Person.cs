@@ -11,6 +11,6 @@ namespace OstjApi.Models
         public string? Phone { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
-        public ICollection<Resume> Resumes { get; set; } = [];
+        public IList<Profile> Profiles { get; set; } = [];
     }
 }

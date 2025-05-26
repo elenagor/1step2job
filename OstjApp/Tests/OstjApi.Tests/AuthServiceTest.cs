@@ -62,7 +62,7 @@ namespace OstjApi.Tests.Services
 
             var authService = new AuthService(dbContext, _options , _logger);
 
-            var result = await authService.VerifyCodeAsync(email, code);
+            var result = await authService.ValidateCodeAsync(email, code);
             Assert.Equal(expetedStatus, result);
         }
 
@@ -79,11 +79,11 @@ namespace OstjApi.Tests.Services
             dbContext.SaveChanges();
 
             var authService = new AuthService(dbContext, _options , _logger);
-            var result = await authService.VerifyCodeAsync(email, code);
+            var result = await authService.ValidateCodeAsync(email, code);
             Assert.Equal(OtcStatus.Valid, result);
 
             // Second attempt to use the same code should fail
-            result = await authService.VerifyCodeAsync(email, code);
+            result = await authService.ValidateCodeAsync(email, code);
             Assert.Equal(OtcStatus.Used, result);
         }
 

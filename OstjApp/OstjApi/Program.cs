@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register DbContext and ResumeService
 builder.Services.AddDbContext<OstjDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSnakeCaseNamingConvention());
 
 builder.Services
     .Configure<AIClientSettings>(builder.Configuration.GetSection("OpenAI"))
@@ -62,9 +64,28 @@ app.MapPost("/api/auth/sendotc", async (HttpRequest request, IAuthService authSe
     var email = form["email"].ToString();
     if (string.IsNullOrEmpty(email))
         return Results.BadRequest("Email is required.");
-        
+
     var code = await authService.GenerateCodeAsync(email);
     await emailService.SendOtcEmailAsync(email, code);
+    return Results.Ok();
+});
+
+app.MapPost("/api/auth/login", async (HttpRequest request, IAuthService authService) =>
+{
+    if (!request.HasFormContentType)
+        return Results.BadRequest("No form data.");
+
+    var form = await request.ReadFormAsync();
+    var email = form["email"].ToString();
+    var code = form["code"].ToString();
+    if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
+        return Results.BadRequest("Email and code are required.");
+
+    var status = await authService.ValidateCodeAsync(email, code);
+    if (status != OtcStatus.Valid)
+        return Results.Unauthorized();
+
+    // Optionally, generate and return a JWT or session token here
     return Results.Ok();
 });
 
