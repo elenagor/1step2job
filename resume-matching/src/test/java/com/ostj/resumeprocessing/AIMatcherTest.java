@@ -23,8 +23,8 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai(resume, "", prompt);
 		assertTrue(response != null);
 		log.trace("AIMatcher Response: {}", response);
-		assertTrue(response.contains("Sergei Azarkhin"));
-		assertTrue(response.contains("sergei.azarkhin@gmail.com"));
+		JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+		log.trace("Json Response: {}", jsonValue);
 	}
 
 	@Test
@@ -32,10 +32,10 @@ public class AIMatcherTest {
 		String resume = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("Person.txt"),  "UTF-8");
 		String prompt = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("prompt.txt"),  "UTF-8");
 		String job_description =  IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("JobDescription.txt"),  "UTF-8");
-		//String response = ai_matcher.call_openai( resume,  job_description,  prompt);
-        //assertTrue(response != null);
-        //log.trace("AIMatcher Response: {}", response);
-		//JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
-		//log.trace("Json Response: {}", jsonValue);
+		String response = ai_matcher.call_openai( resume,  job_description,  prompt);
+    	assertTrue(response != null);
+        log.trace("AIMatcher Response: {}", response);
+		JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+		log.trace("Json Response: {}", jsonValue);
     }
 }

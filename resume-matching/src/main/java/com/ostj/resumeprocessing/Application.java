@@ -12,6 +12,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import com.ostj.dataaccess.JobManager;
 import com.ostj.dataaccess.PersonManager;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.SQLAccess;
@@ -71,13 +72,17 @@ public class Application {
     }
 
     @Bean
-    public PromptManager getPromptManager() throws SQLException {
-        log.debug("PromptManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
-    	return new PromptManager(jdbcUrl, username, password);
+    public PromptManager getPromptManager() {
+    	return new PromptManager();
     }
 
     @Bean
-    public PersonManager getPersonManager() throws SQLException {
+    public PersonManager getPersonManager() {
     	return new PersonManager();
+    }
+
+    @Bean
+    public JobManager getJobManager()  {
+    	return new JobManager();
     }
 }

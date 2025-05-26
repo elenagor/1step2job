@@ -15,6 +15,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessage;
+import com.openai.services.blocking.VectorStoreService;
 
 import kotlin.text.Charsets;
 
@@ -30,21 +31,6 @@ public class AIMatcher {
 		this.apiKey = apiKey;
 		this.endpoint = endpoint;
 		this.model = model;
-	}
-
-	public String run(String resumeFilePath, String jdFilePath, String prompt)
-			throws Exception {
-		log.trace("AIMatcher: resumeFilePath={}, jdFilePath={}", resumeFilePath, jdFilePath);
-
-		String resume = readFile(resumeFilePath);
-		String job_description = readFile(jdFilePath);
-
-		log.trace("AIMatcher: resume={}", resume);
-		log.trace("AIMatcher: job_description={}", job_description);
-		log.trace("AIMatcher: prompt={}", prompt);
-
-		// return call_openai( resume, job_description, prompt);
-		return call_openai(resume, job_description, prompt);
 	}
 
 	public String call_openai(String resume, String job_description, String prompt) throws Exception {
@@ -65,6 +51,7 @@ public class AIMatcher {
 			    .apiKey(apiKey)
 			    .baseUrl(endpoint)
 			    .build();
+
 		// ProxyOptions proxyOptions = new ProxyOptions(ProxyOptions.Type.HTTP, new
 		// InetSocketAddress("localhost", 8000));
 
@@ -82,18 +69,12 @@ public class AIMatcher {
 	}
 
 	private String getJsonContextAsString(String text) {
-        Pattern compiledPattern = Pattern.compile("<\\/think>(.+?)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Pattern compiledPattern = Pattern.compile("^[^{]*(\\{.*\\})[^}]*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher matcher = compiledPattern.matcher(text);
         if (matcher.find()) {
            return matcher.group(1);
         }
         return null;
     }
-	
-	private static String readFile(String path) throws Exception {
-		if (StringUtils.isEmpty(path)) {
-			return "";
-		}
-		return Files.readString(Path.of(path), Charsets.UTF_8);
-	}
+
 }

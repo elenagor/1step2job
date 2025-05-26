@@ -25,13 +25,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ostj.dataaccess.JobManager;
 import com.ostj.dataaccess.PersonManager;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Job;
-import com.ostj.dataentity.MatchResult;
+import com.ostj.dataentity.Result;
 import com.ostj.dataentity.Person;
-import com.ostj.dataentity.Resume;
+import com.ostj.dataentity.Profile;
 import com.ostj.openai.AIMatcher;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
@@ -66,6 +67,9 @@ public class KafkaStreamConfig  {
 
     @Autowired
 	PersonManager personManager;
+
+    @Autowired
+	JobManager jobManager;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -104,14 +108,14 @@ public class KafkaStreamConfig  {
     public void processMessage(String key, ResumeProcessEvent record) {
         log.debug("key={}, value={}", key, record);
         try{
-            List<ResumeProcessEvent> newEvents = processPersonMessage(record);
+            processPersonMessage(record);
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
     }
 
-    private List<ResumeProcessEvent>  processPersonMessage(ResumeProcessEvent record) throws Exception{
+    private void  processPersonMessage(ResumeProcessEvent record) throws Exception{
         String  prompt = promptManager.getPrompt(record);
         if(prompt == null){
             throw new Exception(  String.format("There is no prompt with id=%d", record.PromptId));
@@ -121,40 +125,23 @@ public class KafkaStreamConfig  {
             throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
         }
         log.debug("Processed person: {}", person.toString());
-        for(Resume resume : person.resumes){
-            log.trace("Processed resume: {}", resume.Content);
-            if(record.JobId.length() > 0 ){
-                Job job = dbConnector.getJob(record.JobId);
-                log.debug("Found Job: {}", job);
-                int savedMatchResults = processResume( prompt,  person,  resume,  job);
-                log.debug("Saved resultId: {} ", savedMatchResults);
-            }
-            else{
-                List<Job> jobs = dbConnector.getJobs(person);
-                log.debug("Found {} Jobs", jobs.size());
-                //int savedMatchResults = 0;
-                List<ResumeProcessEvent> records = new ArrayList<ResumeProcessEvent>();
-                for(Job job : jobs){
-                    ResumeProcessEvent newRecord = new ResumeProcessEvent(person.Id, job.ext_id, record.PromptId, record.promptFilePath);
-                    //if( processResume( prompt,  person,  resume,  job) >= 0 ){
-                    //    savedMatchResults++;
-                    //}
-                    records.add(newRecord);
-                }
-                //log.debug("Saved {} results", savedMatchResults);
-            }
+        for(Profile profile : person.resumes){
+            log.debug("Processed title: {}", profile.Title);
+            Job job = jobManager.getJob(record);
+            log.debug("Found Job: {}", job);
+            int savedMatchResults = processResume( prompt,  person,  profile,  job);
+            log.debug("Saved resultId: {} ", savedMatchResults);
         }
-        return null;
     }
-    private int processResume(String prompt, Person person, Resume resume, Job job){
+    private int processResume(String prompt, Person person, Profile resume, Job job){
         try{
             String response = call_openai(prompt, resume, job ) ;
-            MatchResult result = convertResponce(person, resume, job, response);
-            if(result.overall_score >= match_treshhold ){
-                log.debug("Save result to DB {}", result);
-                result.Id = dbConnector.saveMatchResult(result);
-                return result.Id;
-            }
+            
+            Result result = convertResponce(person, resume, job, response);
+
+            result.Id = dbConnector.saveMatchResult(result);
+            log.debug("Saved result to DB {}", result);
+            return result.Id;
         }
         catch(Exception e){
             log.error("Error on proces resumeId={} jobId={} {}", resume.Id, job.Id, e);
@@ -162,28 +149,29 @@ public class KafkaStreamConfig  {
         return -1;
     }
 
-    private MatchResult  convertResponce(Person person, Resume resume, Job job, String response){
+    private Result  convertResponce(Person person, Profile resume, Job job, String response){
         log.trace("AI Responce: {}", response);
         JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
-        MatchResult  result = gson.fromJson(jsonValue, MatchResult .class);
+        Result  result = gson.fromJson(jsonValue, Result .class);
         result.PersonId = person.Id;
         result.ResumeId = resume.Id;
         result.JobId = job.Id;
-        log.debug("MatchResult: {}", result);
+        log.debug("Result: {}", result);
         return result;
     }
 
-    private String call_openai(String  prompt, Resume resume, Job job) throws Exception{
+    private String call_openai(String  prompt, Profile profile, Job job) throws Exception{
         if(prompt == null)
             throw new MissingArgumentException("record.prompt");
-        if(resume == null)
-            throw new MissingArgumentException("resume.content");
+        if(profile == null)
+            throw new MissingArgumentException("profile.content");
         if(job == null)
             throw new MissingArgumentException("job.description");
 
         log.trace("Match with description: {}", job.description);
-        String response = resumeMatcher.call_openai( resume.Content, job.description, prompt) ;
+        
+        String response = resumeMatcher.call_openai( profile.Content, job.description, prompt) ;
         log.trace("AI Response: {}", response);
 
         return response;

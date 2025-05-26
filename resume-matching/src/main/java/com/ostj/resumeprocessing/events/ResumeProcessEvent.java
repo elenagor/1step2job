@@ -4,10 +4,14 @@ public class ResumeProcessEvent {
 
     public String resumeFilePath="";
     public String jdFilePath="";
-    public String promptFilePath = null;
+    public String promptFilePath = "";
     public int PersonId = 0;
     public String JobId = "";
     public int PromptId = 0;
+
+    public ResumeProcessEvent(){
+        
+    }
     
     public ResumeProcessEvent(int PersonId, String JobId, int PromptId, String promptFilePath) {
         this.JobId = JobId;

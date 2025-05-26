@@ -1,66 +1,69 @@
+Elena Gordienko
 
-Sergei Azarkhin
-Pittsburgh, PA | sergei.azarkhin@gmail.com | www.linkedin.com/in/sergei-azarkhin
-________________________________________
-Personal Statement
-With over 24 years of experience in SaaS and IT operations, I specialize in building and scaling high performing multinational teams to deliver transformative service delivery and customer support solutions. My expertise includes scaling startup environments from the ground up to acquisition, fostering a culture of excellence through training, coaching and engagement, while implementing data driven strategies to optimize workflows, enhance KPIs, and ensure SLA compliance. I am passionate about delivering empathetic service experiences and look forward to leveraging my expertise to drive innovation and operational excellence in my next role.
-________________________________________
-Leadership				
-Business & Operations Start-Up - Risk & Regulatory Compliance - Employee Engagement & Motivation - Talent Development – Strategic Partnership - Cultivating High-Performing Teams.
+Phone:
++1(412)403-4272
+E-mail:
+elena.gordienko61@gmail.com
 
-Execution	
-Performance & Change Management - Continuous Business Process Improvement (ITIL) - Quality Control & Measurement - KPI metric improvements - SOP development - Budget Management & Cost Optimization – Program Management.
 
-Influence
-Cross-Organizational Collaboration - Technology and Operations Innovations – Strategic Process Automation – Client Advocate - Stakeholder Management.
+Objective:      
+25 years’ experience in software development and professional services expert. Vast experience in Object Oriented Programming using C++, Java, C# and Angular. Deep knowledge in multi-threading, multi-processing, networking and client-server applications, MongoDB, SQL database and Oracle database. Experience in managing development teams and working in professional services. Looking for challenging job to apply my technology expertise and technical experience in interesting projects.
+Employment:
+2021 – today
 
-Technology & Innovation
-Salesforce - ServiceNow - PowerBI & Data Analytics for Decision Making - Agile Scrum – Cloud Computing - SaaS Innovation – Product Management.
-________________________________________
-Experience and Milestones
-Altera Health | Director of SaaS Operations and Service Delivery 04/2022-08/2024
-•	Pioneered the industry-leading cloud-based EHR as a Service model for community hospitals, driving significant market growth with six new clients in two years.
-•	Led the transition from Waterfall to Agile methodologies for patch deployment, cutting end to end delivery efforts by 76%.
-•	Advocated for end-user needs by integrating user feedback into the deployment cycle, leading to better workflows adoption.
-•	Led orchestration of a multinational operations team of 40+ analysts incorporating DevOps, Support, Product Management, and Managed Services to enhance company operations.
-•	Drove process optimization by implementing policies and procedures that slashed request turnaround times by 50%, resulting in increase in claims processing efficiency and higher provider satisfaction.
-•	Implemented ITIL-compliant framework for change management and validation processes, reducing issues from changes by 42%.
-•	Took ownership of the infrastructure architecture roadmap and implemented features that resulted in a 45% cost reduction by migrating from on-premises to cloud hosting.
-•	Transformed CRM enterprise data trend into performance improvement plan to reduce repetitive issues by 10% 
-•	Presented quarterly operational reviews and strategic recommendations to the executive leadership team, driving alignment on key business objectives and securing approval for new initiatives
-•	Led crisis management and escalation calls, resolving critical system failures, minimizing service disruptions.
-•	Ensured 100% compliance with SLAs, HIPAA, regulatory and security regulations
-•	Maintained ongoing mentorship program for college-grads, focusing on skill development in areas such as process improvement and skills development.
 
-Allscripts | Area Vice President, Population Health Support | 03/2015–04/2022
-•	Directed 24/7 support operations for 4 product lines, servicing over 1,000 organizations and millions of consumers.
-•	Managed a $40M P&L, aligning finance operations with strategic objectives.
-•	Reduced product-critical failures by 68% through the implementation of a new in-house-developed platform.
-•	Established a new service offering for patient care continuum, driving substantial market growth.
-•	Fostered collaboration between development and solutions teams to align product evolution with client feedback.
-Allscripts | Area Vice President, Operations & Customer Success |03/ 2013–03/2015
-•	Built and led a new customer services team supporting 60+ clients across the U.S. and Canada.
-•	Scoped and defined project requirements, leading the preparation of detailed Statements of Work (SOW) that outlined deliverables, timelines, and resource allocation to ensure successful project execution.
-•	Directed a 50+ member professional services team deploying dbMotion Core and Analytics solutions to 200+ environments.
-•	Revised deployment methodologies through automation, reducing manual effort by 45%.
-•	Strengthened client relationships by implementing regular feedback loops and follow-up procedures, which directly contributed to a 15% improvement in customer satisfaction.
-•	Managed relationships with external vendors and system integrators to ensure successful product delivery.
-dbMotion | Director Customer Success | 03/2008–03/2013
-•	Played a pivotal role in expanding dbMotion's startup solutions to the North American market, managing projects with revenues exceeding $7M.
-•	Established a brand-new system engineering team assisting to secure over 40 new clients during the expansion, driving significant growth in a competitive market and contributing to the company’s eventual acquisition.
-•	Collaborated with sales to architect solutions based on product functionality, enhancing go-to-market efforts.
-dbMotion | Development Manager | 02/2000–03/2008
-•	Led product development of Israel’s national patient record system, managing millions of transactions daily and covering 95% of the population.
-________________________________________
-Education
-Master's Degree in Information Technology (minor: Project Management) | Southern Cross University.
-Associate Degree in Software Engineering | Technological College of Beer Sheva.
-Certifications:
-•	ITIL Foundation.
-•	Executive Leadership Program, Center for Creative Leadership.
-________________________________________
-Technical Skills
-•	Cloud Technologies: Microsoft Azure (SaaS, IaaS, PaaS, IaC).
-•	CRM Systems: Salesforce, ServiceNow.
-•	Project Management: Agile Scrum, Waterfall, ITIL, KPIs, OKRs, MS Project, Microsoft Visio.
-•	Data Analytics: PowerBI, middleware solutions for data integration, enterprise reporting.
+
+AccessDx Lab, Technical Consultant
+Professional Service of 2bPrecise team. Main responsibility is implementation the plugins for customer requirements. This implementation is classic Java. Also, the operational system for manager, monitor and notification about any load errors. This system is implementation on Java, Spring Boot, Angular and Python, 
+
+
+2016 - 2021
+Allscripts, Expert Technical Support Consultant
+Layer 3 support of application client-server component of the product. 
+Designed and implemented distributed, desktop application, web application, code-based Health Assessment and Monitoring system. The system is deployed on centralized server or control station and provides centralized monitoring capabilities for number of server environments. Implementation with Azure, C#, ASP.NET, Windows and MS SQL.
+
+
+2011 - 2016
+ECI Telecom. Senior Software Developer & Expert.
+Designed and implemented middle tear and backend development of network management system containing up to ten thousandth network elements; Agile programming; design documentation; Configuration Communication Protocols; Implementation with Java, C++, Unix and Oracle.
+
+
+2004 -2011
+dbMotion Ltd. Senior Software Developer & Expert.
+Middle Tear and Business Layer Development of healthcare application for hospitals and
+community; design documentation; Security Authorizations appearing above and User
+Authentications Protocols; Implementation with C#, C++, Windows and MS SQL.
+
+
+2003 -2004
+ChipPc. Senior Software Developer.
+Middle Tear and UI Development of data transfer application; Implementation with
+C++, Window and MS SQL; Using MFC, ASP.NET, JavaScript and HTML.
+
+
+1995 - 2002:
+Intacta Labs, Software Developer.
+GUI Development of Fax application; Implementation of Binary and Picture Compression and Encryption with C++, MS SQL and Window; Using MFC. 
+
+
+Systems and 
+Platforms:
+Unix, Linux, Solaris, Windows, Android.
+
+
+Special skills:
+Software development in the following areas:  C++, Java, C#, Python, Angular, MongoDB, MS SQL, Azure technology, Spring Boot, Web application technology, multi-platform, multi-threading, Object Oriented Design and Programming (OOD and OOP).
+
+
+Education:
+1989-1994:
+M.Sc. of the Polytechnic Institute of Kyrgyzstan, Department of Informatics, specialized in software application and database support application.
+
+
+Languages:     
+English, Russian, Hebrew
+Personal:
+I am as a highly motivated person, and a good team player. 
+Recommendations
+Available by request.
+
