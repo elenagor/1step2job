@@ -8,6 +8,8 @@ namespace OstjApi.Data
         public OstjDbContext() : base() { }
         public OstjDbContext(DbContextOptions<OstjDbContext> options) : base(options) { }
 
+        public virtual DbSet<Profile> Profiles { get; set; }
+
         public virtual DbSet<Person> Persons { get; set; }
 
         public virtual DbSet<Otc> Otcs { get; set; }

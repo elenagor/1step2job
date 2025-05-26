@@ -85,7 +85,7 @@ namespace OstjApi.Services
             throw new InvalidOperationException("Failed to generate a unique code after multiple attempts.");
         }
 
-        public async Task<OtcStatus> VerifyCodeAsync(string email, string code)
+        public async Task<OtcStatus> ValidateCodeAsync(string email, string code)
         {
             var otc = await _dbContext.Otcs
                 .OrderByDescending(o => o.Expires)

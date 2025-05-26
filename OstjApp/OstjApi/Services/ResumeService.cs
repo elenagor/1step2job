@@ -22,14 +22,14 @@ namespace OstjApi.Services
         public async Task<Person> SavePersonAsync(string fileName, string contentType, byte[] content)
         {
             var resumeText = GetResumeText(contentType, content);
-            var resume = new Resume
+            var resume = new Profile
             {
                 PersonId = 0,
-                Content = resumeText
+                Resume = resumeText
             };
 
             var person = await GetPersonFromResume(resumeText);
-            person.Resumes.Add(resume);
+            person.Profiles.Add(resume);
 
             try
             {
