@@ -2,8 +2,8 @@ package com.ostj.dataentity;
 
 public class Resume
 {
-    public int Id;
-    public int PersonId = 0;
+    public int Id = -1;
+    public int PersonId = -1;
     public String Content = "";
 
     public String toString(){

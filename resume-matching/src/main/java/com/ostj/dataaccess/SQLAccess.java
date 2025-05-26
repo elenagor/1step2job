@@ -66,7 +66,7 @@ public class SQLAccess {
         return stmt;
     }
 
-    public List<Person> getPersonData(int PersonId) throws Exception {
+    public Person getPersonData(int PersonId) throws Exception {
         String sqlQuery ="select public.\"Persons\".*, public.\"Resumes\".\"Content\", public.\"Resumes\".\"Id\" as \"ResumeId\"";
         sqlQuery = sqlQuery + " from public.\"Persons\" join public.\"Resumes\" on public.\"Resumes\".\"PersonId\" = public.\"Persons\".\"Id\" where public.\"Resumes\".\"PersonId\" =  ? ;";
         log.debug("Start query DB: {}", sqlQuery);
@@ -74,23 +74,21 @@ public class SQLAccess {
         PreparedStatement  stmt = this.conn.prepareStatement(sqlQuery) ;
         stmt.setInt(1, PersonId);
 
-        List<Person> list = new ArrayList<Person>();
+        Person person = new Person();
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            list.add(createPerson(rs));
+            addResumePerson(rs, person);
         }
-        return list;
+        return person;
     }
 
-    private Person createPerson(ResultSet rs ) throws Exception{
-        Person person = new Person();
+    private void addResumePerson(ResultSet rs, Person person ) throws Exception{
         convertToObject( rs, person, person.getClass() );
         Resume resume = new Resume();
         resume.Id = rs.getInt("ResumeId");
         resume.PersonId = rs.getInt("Id");
         resume.Content = rs.getString("Content"); 
         person.resumes.add(resume);
-        return person;
     }
 
     public int saveMatchResult(MatchResult result) throws SQLException {

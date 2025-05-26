@@ -32,13 +32,12 @@ public class AIMatcher {
 		this.model = model;
 	}
 
-	public String run(String resumeFilePath, String jdFilePath, String promptFilePath)
+	public String run(String resumeFilePath, String jdFilePath, String prompt)
 			throws Exception {
-		log.trace("AIMatcher: resumeFilePath={}, jdFilePath={}, promptFilePath=", resumeFilePath, jdFilePath, promptFilePath);
+		log.trace("AIMatcher: resumeFilePath={}, jdFilePath={}", resumeFilePath, jdFilePath);
 
 		String resume = readFile(resumeFilePath);
 		String job_description = readFile(jdFilePath);
-		String prompt = readFile(promptFilePath);
 
 		log.trace("AIMatcher: resume={}", resume);
 		log.trace("AIMatcher: job_description={}", job_description);

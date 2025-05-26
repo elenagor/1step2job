@@ -19,13 +19,12 @@ public class SQLAccessTest {
 	@Test
 	public void testGetUserInfo() throws Exception {
 		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
-		List<Person> persons = dbConnector.getPersonData(1);
-		assertTrue(persons != null);
-		assertTrue(persons.size() > 0);
-		assertTrue(persons.get(0).resumes != null);
-		assertTrue(persons.get(0).resumes.size() != 0);
-		log.trace("Response: {}", persons.get(0).resumes.get(0).Content);
-		assertTrue(persons.get(0).resumes.get(0).PersonId == 1);
+		Person person = dbConnector.getPersonData(1);
+		assertTrue(person != null);
+		assertTrue(person.resumes != null);
+		assertTrue(person.resumes.size() != 0);
+		log.trace("Response: {}", person.resumes.get(0).Content);
+		assertTrue(person.resumes.get(0).PersonId == 1);
 	}
 
 	@Test

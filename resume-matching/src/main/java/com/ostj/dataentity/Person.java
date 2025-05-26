@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Person {
-    public int Id = 0;
+    public int Id = -1;
     public String Name = "";
     public String Email = "";
     public String Phone = "";

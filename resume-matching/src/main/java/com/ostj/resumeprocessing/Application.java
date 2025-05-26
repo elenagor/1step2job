@@ -12,6 +12,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import com.ostj.dataaccess.PersonManager;
+import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.openai.AIMatcher;
 
@@ -66,5 +68,16 @@ public class Application {
     public SQLAccess getDBConnector() throws SQLException {
         log.debug("SQLAccess: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	return new SQLAccess(jdbcUrl, username, password);
+    }
+
+    @Bean
+    public PromptManager getPromptManager() throws SQLException {
+        log.debug("PromptManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	return new PromptManager(jdbcUrl, username, password);
+    }
+
+    @Bean
+    public PersonManager getPersonManager() throws SQLException {
+    	return new PersonManager();
     }
 }

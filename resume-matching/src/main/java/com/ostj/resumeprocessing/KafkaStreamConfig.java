@@ -1,14 +1,11 @@
 package com.ostj.resumeprocessing;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -28,7 +25,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import com.ostj.dataaccess.PersonManager;
+import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Job;
 import com.ostj.dataentity.MatchResult;
@@ -44,7 +42,7 @@ import com.ostj.utils.StrictEnumTypeAdapterFactory;
 public class KafkaStreamConfig  {
     private static Logger log = LoggerFactory.getLogger(KafkaStreamConfig.class);
     private static Gson gson = new GsonBuilder().registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
-
+    
     @Value(value = "${ostj.kstream.topic}")
     String topic_name;
 
@@ -63,6 +61,12 @@ public class KafkaStreamConfig  {
     @Autowired
 	SQLAccess dbConnector;
 
+    @Autowired
+	PromptManager promptManager;
+
+    @Autowired
+	PersonManager personManager;
+
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
         Map<String, Object> props = new HashMap<>();
@@ -79,7 +83,8 @@ public class KafkaStreamConfig  {
         KStream<String, String> stream = kStreamBuilder.stream(topic_name);
         stream.mapValues(value -> mapStringValueToEventRecord(value))
         .filter((key, value) -> value != null)
-        .peek((key, value) -> processMessage(key, value));
+        .peek((key, value) -> processMessage(key, value))
+        ;
         return stream;
     }
 
@@ -99,53 +104,51 @@ public class KafkaStreamConfig  {
     public void processMessage(String key, ResumeProcessEvent record) {
         log.debug("key={}, value={}", key, record);
         try{
-            if(record.PersonId != -1){
-                 processPersonMessage(record);
-            }
-            else{
-                // backdoor: work with files from folder, but not db
-                String response = resumeMatcher.run( record.resumeFilePath,  record.jdFilePath,  getPromt(record.promptFilePath));
-                log.debug("Response: " + response);
-            }
-            
+            List<ResumeProcessEvent> newEvents = processPersonMessage(record);
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
     }
 
-    private void processPersonMessage(ResumeProcessEvent record) throws Exception{
-        List<Person> persons = dbConnector.getPersonData(record.PersonId );
-        if(persons == null){
+    private List<ResumeProcessEvent>  processPersonMessage(ResumeProcessEvent record) throws Exception{
+        String  prompt = promptManager.getPrompt(record);
+        if(prompt == null){
+            throw new Exception(  String.format("There is no prompt with id=%d", record.PromptId));
+        }
+        Person person = personManager.getPersonData(record);
+        if(person == null){
             throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
         }
-        for(Person person : persons){
-            log.debug("Processed person: {}", person.toString());
-            for(Resume resume : person.resumes){
-                log.trace("Processed resume: {}", resume.Content);
-                if(record.JobId.length() > 0 ){
-                    Job job = dbConnector.getJob(record.JobId);
-                    log.debug("Found Job: {}", job);
-                    int savedMatchResults = processResume( record,  person,  resume,  job);
-                    log.debug("Saved resultId: {} ", savedMatchResults);
+        log.debug("Processed person: {}", person.toString());
+        for(Resume resume : person.resumes){
+            log.trace("Processed resume: {}", resume.Content);
+            if(record.JobId.length() > 0 ){
+                Job job = dbConnector.getJob(record.JobId);
+                log.debug("Found Job: {}", job);
+                int savedMatchResults = processResume( prompt,  person,  resume,  job);
+                log.debug("Saved resultId: {} ", savedMatchResults);
+            }
+            else{
+                List<Job> jobs = dbConnector.getJobs(person);
+                log.debug("Found {} Jobs", jobs.size());
+                //int savedMatchResults = 0;
+                List<ResumeProcessEvent> records = new ArrayList<ResumeProcessEvent>();
+                for(Job job : jobs){
+                    ResumeProcessEvent newRecord = new ResumeProcessEvent(person.Id, job.ext_id, record.PromptId, record.promptFilePath);
+                    //if( processResume( prompt,  person,  resume,  job) >= 0 ){
+                    //    savedMatchResults++;
+                    //}
+                    records.add(newRecord);
                 }
-                else{
-                    List<Job> jobs = dbConnector.getJobs(person);
-                    log.debug("Found {} Jobs", jobs.size());
-                    int savedMatchResults = 0;
-                    for(Job job : jobs){
-                        if( processResume( record,  person,  resume,  job) >= 0 ){
-                            savedMatchResults++;
-                        }
-                    }
-                    log.debug("Saved {} results", savedMatchResults);
-                }
+                //log.debug("Saved {} results", savedMatchResults);
             }
         }
+        return null;
     }
-    private int processResume(ResumeProcessEvent record, Person person, Resume resume, Job job){
+    private int processResume(String prompt, Person person, Resume resume, Job job){
         try{
-            String response = call_openai(record, resume, job ) ;
+            String response = call_openai(prompt, resume, job ) ;
             MatchResult result = convertResponce(person, resume, job, response);
             if(result.overall_score >= match_treshhold ){
                 log.debug("Save result to DB {}", result);
@@ -171,8 +174,8 @@ public class KafkaStreamConfig  {
         return result;
     }
 
-    private String call_openai(ResumeProcessEvent record, Resume resume, Job job) throws Exception{
-        if(record == null)
+    private String call_openai(String  prompt, Resume resume, Job job) throws Exception{
+        if(prompt == null)
             throw new MissingArgumentException("record.prompt");
         if(resume == null)
             throw new MissingArgumentException("resume.content");
@@ -180,13 +183,10 @@ public class KafkaStreamConfig  {
             throw new MissingArgumentException("job.description");
 
         log.trace("Match with description: {}", job.description);
-        String response = resumeMatcher.call_openai( resume.Content, job.description, getPromt(record.promptFilePath)) ;
+        String response = resumeMatcher.call_openai( resume.Content, job.description, prompt) ;
         log.trace("AI Response: {}", response);
 
         return response;
     }
-    
-    private String getPromt(String promptResourceName) throws IOException{
-        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(promptResourceName),  "UTF-8");
-    }
+
 }
