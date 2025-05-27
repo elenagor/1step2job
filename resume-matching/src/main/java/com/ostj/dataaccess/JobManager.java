@@ -50,7 +50,7 @@ public class JobManager {
         getJobFromDB(sqlQuery, parameters,  job);
     }
     private void getJobFromDB(String JobId,  Job job) throws Exception{
-        String sqlQuery ="SELECT * FROM jobs WHERE ext_id = ?;";
+        String sqlQuery ="SELECT * FROM jobs WHERE external_id = ?;";
         List<Object> parameters = Arrays.asList(JobId );
         getJobFromDB(sqlQuery, parameters,  job);
     }
@@ -69,7 +69,7 @@ public class JobManager {
         List<Job> list = new ArrayList<Job>();
         String sqlQuery ="SELECT * FROM jobs WHERE jobs.title ~* ? ;";
 
-        List<Object> parameters = Arrays.asList(resume.Title );
+        List<Object> parameters = Arrays.asList(resume.title );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){

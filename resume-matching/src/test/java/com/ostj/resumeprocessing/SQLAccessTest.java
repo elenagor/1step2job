@@ -19,11 +19,16 @@ import com.ostj.dataentity.Person;
 
 public class SQLAccessTest {
     private static Logger log = LoggerFactory.getLogger(SQLAccessTest.class);
+
+	private String jdbcUrl = "jdbc:postgresql://localhost:5432/ostjdb";
+	private String username = "ostjuser";
+	private String password = "ostjuser!";
+
 	private ResumeProcessEvent event = new ResumeProcessEvent();
  
 	@Test
 	public void testGetPrompt() throws Exception {
-		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		PromptManager jobManager = new PromptManager(dbConnector);
 		event.PersonId = 0;
 		String prompt = jobManager.getPrompt(event);
@@ -33,20 +38,20 @@ public class SQLAccessTest {
 
 	@Test
 	public void testGetUserInfo() throws Exception {
-		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		PersonManager personManager = new PersonManager(dbConnector);
 		event.PersonId = 1;
 		Person person = personManager.getPersonData(event);
 		assertTrue(person != null);
-		assertTrue(person.resumes != null);
-		assertTrue(person.resumes.size() != 0);
-		log.trace("Response: {}", person.resumes.get(0).Content);
-		assertTrue(person.resumes.get(0).PersonId == 1);
+		assertTrue(person.profiles != null);
+		assertTrue(person.profiles.size() != 0);
+		log.trace("Response: {}", person.profiles.get(0).resume);
+		assertTrue(person.profiles.get(0).person_id == 1);
 	}
 
 	@Test
 	public void testJob() throws Exception {
-		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		JobManager jobManager = new JobManager(dbConnector);
 		event.JobExtId = "9055748138";
 		Job job = jobManager.getJob(event);
@@ -56,7 +61,7 @@ public class SQLAccessTest {
 
 	@Test
 	public void testInserDeleteResult() throws Exception {
-		//SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		//SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		//ResultManager resultManager = new ResultManager(dbConnector);
 		Result result = new Result();
 		result.PersonId = 1;

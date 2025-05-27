@@ -31,8 +31,8 @@ public class PersonManager {
         Person person = new Person();
         if(event.resumeFilePath != null && event.resumeFilePath.length() > 0){
             Profile resume = new Profile();
-            resume.Content = Utils.getPromptByFileName(event.resumeFilePath);
-            person.resumes.add(resume);
+            resume.resume = Utils.getPromptByFileName(event.resumeFilePath);
+            person.profiles.add(resume);
         }
         else{
             getPersonData(event.PersonId, person );
@@ -41,8 +41,8 @@ public class PersonManager {
     }
     
     private void getPersonData(int personId, Person person) throws Exception {
-        String sqlQuery ="SELECT persons.*, profile.content, profile.title, profile.id AS profile_id FROM persons "+//
-        "JOIN profile ON profile.person_id = persons.id WHERE profile.person_id =  ? ;";
+        String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
+        "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? ;";
 
         List<Object> parameters = Arrays.asList(personId );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
@@ -53,7 +53,7 @@ public class PersonManager {
             }
         }
 
-        if(person.Id < 0){
+        if(person.id < 0){
             throw new Exception(String.format("There is no person by id=%d", personId));
         }
     }
@@ -62,8 +62,8 @@ public class PersonManager {
         Utils.convertToObject( rs, person, person.getClass() );
         Profile profile = new Profile();
         Utils.convertToObject( rs, profile, profile.getClass() );
-        profile.Id = (int) rs.get("profile_id");
-        profile.PersonId = (int) rs.get("id");
-        person.resumes.add(profile);
+        profile.id = (int) rs.get("profile_id");
+        profile.person_id = (int) rs.get("id");
+        person.profiles.add(profile);
     }
 }

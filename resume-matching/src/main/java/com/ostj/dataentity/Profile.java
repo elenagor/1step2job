@@ -2,12 +2,12 @@ package com.ostj.dataentity;
 
 public class Profile
 {
-    public int Id = -1;
-    public int PersonId = -1;
-    public String Title = "";
-    public String Content = "";
+    public int id = -1;
+    public int person_id = -1;
+    public String title = "";
+    public String resume = "";
 
     public String toString(){
-        return String.format("Id=%d, PersonId=%s, Title=%s, Content=%s", Id, PersonId, Title, Content );
+        return String.format("Id=%d, PersonId=%s, Title=%s, Content=%s", id, person_id, title, resume );
     }
 }

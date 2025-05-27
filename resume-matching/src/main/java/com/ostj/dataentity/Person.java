@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Person {
-    public int Id = -1;
-    public String Name = "";
-    public String Email = "";
-    public String Phone = "";
-    public String City = "";
-    public String State = "";
-    public List<Profile> resumes;
+    public int id = -1;
+    public String name = "";
+    public String email = "";
+    public String phone = "";
+    public String city = "";
+    public String state = "";
+    public List<Profile> profiles;
 
     public Person(){
-        this.resumes = new ArrayList<Profile>();
+        this.profiles = new ArrayList<Profile>();
     }
 
     public String toString(){
-        return String.format("Id=%d", Id )+", Name="+Name+", Email="+Email+", Phone="+Phone+", City="+City+", State="+State+", resumes count="+resumes.size();
+        return String.format("Id=%d", id )+", Name="+name+", Email="+email+", Phone="+phone+", City="+city+", State="+state+", resumes count="+profiles.size();
     }
 }
