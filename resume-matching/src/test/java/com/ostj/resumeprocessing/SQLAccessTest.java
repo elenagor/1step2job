@@ -20,7 +20,7 @@ import com.ostj.dataentity.Person;
 public class SQLAccessTest {
     private static Logger log = LoggerFactory.getLogger(SQLAccessTest.class);
 	private ResumeProcessEvent event = new ResumeProcessEvent();
-
+ 
 	@Test
 	public void testGetPrompt() throws Exception {
 		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
@@ -60,7 +60,7 @@ public class SQLAccessTest {
 		//ResultManager resultManager = new ResultManager(dbConnector);
 		Result result = new Result();
 		result.PersonId = 1;
-		result.ResumeId = 3;
+		result.ProfileId = 3;
 		result.JobId = 5;
 		result.overall_score = 0;
 		result.date = new java.util.Date(); // Current date
@@ -69,4 +69,5 @@ public class SQLAccessTest {
 		//assertTrue(resultId >= 0);
 		//resultManager.deleteMatchResult(resultId);
 	}
+
 }

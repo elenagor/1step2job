@@ -113,54 +113,51 @@ public class KafkaStreamConfig  {
     public void processMessage(String key, ResumeProcessEvent record) {
         log.debug("key={}, value={}", key, record);
         try{
-            processPersonMessage(record);
+            String  prompt = promptManager.getPrompt(record);
+            if(prompt == null){
+                throw new Exception(  String.format("There is no prompt with id=%d", record.PromptId));
+            }
+            Person person = personManager.getPersonData(record);
+            if(person == null){
+                throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
+            }
+            processPersonMessage(record, person, prompt);
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
     }
 
-    private void  processPersonMessage(ResumeProcessEvent record) throws Exception{
-        String  prompt = promptManager.getPrompt(record);
-        if(prompt == null){
-            throw new Exception(  String.format("There is no prompt with id=%d", record.PromptId));
-        }
-        Person person = personManager.getPersonData(record);
-        if(person == null){
-            throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
-        }
-        log.debug("Processed person: {}", person.toString());
+    private void  processPersonMessage(ResumeProcessEvent record, Person person, String  prompt) throws Exception{
+        log.info("Processed person: {}", person.toString());
         for(Profile profile : person.resumes){
             log.debug("Processed title: {}", profile.Title);
             Job job = jobManager.getJob(record);
             log.debug("Found Job: {}", job);
-            int savedMatchResults = processResume( prompt,  person,  profile,  job);
-            log.debug("Saved resultId: {} ", savedMatchResults);
+            processResume( prompt,  person,  profile,  job);
         }
     }
-    private int processResume(String prompt, Person person, Profile resume, Job job){
+    private void processResume(String prompt, Person person, Profile profile, Job job){
         try{
-            String response = call_openai(prompt, resume, job ) ;
-            
-            Result result = convertResponce(person, resume, job, response);
-
+            String response = call_openai(prompt, profile, job ) ;
+            Result result = createMatchResultFromOpenAiResponse(person, profile, job, response);
             result.Id = resultManager.saveMatchResult(result);
             log.debug("Saved result to DB {}", result);
-            return result.Id;
+            log.info("Saved resultId: {} ", result.Id);
         }
         catch(Exception e){
-            log.error("Error on proces resumeId={} jobId={} {}", resume.Id, job.Id, e);
+            log.error("Error on proces profileId={} jobId={} {}", profile.Id, job.Id, e);
         }
-        return -1;
     }
 
-    private Result  convertResponce(Person person, Profile resume, Job job, String response){
+    private Result createMatchResultFromOpenAiResponse(Person person, Profile profile, Job job, String response){
         String jsonString = Utils.getJsonContextAsString(response);
+        log.trace("Json Response: {}", jsonString);
         JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
-        Result  result = gson.fromJson(jsonValue, Result .class);
+        Result result = gson.fromJson(jsonValue, Result .class);
         result.PersonId = person.Id;
-        result.ResumeId = resume.Id;
+        result.ProfileId = profile.Id;
         result.JobId = job.Id;
         result.date = new java.util.Date(); // Current date
         result.Reasoning = Utils.getThinksAsText(response);
@@ -171,16 +168,15 @@ public class KafkaStreamConfig  {
     private String call_openai(String  prompt, Profile profile, Job job) throws Exception{
         if(prompt == null)
             throw new MissingArgumentException("record.prompt");
-        if(profile == null)
+        if(profile.Content == null)
             throw new MissingArgumentException("profile.content");
-        if(job == null)
+        if(job.description == null)
             throw new MissingArgumentException("job.description");
 
         log.trace("Match with description: {}", job.description);
-        
         String response = resumeMatcher.call_openai( profile.Content, job.description, prompt) ;
-        log.trace("AI Response: {}", response);
 
+        log.trace("AI Response: {}", response);
         return response;
     }
 

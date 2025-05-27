@@ -12,6 +12,10 @@ namespace OstjApi.Data
 
         public virtual DbSet<Person> Persons { get; set; }
 
+        public virtual DbSet<Job> Jobs { get; set; }
+
+        public virtual DbSet<Result> Results { get; set; }
+
         public virtual DbSet<Otc> Otcs { get; set; }
     }
 }

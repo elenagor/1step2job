@@ -26,6 +26,7 @@ public class SQLAccess {
 
     public List<Map<String, Object>> query( String sql, List<Object> parameters) throws SQLException
     {
+        log.debug("Start query: {}", sql);
         List<Map<String, Object>> results = null;
         ResultSet rs = null;
         PreparedStatement ps = null;
@@ -51,7 +52,6 @@ public class SQLAccess {
     public List<Map<String, Object>> map(ResultSet rs) throws SQLException
     {
         List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-
         try
         {
             if (rs != null)
@@ -75,7 +75,6 @@ public class SQLAccess {
         {
             close(rs);
         }
-
         return results;
     }
 
@@ -83,7 +82,7 @@ public class SQLAccess {
     {
         int numRowsUpdated = 0;
         PreparedStatement ps = null;
-
+        log.debug("Start update query: {}", sql);
         try
         {
             ps = this.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -94,7 +93,7 @@ public class SQLAccess {
             }
             numRowsUpdated = ps.executeUpdate();
             if (numRowsUpdated > 0) {
-                var rs = ps.getGeneratedKeys();
+                ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     numRowsUpdated = rs.getInt(1);
                 }
@@ -104,7 +103,6 @@ public class SQLAccess {
         {
             close(ps);
         }
-
         return numRowsUpdated;
     }
 

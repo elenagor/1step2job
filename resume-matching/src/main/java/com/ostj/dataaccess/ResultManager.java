@@ -18,7 +18,7 @@ public class ResultManager {
 	SQLAccess dbConnector;
 
     public ResultManager(){
-
+        log.trace("Start ResultManager");
     }
 
     public ResultManager(SQLAccess dbConnector){
@@ -26,13 +26,12 @@ public class ResultManager {
     }
 
     public int saveMatchResult(Result result) throws Exception {
-        String insertQuery = "INSERT INTO results(person_id, resume_id, job_id, match_result_score, date, details)VALUES (?, ?, ?, ?, ?, ? ::json);";
-        log.debug("Start query DB: {}", insertQuery);
+        String insertQuery = "INSERT INTO results(person_id, profile_id, job_id, match_result_score, date, reasoning, details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);
 
-        List<Object> parameters = Arrays.asList( result.PersonId, result.ResumeId,result.JobId, result.overall_score, sqlDate, details );
+        List<Object> parameters = Arrays.asList( result.PersonId, result.ProfileId, result.JobId, result.overall_score, sqlDate, result.Reasoning, details );
 
         return dbConnector.update( insertQuery, parameters);
     }
