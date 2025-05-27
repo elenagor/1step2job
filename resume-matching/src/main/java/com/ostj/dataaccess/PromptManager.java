@@ -19,7 +19,7 @@ public class PromptManager {
 	SQLAccess dbConnector;
 
     public PromptManager(){
-
+        log.trace("Start PromptManager");
     }
 
     public PromptManager(SQLAccess dbConnector){

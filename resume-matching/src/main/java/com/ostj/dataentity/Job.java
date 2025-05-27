@@ -1,9 +1,5 @@
 package com.ostj.dataentity;
 
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class Job {
     public int Id;
     public String ext_id;

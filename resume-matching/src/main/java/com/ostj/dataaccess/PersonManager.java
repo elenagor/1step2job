@@ -20,7 +20,7 @@ public class PersonManager {
 	SQLAccess dbConnector;
 
     public PersonManager(){
-
+        log.trace("Start PersonManager");
     }
 
     public PersonManager(SQLAccess dbConnector){

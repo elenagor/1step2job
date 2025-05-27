@@ -65,10 +65,12 @@ public class AIMatcher {
 
 	private String getJsonContextAsString(ChatCompletionMessage  message){
 		Optional<String> content = message.content();
-		return getJsonContextAsString(content.get() );
+		//return getJsonContextAsString(content.get() );
+		return content.get();
 	}
 
 	private String getJsonContextAsString(String text) {
+		log.trace(text);
         Pattern compiledPattern = Pattern.compile("^[^{]*(\\{.*\\})[^}]*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher matcher = compiledPattern.matcher(text);
         if (matcher.find()) {

@@ -55,7 +55,7 @@ public class Application {
         String[] beanNames = ctx.getBeanDefinitionNames();
         Arrays.sort(beanNames);
         for (String beanName : beanNames) {
-            //log.info(beanName);
+            log.trace(beanName);
         }
         };
     }

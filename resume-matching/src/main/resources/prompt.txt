@@ -20,4 +20,3 @@ Resume:
 Job Description:
 {job_description}
 
-/no_think

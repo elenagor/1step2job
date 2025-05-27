@@ -4,12 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ostj.openai.AIMatcher;
+import com.ostj.utils.Utils;
 
 
 public class AIMatcherTest {
@@ -35,7 +37,12 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai( resume,  job_description,  prompt);
     	assertTrue(response != null);
         log.trace("AIMatcher Response: {}", response);
-		JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+		String jsonString = Utils.getJsonContextAsString(response);
+		JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
 		log.trace("Json Response: {}", jsonValue);
+		String reasoning = Utils.getThinksAsText(response);
+		log.trace("reasoning: {}", reasoning);
     }
+
+
 }

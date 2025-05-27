@@ -22,7 +22,7 @@ public class JobManager {
 	SQLAccess dbConnector;
 
     public JobManager(){
-
+        log.trace("Start JobManager");
     }
 
     public JobManager(SQLAccess dbConnector){

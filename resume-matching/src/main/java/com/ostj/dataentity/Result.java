@@ -11,6 +11,7 @@ public class Result {
     public int JobId;
     public int overall_score;
     public Date date;
+    public String Reasoning;
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
         
     public String toString(){

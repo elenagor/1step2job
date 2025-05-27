@@ -1,9 +1,9 @@
 package com.ostj.resumeprocessing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.kafka.common.serialization.Serdes;
@@ -37,6 +37,7 @@ import com.ostj.dataentity.Profile;
 import com.ostj.openai.AIMatcher;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
+import com.ostj.utils.Utils;
 
 @Configuration
 @EnableKafka
@@ -154,14 +155,15 @@ public class KafkaStreamConfig  {
     }
 
     private Result  convertResponce(Person person, Profile resume, Job job, String response){
-        log.trace("AI Responce: {}", response);
-        JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+        String jsonString = Utils.getJsonContextAsString(response);
+        JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
         Result  result = gson.fromJson(jsonValue, Result .class);
         result.PersonId = person.Id;
         result.ResumeId = resume.Id;
         result.JobId = job.Id;
         result.date = new java.util.Date(); // Current date
+        result.Reasoning = Utils.getThinksAsText(response);
         log.debug("Result: {}", result);
         return result;
     }
@@ -181,5 +183,6 @@ public class KafkaStreamConfig  {
 
         return response;
     }
+
 
 }
