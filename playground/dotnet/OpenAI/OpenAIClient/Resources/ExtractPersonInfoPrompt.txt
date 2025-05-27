@@ -1,0 +1,19 @@
+Extract form the resume below person information:
+- Person Full Name
+- Email Address
+- Phone number
+- Job Titles (take from 3 most recent jobs)
+
+Output found information as JSON below:
+```
+{
+    "Name": "<Full Name you found, or empty string if not found>"
+    "Email": "<Email address you found, or empty string if not found>"
+    "Phone": "<Phone Number you found, or empty string if not found>"
+    "JobTitles": [ <array of job titles as strings"> ]
+}
+
+Resume:
+{resume}
+
+/no_think

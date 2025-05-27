@@ -1,7 +1,10 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @rendermode InteractiveServer
 @inject HttpClient HttpClient
+
 
 <PageTitle>Home</PageTitle>
 
@@ -48,6 +51,7 @@
         </div>
     </div>
 </div>
+
 
 @code {
     IBrowserFile? selectedFile;

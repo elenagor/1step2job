@@ -2,6 +2,7 @@
 using System.Text.Json;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Embeddings;
 
 var promptPath = Path.Combine(AppContext.BaseDirectory, "../../..", "Resources", "ExtractPersonInfoPrompt.txt");
 string promptTemplate = await File.ReadAllTextAsync(promptPath);
@@ -32,6 +33,14 @@ var person = JsonSerializer.Deserialize<Person>(json);
 Console.WriteLine($"Name: {person?.Name}");
 Console.WriteLine($"Email: {person?.Email}");
 Console.WriteLine($"Phone: {person?.Phone}");
+Console.WriteLine($"Positions: {person?.JobTitles}");
+
+EmbeddingClient embeddingClient = new("qwen", new ApiKeyCredential("EMPTY"), options);
+foreach (var position in person?.JobTitles ?? [])
+{
+    var embedding = embeddingClient.GenerateEmbedding(position).Value.ToFloats().ToArray();
+    Console.WriteLine($"Position: {position}, Embedding: [{string.Join(", ", embedding.Take(5))}...]");
+}
 
 public class Person
 {
@@ -41,7 +50,8 @@ public class Person
     public string Phone { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
-    public ICollection<Resume> Resumes { get; set; } = new List<Resume>();
+    public ICollection<Resume> Resumes { get; set; } = [];
+    public IList<string> JobTitles { get; set; } = [];
 }
 
 public class Resume

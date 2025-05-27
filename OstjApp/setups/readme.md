@@ -25,3 +25,13 @@ docker -e ASPNETCORE_HTTP_PORTS=80 \
 ```
 
 ### Run locally
+Run Postges as Docker
+```
+$ docker run -itd -e POSTGRES_USER=ostjsvc -e PSOTGRES_DB=ostjdb -e POSTGRES_PASSWORD=ostjsvc! -p 5432:5432 -v ./data:/<localpath>/data/ostj --name ostjdb postgres
+$ docker exec -it ostjdbv /bin/bash
+```
+**NOTE** The prompt will be changes it '#' as you will be working in Docker container console
+```
+# pqsl -U ostjsvc
+# CREATE EXTENSION vector;
+```
