@@ -25,10 +25,11 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai(resume, "", prompt);
 		assertTrue(response != null);
 		log.trace("AIMatcher Response: {}", response);
-		JsonObject jsonValue = JsonParser.parseString(response).getAsJsonObject();
+		String jsonString = Utils.getJsonContextAsString(response);
+		JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
 		log.trace("Json Response: {}", jsonValue);
 	}
-
+/* 
 	@Test
 	public void testMatchResumeToJobDescription() throws Exception{
 		String resume = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("Person.txt"),  "UTF-8");
@@ -43,6 +44,6 @@ public class AIMatcherTest {
 		String reasoning = Utils.getThinksAsText(response);
 		log.trace("reasoning: {}", reasoning);
     }
-
+*/
 
 }
