@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Register DbContext and ResumeService
 builder.Services.AddDbContext<OstjDbContext>(options =>
     options
-        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), option => option.UseVector())
         .UseSnakeCaseNamingConvention());
 
 builder.Services

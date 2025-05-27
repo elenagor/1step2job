@@ -1,25 +1,27 @@
+using Pgvector.EntityFrameworkCore;
+using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace OstjApi.Models
 {
-    [Index(nameof(ext_id), IsUnique = false)]
-    [Index(nameof(title), IsUnique = false)]
-    [Index(nameof(location), IsUnique = false)]
-    [Index(nameof(published), IsUnique = false)]
-    [Index(nameof(remote), IsUnique = false)]
-    [Index(nameof(type), IsUnique = false)]
     public class Job
     {
-        [Key]
-        public int Id;
-        public String ext_id;
-        public String title;
-        public String location;
-        public String published;
-        public String description;
-        public String application_url;
-        public String salary;
-        public String remote;
-        public String type;
+        public int Id { get; set; }
+        public required string ExternalId { get; set; }
+        public required string Title { get; set; }
+        [Column(TypeName = "vector(4096)")]
+        public Pgvector.Vector? TitleEmbeddings { get; set; }
+        public string? LocationCountry { get; set; }
+        public string? LocationCity { get; set; }
+        public string? LocationState { get; set; }
+        public bool? LocationIsRemote { get; set; }
+        public DateTime Published { get; set; }
+        public required string Description { get; set; }
+        public required string ApplyUrl { get; set; }
+        public float? SalaryMin { get; set; }
+        public float? SalaryMax { get; set; }
+        public string? Type { get; set; }
     }
 }
