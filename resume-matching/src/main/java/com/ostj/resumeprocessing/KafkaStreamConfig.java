@@ -28,6 +28,7 @@ import com.google.gson.JsonParser;
 import com.ostj.dataaccess.JobManager;
 import com.ostj.dataaccess.PersonManager;
 import com.ostj.dataaccess.PromptManager;
+import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Job;
 import com.ostj.dataentity.Result;
@@ -70,6 +71,9 @@ public class KafkaStreamConfig  {
 
     @Autowired
 	JobManager jobManager;
+
+    @Autowired
+	ResultManager resultManager;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -139,7 +143,7 @@ public class KafkaStreamConfig  {
             
             Result result = convertResponce(person, resume, job, response);
 
-            result.Id = dbConnector.saveMatchResult(result);
+            result.Id = resultManager.saveMatchResult(result);
             log.debug("Saved result to DB {}", result);
             return result.Id;
         }
@@ -157,6 +161,7 @@ public class KafkaStreamConfig  {
         result.PersonId = person.Id;
         result.ResumeId = resume.Id;
         result.JobId = job.Id;
+        result.date = new java.util.Date(); // Current date
         log.debug("Result: {}", result);
         return result;
     }

@@ -6,15 +6,17 @@ public class ResumeProcessEvent {
     public String jdFilePath="";
     public String promptFilePath = "";
     public int PersonId = 0;
-    public String JobId = "";
+    public int JobId = 0;
+    public String JobExtId = "";
     public int PromptId = 0;
 
     public ResumeProcessEvent(){
         
     }
     
-    public ResumeProcessEvent(int PersonId, String JobId, int PromptId, String promptFilePath) {
+    public ResumeProcessEvent(int PersonId, String JobExtId, int JobId, int PromptId, String promptFilePath) {
         this.JobId = JobId;
+        this.JobExtId = JobExtId;
         this.PersonId = PersonId;
         this.PromptId = PromptId;
         this.promptFilePath = promptFilePath;

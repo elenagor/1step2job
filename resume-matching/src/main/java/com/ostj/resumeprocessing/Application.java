@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import com.ostj.dataaccess.JobManager;
 import com.ostj.dataaccess.PersonManager;
 import com.ostj.dataaccess.PromptManager;
+import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.openai.AIMatcher;
 
@@ -84,5 +85,10 @@ public class Application {
     @Bean
     public JobManager getJobManager()  {
     	return new JobManager();
+    }
+
+    @Bean
+    public ResultManager getResultManager()  {
+    	return new ResultManager();
     }
 }

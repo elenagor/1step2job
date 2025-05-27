@@ -4,16 +4,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import com.ostj.dataentity.Alignment;
-import com.ostj.dataentity.Result;
 
 public class SQLAccess {
     private static Logger log = LoggerFactory.getLogger(SQLAccess.class);
@@ -24,86 +24,143 @@ public class SQLAccess {
         this.conn = DriverManager.getConnection(jdbcUrl, username, password);
     }
 
-    public String getPromptById(int promptId) throws Exception{
-        String sqlQuery ="SELECT * FROM prompts WHERE id = ?;";
-        log.debug("Start query DB: {}", sqlQuery);
-
-        PreparedStatement  stmt = this.conn.prepareStatement(sqlQuery) ;
-        stmt.setInt(1, promptId);
-
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            return rs.getString("text"); 
+    public List<Map<String, Object>> query( String sql, List<Object> parameters) throws SQLException
+    {
+        List<Map<String, Object>> results = null;
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try
+        {
+            ps = this.conn.prepareStatement(sql);
+            int i = 0;
+            for (Object parameter : parameters)
+            {
+                ps.setObject(++i, parameter);
+            }
+            rs = ps.executeQuery();
+            results = map(rs);
         }
-        throw new Exception(String.format("There is no prompt text by id=%d", promptId));
+        finally
+        {
+            close(rs);
+            close(ps);
+        }
+        return results;
     }
 
-    public ResultSet getPersonData(int PersonId) throws Exception {
-        String sqlQuery ="SELECT persons.*, resumes.content, resumes.title, resumes.id AS resumeid FROM persons "+//
-        "JOIN resumes ON resumes.person_id = persons.id " + //
-        "WHERE resumes.person_id =  ? ;";
-        log.debug("Start query DB: {}", sqlQuery);
+    public List<Map<String, Object>> map(ResultSet rs) throws SQLException
+    {
+        List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 
-        PreparedStatement  stmt = this.conn.prepareStatement(sqlQuery) ;
-        stmt.setInt(1, PersonId);
-
-        return stmt.executeQuery();
-    }
-
-    public ResultSet getJob(String JobId)  throws Exception {
-        String sqlQuery ="SELECT * FROM jobs WHERE ext_id = ?;";
-        log.debug("Start query DB: {}", sqlQuery);
-
-        PreparedStatement  stmt = this.conn.prepareStatement(sqlQuery) ;
-        stmt.setString(1, JobId);
-
-        return stmt.executeQuery();
-    }
-
-    public ResultSet getJobs(PreparedStatement pstmt)  throws Exception {
-        return pstmt.executeQuery();
-    }
-
-    public PreparedStatement createQuerySearchByTitle(String title) throws SQLException {
-        String sqlQuery ="SELECT * FROM jobs WHERE jobs.title ~* ? ;";
-        log.debug("Start query DB: {}", sqlQuery);
-
-        PreparedStatement  stmt = this.conn.prepareStatement(sqlQuery) ;
-        stmt.setString(1, title);
-
-        return stmt;
-    }
-
-    public int saveMatchResult(Result result) throws SQLException {
-        int savedId = -1;
-        String insertQuery = "INSERT INTO results(person_id, resume_id, job_id, match_result_score, details)VALUES (?, ?, ?, ?, ?);";
-        log.debug("Start query DB: {}", insertQuery);
-
-        PreparedStatement  stmt = this.conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS) ;
-        stmt.setInt(1, result.PersonId);
-        stmt.setInt(2, result.ResumeId);
-        stmt.setInt(3, result.JobId);
-        stmt.setInt(4, result.overall_score);
-        stmt.setString(5, StringUtils.join( result.key_arias_of_comparison, " "));
-
-        int insertedRow = stmt.executeUpdate();
-        if (insertedRow > 0) {
-            var rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                savedId = rs.getInt(1);
+        try
+        {
+            if (rs != null)
+            {
+                ResultSetMetaData meta = rs.getMetaData();
+                int numColumns = meta.getColumnCount();
+                while (rs.next())
+                {
+                    Map<String, Object> row = new HashMap<String, Object>();
+                    for (int i = 1; i <= numColumns; ++i)
+                    {
+                        String name = meta.getColumnName(i);
+                        Object value = rs.getObject(i);
+                        row.put(name, value);
+                    }
+                    results.add(row);
+                }
             }
         }
-        return savedId;
+        finally
+        {
+            close(rs);
+        }
+
+        return results;
     }
 
-    public void deleteMatchResult(int resultId) throws SQLException {
-        String query = "DELETE FROM results WHERE id= ? ;";
-        log.debug("Start query DB: {}", query);
+    public  int update( String sql, List<Object> parameters) throws SQLException
+    {
+        int numRowsUpdated = 0;
+        PreparedStatement ps = null;
 
-        PreparedStatement  stmt = this.conn.prepareStatement(query) ;
-        stmt.setInt(1, resultId);
+        try
+        {
+            ps = this.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            int i = 0;
+            for (Object parameter : parameters)
+            {
+                ps.setObject(++i, parameter);
+            }
+            numRowsUpdated = ps.executeUpdate();
+            if (numRowsUpdated > 0) {
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    numRowsUpdated = rs.getInt(1);
+                }
+            }
+        }
+        finally
+        {
+            close(ps);
+        }
 
-        stmt.executeQuery();
+        return numRowsUpdated;
     }
 
+
+    public void close()
+    {
+        try
+        {
+           this.conn.close();
+        }
+        catch (SQLException e)
+        {
+            log.error("Error close Statement {}", e);
+        }
+    }
+
+
+    public void close(Statement st)
+    {
+        try
+        {
+            if (st != null)
+            {
+                st.close();
+            }
+        }
+        catch (SQLException e)
+        {
+            log.error("Error close Statement {}", e);
+        }
+    }
+
+    public void close(ResultSet rs)
+    {
+        try
+        {
+            if (rs != null)
+            {
+                rs.close();
+            }
+        }
+        catch (SQLException e)
+        {
+            log.error("Error close ResultSet {}", e);
+        }
+    }
+
+    public void rollback()
+    {
+        try
+        {
+            this.conn.rollback();
+        }
+        catch (SQLException e)
+        {
+            log.error("Error rollback {}", e);
+        }
+    }
 }

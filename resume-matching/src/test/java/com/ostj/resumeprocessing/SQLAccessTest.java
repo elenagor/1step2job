@@ -2,15 +2,16 @@ package com.ostj.resumeprocessing;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ostj.dataaccess.JobManager;
 import com.ostj.dataaccess.PersonManager;
+import com.ostj.dataaccess.PromptManager;
+import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
+import com.ostj.dataentity.Alignment;
 import com.ostj.dataentity.Job;
 import com.ostj.dataentity.Result;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
@@ -19,6 +20,17 @@ import com.ostj.dataentity.Person;
 public class SQLAccessTest {
     private static Logger log = LoggerFactory.getLogger(SQLAccessTest.class);
 	private ResumeProcessEvent event = new ResumeProcessEvent();
+
+	@Test
+	public void testGetPrompt() throws Exception {
+		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		PromptManager jobManager = new PromptManager(dbConnector);
+		event.PersonId = 0;
+		String prompt = jobManager.getPrompt(event);
+		assertTrue(prompt != null);
+		log.trace("Response: {}", prompt);
+	}
+
 	@Test
 	public void testGetUserInfo() throws Exception {
 		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
@@ -36,7 +48,7 @@ public class SQLAccessTest {
 	public void testJob() throws Exception {
 		SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
 		JobManager jobManager = new JobManager(dbConnector);
-		event.JobId = "9055748138";
+		event.JobExtId = "9055748138";
 		Job job = jobManager.getJob(event);
 		assertTrue(job != null);
 		log.trace("Response: {}", job.description);
@@ -45,13 +57,16 @@ public class SQLAccessTest {
 	@Test
 	public void testInserDeleteResult() throws Exception {
 		//SQLAccess dbConnector = new SQLAccess("jdbc:postgresql://localhost:5432/ostjdb", "ostjuser", "ostjuser!");
+		//ResultManager resultManager = new ResultManager(dbConnector);
 		Result result = new Result();
 		result.PersonId = 1;
 		result.ResumeId = 3;
 		result.JobId = 5;
 		result.overall_score = 0;
-		//int resultId = dbConnector.saveMatchResult(result);
+		result.date = new java.util.Date(); // Current date
+		result.key_arias_of_comparison.add(new Alignment());
+		//int resultId = resultManager.saveMatchResult(result);
 		//assertTrue(resultId >= 0);
-		//dbConnector.deleteMatchResult(resultId);
+		//resultManager.deleteMatchResult(resultId);
 	}
 }

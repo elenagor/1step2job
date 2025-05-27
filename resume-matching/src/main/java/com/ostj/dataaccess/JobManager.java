@@ -1,9 +1,9 @@
 package com.ostj.dataaccess;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.Utils;
 
 public class JobManager {
-    private static Logger log = LoggerFactory.getLogger(PersonManager.class);
+    private static Logger log = LoggerFactory.getLogger(ResultManager.class);
 
     @Autowired
 	SQLAccess dbConnector;
@@ -35,22 +35,49 @@ public class JobManager {
             job.description = Utils.getPromptByFileName(event.jdFilePath);
         }
         else{
-            ResultSet rs = dbConnector.getJob(event.JobId );
-            if (rs.next()) {
-                Utils.convertToObject( rs, job, job.getClass() );
+            if(event.JobExtId != null && event.JobExtId.length() > 0){
+                getJobFromDB(event.JobExtId,  job);
+            }
+            else{
+                getJobFromDB(event.JobId,  job);
             }
         }
         return job;
     }
+    private void getJobFromDB(int JobId,  Job job) throws Exception{
+        String sqlQuery ="SELECT * FROM jobs WHERE id = ?;";
+        List<Object> parameters = Arrays.asList( JobId );
+        getJobFromDB(sqlQuery, parameters,  job);
+    }
+    private void getJobFromDB(String JobId,  Job job) throws Exception{
+        String sqlQuery ="SELECT * FROM jobs WHERE ext_id = ?;";
+        List<Object> parameters = Arrays.asList(JobId );
+        getJobFromDB(sqlQuery, parameters,  job);
+    }
+
+    private void getJobFromDB( String sqlQuery, List<Object> parameters, Job job) throws Exception{
+
+        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
+        if (res != null) {
+            for (Map<String, Object> rs : res) {
+                Utils.convertToObject( rs, job, job.getClass() );
+            }
+        }
+    }
 
     public List<Job> getJobs(Person person, Profile resume)  throws Exception {
         List<Job> list = new ArrayList<Job>();
-        PreparedStatement pstmt = dbConnector.createQuerySearchByTitle(resume.Title);
-        ResultSet rs = dbConnector.getJobs(pstmt );
-        while (rs.next()) {
-            Job job = new Job();
-            Utils.convertToObject( rs, job, job.getClass());
-            list.add(job);
+        String sqlQuery ="SELECT * FROM jobs WHERE jobs.title ~* ? ;";
+
+        List<Object> parameters = Arrays.asList(resume.Title );
+        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
+
+        if(res != null){
+            for (Map<String, Object> rs : res) {
+                Job job = new Job();
+                Utils.convertToObject( rs, job, job.getClass());
+                list.add(job);
+            }
         }
         return list;
      }

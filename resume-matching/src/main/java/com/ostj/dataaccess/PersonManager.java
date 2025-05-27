@@ -1,6 +1,8 @@
 package com.ostj.dataaccess;
 
-import java.sql.ResultSet;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,20 +35,35 @@ public class PersonManager {
             person.resumes.add(resume);
         }
         else{
-            ResultSet rs = dbConnector.getPersonData(event.PersonId );
-            while (rs.next()) {
-                addProfilePerson(rs, person);
-            }
+            getPersonData(event.PersonId, person );
         }
         return person;
     }
     
-    private void addProfilePerson(ResultSet rs, Person person ) throws Exception{
+    private void getPersonData(int personId, Person person) throws Exception {
+        String sqlQuery ="SELECT persons.*, profile.content, profile.title, profile.id AS profile_id FROM persons "+//
+        "JOIN profile ON profile.person_id = persons.id WHERE profile.person_id =  ? ;";
+
+        List<Object> parameters = Arrays.asList(personId );
+        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
+
+        if(res != null){
+            for (Map<String, Object> rs : res) {
+                addProfilePerson(rs, person);
+            }
+        }
+
+        if(person.Id < 0){
+            throw new Exception(String.format("There is no person by id=%d", personId));
+        }
+    }
+
+    private void addProfilePerson(Map<String, Object> rs, Person person ) throws Exception{
         Utils.convertToObject( rs, person, person.getClass() );
         Profile profile = new Profile();
         Utils.convertToObject( rs, profile, profile.getClass() );
-        profile.Id = rs.getInt("ResumeId");
-        profile.PersonId = rs.getInt("id");
+        profile.Id = (int) rs.get("profile_id");
+        profile.PersonId = (int) rs.get("id");
         person.resumes.add(profile);
     }
 }
