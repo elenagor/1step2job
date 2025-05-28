@@ -26,7 +26,7 @@ public class ResultManager {
     }
 
     public int saveMatchResult(Result result) throws Exception {
-        String insertQuery = "INSERT INTO results(person_id, profile_id, job_id, match_result_score, date, reasoning, details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
+        String insertQuery = "INSERT INTO results(person_id, profile_id, job_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);

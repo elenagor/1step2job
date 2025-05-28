@@ -3,7 +3,7 @@ package com.ostj.dataentity;
 import java.util.Date;
 
 public class Job {
-    public int id;
+    public int id = -1;
     public String external_id;
     public String title;
     public String location_country;

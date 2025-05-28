@@ -48,15 +48,20 @@ public class JobManager {
         String sqlQuery ="SELECT * FROM jobs WHERE id = ?;";
         List<Object> parameters = Arrays.asList( JobId );
         getJobFromDB(sqlQuery, parameters,  job);
+        if(job.id < 0 ){
+            throw new Exception(String.format("There is no job by id=%d", JobId));
+        }
     }
     private void getJobFromDB(String JobId,  Job job) throws Exception{
         String sqlQuery ="SELECT * FROM jobs WHERE external_id = ?;";
         List<Object> parameters = Arrays.asList(JobId );
         getJobFromDB(sqlQuery, parameters,  job);
+        if(job.id < 0 ){
+            throw new Exception(String.format("There is no job by external_id=%d", JobId));
+        }
     }
 
     private void getJobFromDB( String sqlQuery, List<Object> parameters, Job job) throws Exception{
-
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
         if (res != null) {
             for (Map<String, Object> rs : res) {
@@ -65,11 +70,11 @@ public class JobManager {
         }
     }
 
-    public List<Job> getJobs(Person person, Profile resume)  throws Exception {
+    public List<Job> getJobs(Person person, Profile profile)  throws Exception {
         List<Job> list = new ArrayList<Job>();
         String sqlQuery ="SELECT * FROM jobs WHERE jobs.title ~* ? ;";
 
-        List<Object> parameters = Arrays.asList(resume.title );
+        List<Object> parameters = Arrays.asList(profile.title );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){

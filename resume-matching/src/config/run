@@ -4,7 +4,7 @@ java -Dlogging.config=resume-matching/src/main/resources/logback.xml  -jar resum
 { "resumeFilePath":"data/Person.txt", "jdFilePath":"data/JD_Match1.txt","promptFilePath":"prompt.txt"}
 { "resumeFilePath":"data/Person.txt", "jdFilePath":"","promptFilePath":"prompt_get_info.txt"}
 { "PersonId":"1", "jdFilePath":"","promptFilePath":"prompt_get_info.txt"}
-{ "PersonId":"1", "JobId":"9055748138","promptFilePath":"prompt.txt"}
+{ "PersonId":"1", "JobId":"1","promptFilePath":"prompt.txt"}
 
 C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-server-start.bat ../../config/server.properties
 C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-console-producer.bat --ostj_user_resumes localhost:9092 --topic ostj_user_resumes
