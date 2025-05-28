@@ -32,7 +32,7 @@ public class JobManager {
     public Job getJob(ResumeProcessEvent event) throws Exception{
         Job job = new Job();
         if(event.jdFilePath != null && event.jdFilePath.length() > 0){
-            job.description = Utils.getPromptByFileName(event.jdFilePath);
+            job.description = Utils.getFileContent(event.jdFilePath);
         }
         else{
             if(event.JobExtId != null && event.JobExtId.length() > 0){

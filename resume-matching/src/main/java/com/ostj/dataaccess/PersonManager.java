@@ -31,7 +31,7 @@ public class PersonManager {
         Person person = new Person();
         if(event.resumeFilePath != null && event.resumeFilePath.length() > 0){
             Profile resume = new Profile();
-            resume.resume = Utils.getPromptByFileName(event.resumeFilePath);
+            resume.resume = Utils.getFileContent(event.resumeFilePath);
             person.profiles.add(resume);
         }
         else{

@@ -27,8 +27,9 @@ public class PromptManager {
     }
 
     public String getPrompt(ResumeProcessEvent event) throws Exception{
+        log.trace("Start getPrompt {}", event);
         if(event.promptFilePath != null && event.promptFilePath.length() > 0){
-            return Utils.getPromptByFileName(event.promptFilePath);
+            return Utils.getFileContent(event.promptFilePath);
         }
         else{
             return getPromptById(event.PromptId);

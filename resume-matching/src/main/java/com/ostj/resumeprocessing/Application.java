@@ -55,14 +55,14 @@ public class Application {
         String[] beanNames = ctx.getBeanDefinitionNames();
         Arrays.sort(beanNames);
         for (String beanName : beanNames) {
-            log.trace(beanName);
+            //log.trace(beanName);
         }
         };
     }
     
     @Bean
     public AIMatcher getMatcher() {
-        log.debug("Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
+        log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
     	return new AIMatcher(apiKey, endpoint, model);
     }
         

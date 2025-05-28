@@ -113,11 +113,11 @@ public class KafkaStreamConfig  {
         try{
             String  prompt = promptManager.getPrompt(record);
             if(prompt == null){
-                throw new Exception(  String.format("There is no prompt with id=%d", record.PromptId));
+                throw new Exception(  String.format("There is no prompt with id=%d or filename=%s", record.PromptId, record.promptFilePath));
             }
             Person person = personManager.getPersonData(record);
             if(person == null){
-                throw new Exception(  String.format("There is no person with id=%d", record.PersonId));
+                throw new Exception(  String.format("There is no person with id=%d or filename=%s", record.PersonId, record.resumeFilePath));
             }
             processPersonMessage(record, person, prompt);
         }
@@ -165,7 +165,7 @@ public class KafkaStreamConfig  {
 
     private String call_openai(String  prompt, Profile profile, Job job) throws Exception{
         if(prompt == null)
-            throw new MissingArgumentException("record.prompt");
+            throw new MissingArgumentException("prompt");
         if(profile.resume == null)
             throw new MissingArgumentException("profile.resume");
         if(job.description == null)

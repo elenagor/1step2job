@@ -2,8 +2,6 @@ package com.ostj.utils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,16 +10,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kotlin.text.Charsets;
-
 public class Utils {
         private static Logger log = LoggerFactory.getLogger(Utils.class);
 
-    public static String getPromptByFileName(String resourceName) throws IOException{
-        return Files.readString(Path.of(getPromtPath(resourceName)), Charsets.UTF_8);
-    }
-
-    private static String getPromtPath(String resourceName) throws IOException{
+    public static String getFileContent(String resourceName) throws IOException{
         return IOUtils.toString(Utils.class.getClassLoader().getResourceAsStream(resourceName),  "UTF-8");
     }
 
