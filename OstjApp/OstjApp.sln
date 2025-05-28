@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OstjWeb", "OstjWeb\OstjWeb.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OstjApi", "OstjApi\OstjApi.csproj", "{43BA0EF6-9A58-4BE8-9C82-07A1D08E6AF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAIClient", "..\playground\dotnet\OpenAIClient\OpenAIClient.csproj", "{B8AAE095-3ACA-4251-8774-5339EE52325F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OstjApi.Tests", "Tests\OstjApi.Tests\OstjApi.Tests.csproj", "{D052D6A2-2C47-4DEE-A44A-D57F3782FF05}"
