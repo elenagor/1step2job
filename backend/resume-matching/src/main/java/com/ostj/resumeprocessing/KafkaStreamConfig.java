@@ -171,7 +171,6 @@ public class KafkaStreamConfig  {
         if(job.description == null)
             throw new MissingArgumentException("job.description");
 
-        log.trace("Match with description: {}", job.description);
         String response = resumeMatcher.call_openai( profile.resume, job.description, prompt) ;
 
         log.trace("AI Response: {}", response);

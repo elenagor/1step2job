@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Date;
 
 public class Result {
-    public int Id;
-    public int PersonId;
-    public int ProfileId;
-    public int JobId;
-    public int overall_score;
+    public int Id = -1;
+    public int PersonId = -1;
+    public int ProfileId = -1;
+    public int JobId = -1;
+    public int overall_score = 0;
     public Date date;
-    public String Reasoning;
+    public String Reasoning = "";
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
         
     public String toString(){

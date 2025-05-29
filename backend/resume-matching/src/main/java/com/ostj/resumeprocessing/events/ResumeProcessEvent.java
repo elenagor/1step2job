@@ -5,10 +5,11 @@ public class ResumeProcessEvent {
     public String resumeFilePath="";
     public String jdFilePath="";
     public String promptFilePath = "";
-    public int PersonId = 0;
-    public int JobId = 0;
+    public int PersonId = -1;
+    public int ProfileId = -1;
+    public int JobId = -1;
     public String JobExtId = "";
-    public int PromptId = 0;
+    public int PromptId = -1;
 
     public ResumeProcessEvent(){
         

@@ -24,11 +24,8 @@ public class Utils {
     }
     private static <T> void setValue(Field fieldname, T obj, Map<String, Object> rs){
         try{
-            fieldname.setAccessible(true);
-            if( fieldname.getType() == String.class ){
-                fieldname.set(obj, rs.get(fieldname.getName().toLowerCase()) );
-            } 
-            if( fieldname.getType() == int.class ){
+            if(rs.containsKey(fieldname.getName().toLowerCase()) && rs.get(fieldname.getName().toLowerCase()) != null){
+                fieldname.setAccessible(true);
                 fieldname.set(obj, rs.get(fieldname.getName().toLowerCase()) );
             }
         }

@@ -30,14 +30,13 @@ public class SQLAccessTest {
 	public void testGetPrompt() throws Exception {
 		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		PromptManager jobManager = new PromptManager(dbConnector);
-		event.PersonId = 0;
+		event.PromptId = 0;
 		String prompt = jobManager.getPrompt(event);
 		assertTrue(prompt != null);
 		log.trace("Response: {}", prompt);
 	}
-
 	@Test
-	public void testGetUserInfo() throws Exception {
+	public void testGetUserInfo1() throws Exception {
 		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		PersonManager personManager = new PersonManager(dbConnector);
 		event.PersonId = 1;
@@ -45,18 +44,42 @@ public class SQLAccessTest {
 		assertTrue(person != null);
 		assertTrue(person.profiles != null);
 		assertTrue(person.profiles.size() != 0);
-		log.trace("Response: {}", person.profiles.get(0).resume);
+		log.trace("Response: {}", person.toString());
 		assertTrue(person.profiles.get(0).person_id == 1);
 	}
 
 	@Test
-	public void testJob() throws Exception {
+	public void testGetUserInfo2() throws Exception {
+		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
+		PersonManager personManager = new PersonManager(dbConnector);
+		event.PersonId = 1;
+		event.ProfileId = 1;
+		Person person = personManager.getPersonData(event);
+		assertTrue(person != null);
+		assertTrue(person.id == 1);
+		assertTrue(person.profiles != null);
+		assertTrue(person.profiles.size() != 0);
+		log.trace("Response: {}", person.toString());
+		assertTrue(person.profiles.get(0).person_id == 1);
+		log.trace("Response: {}", person.profiles.get(0).toString());
+	}
+	@Test
+	public void testJob1() throws Exception {
+		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
+		JobManager jobManager = new JobManager(dbConnector);
+		event.JobId = 1;
+		Job job = jobManager.getJob(event);
+		assertTrue(job != null);
+		log.trace("Response: {}", job.toString());
+	}
+	@Test
+	public void testJob2() throws Exception {
 		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		JobManager jobManager = new JobManager(dbConnector);
 		event.JobExtId = "9055748138";
 		Job job = jobManager.getJob(event);
 		assertTrue(job != null);
-		log.trace("Response: {}", job.description);
+		log.trace("Response: {}", job.toString());
 	}
 
 	@Test

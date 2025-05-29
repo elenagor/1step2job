@@ -35,7 +35,13 @@ public class PersonManager {
             person.profiles.add(resume);
         }
         else{
-            getPersonData(event.PersonId, person );
+            if(event.ProfileId >= 0 ){
+                getPersonData(event.PersonId, event.ProfileId, person );
+            }
+            else{
+                getPersonData(event.PersonId, person );
+            }
+            
         }
         return person;
     }
@@ -45,6 +51,24 @@ public class PersonManager {
         "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? ;";
 
         List<Object> parameters = Arrays.asList(personId );
+        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
+
+        if(res != null){
+            for (Map<String, Object> rs : res) {
+                addProfilePerson(rs, person);
+            }
+        }
+
+        if(person.id < 0){
+            throw new Exception(String.format("There is no person by id=%d", personId));
+        }
+    }
+
+    private void getPersonData(int personId, int ProfileId, Person person) throws Exception {
+        String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
+        "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? AND profiles.id = ?;";
+
+        List<Object> parameters = Arrays.asList(personId , ProfileId);
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){
