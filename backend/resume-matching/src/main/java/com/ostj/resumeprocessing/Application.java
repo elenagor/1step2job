@@ -67,7 +67,7 @@ public class Application {
     }
 
     @Bean
-    public PersonReceiver getPersonManager() {
+    public PersonReceiver getPersonReceiver() {
         log.debug("PersonReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
             return new PersonReceiver(jdbcUrl, username, password);

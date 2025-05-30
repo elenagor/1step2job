@@ -1,24 +1,14 @@
 package com.ostj;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.kstream.Branched;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Produced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
-import com.ostj.events.ProcessEvent;
+import com.ostj.managers.JobManager;
+import com.ostj.managers.PersonManager;
 
 @SpringBootApplication
 public class Application {
@@ -41,12 +31,6 @@ public class Application {
     @Value(value = "${ostj.db.password}")
     String password;
 
-    @Value(value = "${ostj.kstream.topic.output}")
-    String outputTopic;
-
-    @Autowired
-    Serde<ProcessEvent> messageSerdersEvent;
-
     public static void main(String[] args) {
         log.trace("Trace log message");
         log.debug("Debug log message");
@@ -56,30 +40,32 @@ public class Application {
         new SpringApplicationBuilder(Application.class).run(args);
     }
 
-	@Bean
-	public Consumer<KStream<String, String>> process() {
-		log.trace("Initializing Kafka Streams topology");
-		return input -> input
-        .peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
-        .mapValues(this::processPersonJob)
-        .filter((k,v) -> {return v != null;})
-        .split()
-        .branch((k, v) -> (v instanceof ProcessEvent), Branched.withConsumer(stream -> stream
-						// Convert basic Serializable to relevant type
-						.mapValues(v -> (ProcessEvent) v)
-                        .peek((k, v) -> {log.debug("Sent key={}, value={}", k, v);})
-                        .to(outputTopic, Produced.with(Serdes.String(), messageSerdersEvent )))
-        ).noDefaultBranch();
+    @Bean
+    public PersonManager getPersonManager() {
+        log.debug("PersonReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new PersonManager(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
     }
 
-    private List<ProcessEvent> processPersonJob(String key, String value) {
-        log.debug("key={}, value={}", key, value);
-        List<ProcessEvent> list = new ArrayList<ProcessEvent>();
-        ProcessEvent event = new ProcessEvent();
-        event.PersonId = 1;
-        event.ProfileId = 1;
-        event.JobId = 1;
-        list.add(event);
-        return list.size() > 0 ? list : null;
+    @Bean
+    public JobManager getJobManager()  {
+        log.debug("JobsReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new JobManager(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
     }
+/* 
+    @Bean
+    public AIMatcher getMatcher() {
+        log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
+    	return new AIMatcher(apiKey, endpoint, model);
+    }
+*/
 }

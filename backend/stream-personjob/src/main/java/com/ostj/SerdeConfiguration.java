@@ -11,7 +11,7 @@ import com.ostj.events.ProcessEvent;
 public class SerdeConfiguration {
     
     @Bean
-	public Serde<ProcessEvent> getProcessEventSerde() {
+	public Serde<ProcessEvent> getMessageSerdersEvent() {
 		return new JsonSerde<>(ProcessEvent.class);
 	}
 }

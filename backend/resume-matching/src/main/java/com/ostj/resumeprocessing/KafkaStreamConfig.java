@@ -51,7 +51,7 @@ public class KafkaStreamConfig  {
     String bootstrapAddress;
 
     @Value(value = "${spring.application.name}")
-    String appName;;
+    String appName;
 
     @Value(value = "${ostj.match.treshhold}")
     int match_treshhold;

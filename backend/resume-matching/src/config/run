@@ -8,7 +8,8 @@ java -Dlogging.config=resume-matching/src/main/resources/logback.xml  -jar resum
 { "PersonId":"1", "JobId":"1","PromptId":"1"}
 { "PersonId":"1","ProfileId":"1", "JobId":"1","PromptId":"1"}
 
-C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-server-start.bat ../../config/server.properties
-C:\kafka4.0.0\kafka_2.13-4.0.0\bin\windows>kafka-console-producer.bat --ostj_user_resumes localhost:9092 --topic ostj_user_resumes
+<KafkaDir>\bin\windows>kafka-server-start.bat ../../config/server.properties
+<KafkaDir>\bin\windows>kafka-console-producer.bat --ostj_user_resumes localhost:9092 --topic ostj_user_resumes
+<KafkaDir>\bin\kafka-console-producer.sh --topic ostj_person_jobs --bootstrap-server localhost:9092 --property "parse.key=true" --property "key.separator=="
 
 mvn archetype:generate -DarchetypeGroupId=org.apache.kafka -DarchetypeArtifactId=streams-personjob-process-java -DgroupId=stream-personjob -DartifactId=stream-personjob -Dversion=1.0.0 -Dpackage=com.ostj
