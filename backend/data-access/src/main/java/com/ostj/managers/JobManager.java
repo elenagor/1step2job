@@ -1,4 +1,4 @@
-package com.ostj.dataaccess;
+package com.ostj.managers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,44 +7,23 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ostj.dataentity.Job;
-import com.ostj.dataentity.Person;
-import com.ostj.dataentity.Profile;
-import com.ostj.resumeprocessing.events.ResumeProcessEvent;
-import com.ostj.utils.Utils;
+import com.ostj.convertors.DataMapper;
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.entities.Job;
+import com.ostj.entities.Person;
+import com.ostj.entities.Profile;
 
 public class JobManager {
-    private static Logger log = LoggerFactory.getLogger(ResultManager.class);
+    private static Logger log = LoggerFactory.getLogger(JobManager.class);
 
-    @Autowired
-	SQLAccess dbConnector;
+	private SQLAccess dbConnector;
 
-    public JobManager(){
-        log.trace("Start JobManager");
+    public JobManager(String jdbcUrl, String username, String password) throws Exception {
+        this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }
 
-    public JobManager(SQLAccess dbConnector){
-        this.dbConnector = dbConnector;
-    }
-
-    public Job getJob(ResumeProcessEvent event) throws Exception{
-        Job job = new Job();
-        if(event.jdFilePath != null && event.jdFilePath.length() > 0){
-            job.description = Utils.getFileContent(event.jdFilePath);
-        }
-        else{
-            if(event.JobExtId != null && event.JobExtId.length() > 0){
-                getJobFromDB(event.JobExtId,  job);
-            }
-            else{
-                getJobFromDB(event.JobId,  job);
-            }
-        }
-        return job;
-    }
-    private void getJobFromDB(int JobId,  Job job) throws Exception{
+    public void getJobFromDB(int JobId,  Job job) throws Exception{
         String sqlQuery ="SELECT * FROM jobs WHERE id = ?;";
         List<Object> parameters = Arrays.asList( JobId );
         getJobFromDB(sqlQuery, parameters,  job);
@@ -52,7 +31,7 @@ public class JobManager {
             throw new Exception(String.format("There is no job by id=%d", JobId));
         }
     }
-    private void getJobFromDB(String JobId,  Job job) throws Exception{
+    public void getJobFromDB(String JobId,  Job job) throws Exception{
         String sqlQuery ="SELECT * FROM jobs WHERE external_id = ?;";
         List<Object> parameters = Arrays.asList(JobId );
         getJobFromDB(sqlQuery, parameters,  job);
@@ -65,7 +44,7 @@ public class JobManager {
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
         if (res != null) {
             for (Map<String, Object> rs : res) {
-                Utils.convertToObject( rs, job, job.getClass() );
+                DataMapper.convertToObject( rs, job, job.getClass() );
             }
         }
     }
@@ -80,7 +59,7 @@ public class JobManager {
         if(res != null){
             for (Map<String, Object> rs : res) {
                 Job job = new Job();
-                Utils.convertToObject( rs, job, job.getClass());
+                DataMapper.convertToObject( rs, job, job.getClass());
                 list.add(job);
             }
         }

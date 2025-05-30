@@ -1,4 +1,4 @@
-package com.ostj.dataentity;
+package com.ostj.entities;
 
 import java.util.Date;
 

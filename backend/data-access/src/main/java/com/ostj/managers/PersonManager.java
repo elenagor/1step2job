@@ -1,4 +1,4 @@
-package com.ostj.dataaccess;
+package com.ostj.managers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,47 +6,22 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ostj.dataentity.Person;
-import com.ostj.dataentity.Profile;
-import com.ostj.resumeprocessing.events.ResumeProcessEvent;
-import com.ostj.utils.Utils;
+import com.ostj.convertors.DataMapper;
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.entities.Person;
+import com.ostj.entities.Profile;
 
 public class PersonManager {
     private static Logger log = LoggerFactory.getLogger(PersonManager.class);
 
-    @Autowired
-	SQLAccess dbConnector;
+	private SQLAccess dbConnector;
 
-    public PersonManager(){
-        log.trace("Start PersonManager");
+    public PersonManager(String jdbcUrl, String username, String password) throws Exception {
+        this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }
 
-    public PersonManager(SQLAccess dbConnector){
-        this.dbConnector = dbConnector;
-    }
-
-    public Person getPersonData(ResumeProcessEvent event) throws Exception{
-        Person person = new Person();
-        if(event.resumeFilePath != null && event.resumeFilePath.length() > 0){
-            Profile resume = new Profile();
-            resume.resume = Utils.getFileContent(event.resumeFilePath);
-            person.profiles.add(resume);
-        }
-        else{
-            if(event.ProfileId >= 0 ){
-                getPersonData(event.PersonId, event.ProfileId, person );
-            }
-            else{
-                getPersonData(event.PersonId, person );
-            }
-            
-        }
-        return person;
-    }
-    
-    private void getPersonData(int personId, Person person) throws Exception {
+    public void getPersonData(int personId, Person person) throws Exception {
         String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
         "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? ;";
 
@@ -64,7 +39,7 @@ public class PersonManager {
         }
     }
 
-    private void getPersonData(int personId, int ProfileId, Person person) throws Exception {
+    public void getPersonData(int personId, int ProfileId, Person person) throws Exception {
         String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
         "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? AND profiles.id = ?;";
 
@@ -83,9 +58,9 @@ public class PersonManager {
     }
 
     private void addProfilePerson(Map<String, Object> rs, Person person ) throws Exception{
-        Utils.convertToObject( rs, person, person.getClass() );
+        DataMapper.convertToObject( rs, person, person.getClass() );
         Profile profile = new Profile();
-        Utils.convertToObject( rs, profile, profile.getClass() );
+        DataMapper.convertToObject( rs, profile, profile.getClass() );
         profile.id = (int) rs.get("profile_id");
         profile.person_id = (int) rs.get("id");
         person.profiles.add(profile);

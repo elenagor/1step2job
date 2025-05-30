@@ -1,19 +1,14 @@
 package com.ostj.resumeprocessing;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import com.ostj.dataaccess.JobManager;
-import com.ostj.dataaccess.PersonManager;
+import com.ostj.dataaccess.JobsReceiver;
+import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
@@ -50,26 +45,20 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-    return args -> {
-        String[] beanNames = ctx.getBeanDefinitionNames();
-        Arrays.sort(beanNames);
-        for (String beanName : beanNames) {
-            //log.trace(beanName);
+    public SQLAccess getSQLAccess() {
+        log.debug("SQLAccess: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new SQLAccess(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
         }
-        };
+        return null;
     }
     
     @Bean
     public AIMatcher getMatcher() {
         log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
     	return new AIMatcher(apiKey, endpoint, model);
-    }
-        
-    @Bean
-    public SQLAccess getDBConnector() throws SQLException {
-        log.debug("SQLAccess: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
-    	return new SQLAccess(jdbcUrl, username, password);
     }
 
     @Bean
@@ -78,13 +67,25 @@ public class Application {
     }
 
     @Bean
-    public PersonManager getPersonManager() {
-    	return new PersonManager();
+    public PersonReceiver getPersonManager() {
+        log.debug("PersonReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new PersonReceiver(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
     }
 
     @Bean
-    public JobManager getJobManager()  {
-    	return new JobManager();
+    public JobsReceiver getJobsReceiver()  {
+        log.debug("JobsReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new JobsReceiver(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
     }
 
     @Bean
