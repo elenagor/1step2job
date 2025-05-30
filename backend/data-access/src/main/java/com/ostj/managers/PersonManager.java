@@ -18,6 +18,7 @@ public class PersonManager {
 	private SQLAccess dbConnector;
 
     public PersonManager(String jdbcUrl, String username, String password) throws Exception {
+        log.info("Start PersonManager");
         this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }
 

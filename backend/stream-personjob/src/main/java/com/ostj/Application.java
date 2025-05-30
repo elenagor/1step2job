@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.Branched;
@@ -56,20 +55,21 @@ public class Application {
 
         new SpringApplicationBuilder(Application.class).run(args);
     }
-    @SuppressWarnings("unchecked")
+
 	@Bean
 	public Consumer<KStream<String, String>> process() {
 		log.trace("Initializing Kafka Streams topology");
 		return input -> input
+        .peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
         .mapValues(this::processPersonJob)
         .filter((k,v) -> {return v != null;})
         .split()
         .branch((k, v) -> (v instanceof ProcessEvent), Branched.withConsumer(stream -> stream
 						// Convert basic Serializable to relevant type
 						.mapValues(v -> (ProcessEvent) v)
-                        .peek((k, v) -> {log.debug("key={}, value={}", k, v);})
+                        .peek((k, v) -> {log.debug("Sent key={}, value={}", k, v);})
                         .to(outputTopic, Produced.with(Serdes.String(), messageSerdersEvent )))
-        );
+        ).noDefaultBranch();
     }
 
     private List<ProcessEvent> processPersonJob(String key, String value) {

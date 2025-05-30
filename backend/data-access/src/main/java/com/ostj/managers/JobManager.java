@@ -20,6 +20,7 @@ public class JobManager {
 	private SQLAccess dbConnector;
 
     public JobManager(String jdbcUrl, String username, String password) throws Exception {
+        log.info("Start JobManager");
         this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }
 

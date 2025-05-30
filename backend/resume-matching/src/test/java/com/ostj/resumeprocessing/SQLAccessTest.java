@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ostj.dataaccess.PromptManager;
-import com.ostj.dataaccess.ResultManager;
+//import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Alignment;
 import com.ostj.dataentity.Result;
