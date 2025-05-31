@@ -1,23 +1,24 @@
-package com.ostj.openai;
+package com.ostj;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.regex.Pattern;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-public class AIMatcher {
-	private static Logger log = LoggerFactory.getLogger(AIMatcher.class);
+public class OpenAIProvider {
+	private static Logger log = LoggerFactory.getLogger(OpenAIProvider.class);
 
 	String apiKey;
 	String endpoint;
 	String model;
 
-	public AIMatcher(String apiKey, String endpoint, String model) {
-		super();
+	public OpenAIProvider(String apiKey, String endpoint, String model) {
 		this.apiKey = apiKey;
 		this.endpoint = endpoint;
 		this.model = model;
@@ -25,7 +26,7 @@ public class AIMatcher {
 
 	public String call_openai(String resume, String job_description, String prompt) throws Exception {
 		String user_content = "";
-		if (StringUtils.isEmpty(job_description)) {
+		if (job_description == null || job_description.length() == 0) {
 			//  Prompt must contents {resume} placeholder
 			user_content = prompt.replace("{resume}", resume);
 		} else {
@@ -52,4 +53,23 @@ public class AIMatcher {
 		ChatCompletion chatCompletion = client.chat().completions().create(params);
 		return chatCompletion.choices().get(0).message().content().get();
 	}
+
+	public static String converResponseToJsonString(String text) {
+
+        Pattern compiledPattern = Pattern.compile("^[^{]*(\\{.*\\})[^}]*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Matcher matcher = compiledPattern.matcher(text);
+        if (matcher.find()) {
+           return matcher.group(1);
+        }
+        return "{\"Error\":\"Json is invalid\"}";
+    }
+
+	public static String converResponseToThinksAsText(String text) {
+        Pattern compiledPattern = Pattern.compile("<think>(.+)</think>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Matcher matcher = compiledPattern.matcher(text);
+        if (matcher.find()) {
+           return matcher.group(1);
+        }
+        return "No Thinks";
+    }
 }

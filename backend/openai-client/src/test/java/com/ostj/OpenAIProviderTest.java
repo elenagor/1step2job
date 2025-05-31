@@ -1,4 +1,4 @@
-package com.ostj.resumeprocessing;
+package com.ostj;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,12 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ostj.utils.Utils;
-import com.ostj.OpenAIProvider;
 
+public class OpenAIProviderTest {
 
-public class AIMatcherTest {
-	 private static Logger log = LoggerFactory.getLogger(AIMatcherTest.class);
+	 private static Logger log = LoggerFactory.getLogger(OpenAIProviderTest.class);
 	OpenAIProvider ai_matcher = new OpenAIProvider("EMPY", "http://localhost:8000/v1", "qwen");
 	
 	@Test
@@ -25,11 +23,11 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai(resume, "", prompt);
 		assertTrue(response != null);
 		log.trace("AIMatcher Response: {}", response);
-		String jsonString = Utils.getJsonContextAsString(response);
+		String jsonString = OpenAIProvider.converResponseToJsonString(response);
 		JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
 		log.trace("Json Response: {}", jsonValue);
 	}
-/* 
+
 	@Test
 	public void testMatchResumeToJobDescription() throws Exception{
 		String resume = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("Person.txt"),  "UTF-8");
@@ -38,12 +36,11 @@ public class AIMatcherTest {
 		String response = ai_matcher.call_openai( resume,  job_description,  prompt);
     	assertTrue(response != null);
         log.trace("AIMatcher Response: {}", response);
-		String jsonString = Utils.getJsonContextAsString(response);
+		String jsonString = OpenAIProvider.converResponseToJsonString(response);
 		JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
 		log.trace("Json Response: {}", jsonValue);
-		String reasoning = Utils.getThinksAsText(response);
+		String reasoning = OpenAIProvider.converResponseToThinksAsText(response);
 		log.trace("reasoning: {}", reasoning);
     }
-*/
 
 }

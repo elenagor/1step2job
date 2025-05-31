@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ostj.OpenAIProvider;
 import com.ostj.dataaccess.JobsReceiver;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
@@ -32,7 +33,7 @@ import com.ostj.dataentity.Result;
 import com.ostj.entities.Job;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
-import com.ostj.openai.AIMatcher;
+
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
 import com.ostj.utils.Utils;
@@ -57,7 +58,7 @@ public class KafkaStreamConfig  {
     int match_treshhold;
 
     @Autowired
-	AIMatcher resumeMatcher;
+	OpenAIProvider resumeMatcher;
 
     @Autowired
 	SQLAccess dbConnector;

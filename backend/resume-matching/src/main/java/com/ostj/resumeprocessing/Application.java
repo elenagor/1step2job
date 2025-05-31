@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
+import com.ostj.OpenAIProvider;
 import com.ostj.dataaccess.JobsReceiver;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
-import com.ostj.openai.AIMatcher;
 
 @SpringBootApplication
 public class Application {
@@ -56,9 +56,9 @@ public class Application {
     }
     
     @Bean
-    public AIMatcher getMatcher() {
+    public OpenAIProvider getOpenAIProvider() {
         log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
-    	return new AIMatcher(apiKey, endpoint, model);
+    	return new OpenAIProvider(apiKey, endpoint, model);
     }
 
     @Bean
