@@ -25,7 +25,7 @@ namespace OstjApi.Tests.Services
             _options = Options.Create(new OtcSettings
             {
                 CodeLength = 6,
-                CodeEpirationMinutes = 15,
+                CodeExpirationMinutes = 15,
                 MaxGenerationAttempts = 10
             });
 
@@ -63,7 +63,7 @@ namespace OstjApi.Tests.Services
             var authService = new AuthService(dbContext, _options , _logger);
 
             var result = await authService.ValidateCodeAsync(email, code);
-            Assert.Equal(expetedStatus, result);
+            Assert.Equal(expetedStatus, result.Status);
         }
 
         [Fact]
@@ -80,11 +80,11 @@ namespace OstjApi.Tests.Services
 
             var authService = new AuthService(dbContext, _options , _logger);
             var result = await authService.ValidateCodeAsync(email, code);
-            Assert.Equal(OtcStatus.Valid, result);
+            Assert.Equal(OtcStatus.Valid, result.Status);
 
             // Second attempt to use the same code should fail
             result = await authService.ValidateCodeAsync(email, code);
-            Assert.Equal(OtcStatus.Used, result);
+            Assert.Equal(OtcStatus.Used, result.Status);
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace OstjApi.Tests.Services
             var options = Options.Create(new OtcSettings
             {
                 CodeLength = 1,
-                CodeEpirationMinutes = 15,
+                CodeExpirationMinutes = 15,
                 MaxGenerationAttempts = 10
             });
 

@@ -1,16 +1,17 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
 @attribute [Authorize]
 @rendermode InteractiveServer
 @inject HttpClient HttpClient
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Home</PageTitle>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="row g-5 w-100">
-        <div class="col-sm-8 mb-3 mb-sm-0 d-flex alight-items-stretch">
+        <div class="col-sm-12 mb-3 mb-sm-0 d-flex alight-items-stretch">
             <div class="card w-100">
                 <h5 class="card-header">Let's start form here</h5>
                 <div class="card-body">
@@ -38,17 +39,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4 d-flex alight-items-stretch">
-            <div class="card w-100">
-                <h5 class="card-header">Has account already</h5>
-                <div class="card-body">
-                    <p class="card-text">Enter your email to begin</p>
-                    <input type="email" class="form-control mb-3" id="emailInput" placeholder="name@example.com"
-                        required>
-                    <button type="submit" class="btn btn-primary w-100">Submit</button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -60,6 +50,19 @@
     string? uploadMessage;
     bool processing = false;
 
+    ClaimsPrincipal? ClaimsPrincipalUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipalUser = authState.User;
+
+        if (ClaimsPrincipalUser.Identity != null)
+        {
+            var useridentity = ClaimsPrincipalUser.Identity.Name;
+        }
+    }
+    
     private class PersonInfo
     {
         public int Id { get; set; }

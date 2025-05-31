@@ -1,46 +1,95 @@
 @page "/login"
-@inject HttpClient Http
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using OstjWeb.Services
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@inject AuthService authService
 @inject NavigationManager Navigation
 
-<h3>Login</h3>
+@attribute [ExcludeFromInteractiveRoutingAttribute]
 
-@if (!string.IsNullOrEmpty(Error))
-{
-    <div class="alert alert-danger">@Error</div>
-}
-
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-    <InputText @bind-Value="loginModel.Email" placeholder="Email" />
-    <InputText @bind-Value="loginModel.Code" placeholder="One-Time Code" />
-    <button type="submit">Login</button>
-</EditForm>
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="row g-5 w-100">
+        <div class="col-sm-12 d-flex alight-items-stretch">
+            <div class="card w-100">
+                <h5 class="card-header">Has account already</h5>
+                <div class="card-body">
+                    <p class="card-text">Enter your email to begin</p>
+                    <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
+                        <InputText class="form-control mb-3" @bind-Value="loginModel.Email" aria-readonly="@codesent" placeholder="Email" />
+                        <ValidationMessage For="()=> loginModel.Email"/>
+                        <InputText class="form-control mb-3" @bind-Value="loginModel.Code" disabled="@{!codesent}" placeholder="One-Time Code" />
+                        <ValidationMessage For="()=> loginModel.Code"/>
+                        @if (Error != null)
+                        {
+                            <div class="alert alert-danger">@Error</div>
+                        }
+                        <button class="btn btn-primary w-100" type="submit">@btnLabel</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
-    private LoginModel loginModel = new();
+    [SupplyParameterFromForm(FormName = "LoginForm")]
+    private LoginModel loginModel { get; set; } = new();
     private string? Error;
+    private bool codesent = false;
+    private string btnLabel = "Send Code";
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
 
     private async Task HandleLogin()
     {
-        var form = new MultipartFormDataContent
+        if (!string.IsNullOrEmpty(loginModel.Email) && string.IsNullOrEmpty(loginModel.Code))
         {
-            { new StringContent(loginModel.Email), "email" },
-            { new StringContent(loginModel.Code), "code" }
-        };
-        var response = await Http.PostAsync("/api/auth/login", form);
-
-        if (response.IsSuccessStatusCode)
-        {
-            // Optionally store a token or flag here
-            Navigation.NavigateTo("/");
+            var response = await authService.SendOtc(loginModel.Email);
+            if (!response)
+            {
+                Error = "Failed to send code. Please try again later.";
+                return;
+            }
+            codesent = true;
+            btnLabel = "Verify Code`";
+            Error = null;
         }
         else
         {
-            Error = "Invalid code or email.";
+            var response = await authService.Login(loginModel.Email, loginModel.Code);
+            if (response != null)
+            {
+                var claims = new Claim[] {
+                    new Claim("id", response.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, response.Email!),
+                    new Claim(ClaimTypes.Email, response.Email!),
+                    new Claim("role", response.Role ?? "not enrolled"),
+                };
+
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "OstjAuth"));
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme
+                    , principal);
+                // Optionally store a token or flag here
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                Error = "Invalid code or email.";
+                codesent = false;
+                btnLabel = "Send Code";
+                loginModel.Code = "";
+            }
         }
     }
 
-    public class LoginModel
+    class LoginModel
     {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
         public string Email { get; set; } = "";
         public string Code { get; set; } = "";
     }

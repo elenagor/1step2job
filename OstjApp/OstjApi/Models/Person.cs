@@ -11,6 +11,7 @@ namespace OstjApi.Models
         public string? Phone { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
+        public string EnrollmentType { get; set; } = "not enrolled";
         public IList<Profile> Profiles { get; set; } = [];
     }
 }

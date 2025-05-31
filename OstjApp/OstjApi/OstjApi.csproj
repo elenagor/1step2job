@@ -22,4 +22,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources/ExtractPersonInfoPrompt.txt" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OstjLib\OstjLib.csproj" />
+  </ItemGroup>
 </Project>

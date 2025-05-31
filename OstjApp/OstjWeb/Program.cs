@@ -10,13 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+//builder.Services.AddScoped<AuthenticationStateProvider, OtcAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, OtcAuthenticationStateProvider>();
-builder.Services.AddAuthentication(options =>
-    { 
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;})
-    .AddIdentityCookies();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(options =>
+{
+    options.LoginPath = "/login";
+    options.Cookie.Name = "OstjWebAuthCookie";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = false;;
+});
+
+builder.Services.AddHttpClient<AuthService>(options =>
+{
+    options.BaseAddress = new Uri("http://localhost:5034/api/");
+});
+
 
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
 if (string.IsNullOrWhiteSpace(apiBaseUrl))

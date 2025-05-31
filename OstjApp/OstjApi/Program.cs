@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OstjApi.Data;
 using OstjApi.Services;
@@ -9,6 +11,8 @@ builder.Services.AddDbContext<OstjDbContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), option => option.UseVector())
         .UseSnakeCaseNamingConvention());
+
+//builder.Services.AddAntiforgery();
 
 builder.Services
     .Configure<AIClientSettings>(builder.Configuration.GetSection("OpenAI"))
@@ -31,6 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+//app.UseAntiforgery();
 
 // Minimal API endpoint for uploading resume
 app.MapPost("/api/resume/upload", async (HttpRequest request, IPersonService personService) =>
@@ -55,38 +60,37 @@ app.MapPost("/api/resume/upload", async (HttpRequest request, IPersonService per
     return Results.Ok(new { person.Id, person.Name, person.Email });
 });
 
-app.MapPost("/api/auth/sendotc", async (HttpRequest request, IAuthService authService, IEmailService emailService) =>
+app.MapPost("/api/auth/sendotc", async ([FromForm] string email, IAuthService authService, IEmailService emailService) =>
 {
-    if (!request.HasFormContentType)
-        return Results.BadRequest("No form data.");
-
-    var form = await request.ReadFormAsync();
-    var email = form["email"].ToString();
     if (string.IsNullOrEmpty(email))
         return Results.BadRequest("Email is required.");
 
     var code = await authService.GenerateCodeAsync(email);
-    await emailService.SendOtcEmailAsync(email, code);
+    try
+    {
+        await emailService.SendOtcEmailAsync(email, code);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Failed to send OTC email to {Email}", email);
+        return Results.Problem("Failed to send email: " + ex.Message);
+    }
     return Results.Ok();
-});
+})
+.DisableAntiforgery();
 
-app.MapPost("/api/auth/login", async (HttpRequest request, IAuthService authService) =>
+app.MapPost("/api/auth/login", async ([FromForm] string email,[FromForm] string code, IAuthService authService) =>
 {
-    if (!request.HasFormContentType)
-        return Results.BadRequest("No form data.");
-
-    var form = await request.ReadFormAsync();
-    var email = form["email"].ToString();
-    var code = form["code"].ToString();
     if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
         return Results.BadRequest("Email and code are required.");
 
-    var status = await authService.ValidateCodeAsync(email, code);
-    if (status != OtcStatus.Valid)
+    var authResult = await authService.ValidateCodeAsync(email, code);
+    if (authResult.User.UserId < 0)
         return Results.Unauthorized();
 
     // Optionally, generate and return a JWT or session token here
-    return Results.Ok();
-});
+    return Results.Ok(authResult.User);
+})
+.DisableAntiforgery();
 
 app.Run();
