@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.ostj.convertors.DataMapper;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.entities.Job;
-import com.ostj.entities.Person;
-import com.ostj.entities.Profile;
 
 public class JobManager {
     private static Logger log = LoggerFactory.getLogger(JobManager.class);
@@ -50,11 +48,11 @@ public class JobManager {
         }
     }
 
-    public List<Job> getJobs(Person person, Profile profile)  throws Exception {
+    public List<Job> getJobsWithTitle(String title)  throws Exception {
         List<Job> list = new ArrayList<Job>();
         String sqlQuery ="SELECT * FROM jobs WHERE jobs.title ~* ? ;";
 
-        List<Object> parameters = Arrays.asList(profile.title );
+        List<Object> parameters = Arrays.asList( title );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){

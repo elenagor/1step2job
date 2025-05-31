@@ -1,8 +1,6 @@
 package com.ostj;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +9,8 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.Branched;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.ValueMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +22,9 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 
+import com.ostj.entities.Job;
+import com.ostj.entities.Person;
+import com.ostj.entities.Profile;
 import com.ostj.events.ProcessEvent;
 import com.ostj.managers.JobManager;
 import com.ostj.managers.PersonManager;
@@ -73,10 +72,10 @@ public class KafkaStreamConfig {
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
         .mapValues(this::processPersonJob)
-        .filter((k,v) -> {log.debug("Mapped value={}", v); return v != null;})
+        .filter((k,v) -> {log.debug("Will send: {}", v); return v != null;})
         // Splits pasing result into separate messages preparing for sending to further
 		.flatMapValues(v -> v)
-        .mapValues(v -> (ProcessEvent) v)
+        .mapValues(v -> (ProcessEvent)v)
         .to(outputTopic, Produced.with(Serdes.String(), messageSerdersEvent ))
         ;
         return stream;
@@ -85,15 +84,38 @@ public class KafkaStreamConfig {
     private List<ProcessEvent> processPersonJob(String key, String value) {
         log.debug("Processed key={}, value={}", key, value);
         List<ProcessEvent> list = new ArrayList<ProcessEvent>();
-        ProcessEvent event = new ProcessEvent();
-        if(key.equalsIgnoreCase("PersonId"))
-            event.PersonId = Integer.parseInt(value);
-        if(key.equalsIgnoreCase("ProfileId"))
-            event.ProfileId = Integer.parseInt(value);
-        if(key.equalsIgnoreCase("JobId"))
-            event.JobId = Integer.parseInt(value);
-        event.PromptId = 1;
-        list.add(event);
+        Person person = new Person();
+        try {
+            if(key.equalsIgnoreCase("PersonId")){
+                personManager.getPersonData(Integer.parseInt(value), person);
+            }
+            if(key.equalsIgnoreCase("ProfileId")){
+                personManager.getPersonByProfileId(Integer.parseInt(value), person);
+            }
+            if(person.profiles != null){
+                for(Profile profile : person.profiles){
+                    log.debug("Processed title: {}", profile.title);
+                    for( Job job : jobManager.getJobsWithTitle(profile.title)){
+                        log.debug("Found Job: {}", job);
+                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, 1);
+                        list.add(event);
+                    }
+                }
+            }
+            if(key.equalsIgnoreCase("JobId")){
+                Job job = new Job();
+                jobManager.getJobFromDB( Integer.parseInt(value), job);
+                for(Person prsn : personManager.getPersonByTitle(job.title)){
+                    log.debug("Found person: {}", prsn);
+                    for(Profile profile : prsn.profiles){
+                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, 1);
+                        list.add(event);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error process key={} and value={}, {}", key, value, e);
+        }
         return list.size() > 0 ? list : null;
     }
 }

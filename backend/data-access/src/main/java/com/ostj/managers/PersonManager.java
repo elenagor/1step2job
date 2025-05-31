@@ -1,5 +1,6 @@
 package com.ostj.managers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,24 +28,58 @@ public class PersonManager {
         "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? ;";
 
         List<Object> parameters = Arrays.asList(personId );
-        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
-
-        if(res != null){
-            for (Map<String, Object> rs : res) {
-                addProfilePerson(rs, person);
-            }
+         try{
+            getPersonData( sqlQuery, parameters,  person);
         }
-
-        if(person.id < 0){
+        catch(Exception e){
             throw new Exception(String.format("There is no person by id=%d", personId));
+        }
+    }
+
+    public void getPersonByProfileId( int ProfileId, Person person) throws Exception {
+        String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
+                        "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.id = ?;";
+
+        List<Object> parameters = Arrays.asList( ProfileId);
+        try{
+            getPersonData( sqlQuery, parameters,  person);
+        }
+        catch(Exception e){
+            throw new Exception(String.format("There is no person Profile by Id=%d", ProfileId));
         }
     }
 
     public void getPersonData(int personId, int ProfileId, Person person) throws Exception {
         String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons "+//
-        "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? AND profiles.id = ?;";
+                        "JOIN profiles ON profiles.person_id = persons.id WHERE profiles.person_id =  ? AND profiles.id = ?;";
 
         List<Object> parameters = Arrays.asList(personId , ProfileId);
+        try{
+            getPersonData( sqlQuery, parameters,  person);
+        }
+        catch(Exception e){
+            throw new Exception(String.format("There is no person by id=%d", personId));
+        }
+    }
+    public List<Person>  getPersonByTitle(String title) throws Exception {
+        List<Person> list = new ArrayList<Person>();
+        String sqlQuery ="SELECT persons.*, profiles.resume, profiles.title, profiles.id AS profile_id FROM persons " + //
+                        "JOIN profiles ON profiles.person_id = persons.id  WHERE profiles.title ~* ? ;";
+
+        List<Object> parameters = Arrays.asList( title );
+        List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
+        
+        if(res != null){
+            for (Map<String, Object> rs : res) {
+                Person person = new Person();
+                addProfilePerson( rs,  person);
+                list.add(person);
+            }
+        }
+        return list;
+    }
+
+    private void getPersonData(String sqlQuery, List<Object> parameters, Person person) throws Exception {
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){
@@ -54,7 +89,7 @@ public class PersonManager {
         }
 
         if(person.id < 0){
-            throw new Exception(String.format("There is no person by id=%d", personId));
+            throw new Exception(String.format("Error in query ", sqlQuery));
         }
     }
 
@@ -66,4 +101,6 @@ public class PersonManager {
         profile.person_id = (int) rs.get("id");
         person.profiles.add(profile);
     }
+
+
 }
