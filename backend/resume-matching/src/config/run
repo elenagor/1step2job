@@ -13,3 +13,6 @@ java -Dlogging.config=resume-matching/src/main/resources/logback.xml  -jar resum
 <KafkaDir>\bin\kafka-console-producer.sh --topic ostj_person_jobs --bootstrap-server localhost:9092 --property "parse.key=true" --property "key.separator=="
 
 mvn archetype:generate -DarchetypeGroupId=org.apache.kafka -DarchetypeArtifactId=streams-personjob-process-java -DgroupId=stream-personjob -DartifactId=stream-personjob -Dversion=1.0.0 -Dpackage=com.ostj
+
+docker build . -t kstream-personjob-service -f ./stream-personjob/docker/Dockerfile
+docker build . -t resume-matching-service -f ./resume-matching/docker/Dockerfile

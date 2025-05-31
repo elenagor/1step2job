@@ -1,9 +1,9 @@
 FROM openjdk:17-jdk-slim
 
+COPY stream-personjob/target/stream-personjob-1.0.0.jar /stream-personjob.jar
+
+EXPOSE 8080
+
 WORKDIR /stream-personjob
 
-COPY target/stream-personjob-*.jar stream-personjob.jar
-
-EXPOSE 8081
-
-CMD ["java", "-jar", "stream-personjob.jar"]
+CMD ["java", "-jar", "/stream-personjob.jar"]

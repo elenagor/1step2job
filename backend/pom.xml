@@ -15,9 +15,9 @@
   </properties>
   <packaging>pom</packaging>
   <modules>
+    <module>openai-client</module>
     <module>data-access</module>
     <module>resume-matching</module>
     <module>stream-personjob</module>
-    <module>openai-client</module>
   </modules>
 </project>

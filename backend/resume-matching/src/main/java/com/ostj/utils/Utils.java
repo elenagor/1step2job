@@ -44,12 +44,11 @@ public class Utils {
     }
 
     public static String getJsonContextAsString(String text) {
-
         Pattern compiledPattern = Pattern.compile("^[^{]*(\\{.*\\})[^}]*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         Matcher matcher = compiledPattern.matcher(text);
         if (matcher.find()) {
            return matcher.group(1);
         }
-        return "{\"Error\":\"Json is invalid\"}";
+        return "{\"Error\":\"Prompt was incorrect\"}";
     }
 }

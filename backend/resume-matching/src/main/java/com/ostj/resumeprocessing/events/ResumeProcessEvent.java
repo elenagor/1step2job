@@ -24,6 +24,7 @@ public class ResumeProcessEvent {
     }
 
     public String toString(){
-        return "resumeFilePath="+resumeFilePath+", PersonId="+PersonId+", jdFilePath="+jdFilePath+", JobId="+JobId+", promptFilePath="+promptFilePath+", PromptId="+PromptId;
+        return "resumeFilePath="+resumeFilePath+", jdFilePath="+jdFilePath+", promptFilePath="+promptFilePath
+        +String.format("PersonId=%d, ProfileId=%d, JobId=%d, PromptId=%d", PersonId, ProfileId, JobId, PromptId);
     }
 }
