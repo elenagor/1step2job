@@ -16,7 +16,7 @@ import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 public class SQLAccessTest {
     private static Logger log = LoggerFactory.getLogger(SQLAccessTest.class);
 
-	private String jdbcUrl = "jdbc:postgresql://localhost:5432/ostjdb";
+	private String jdbcUrl = "jdbc:postgresql://ostjdbv.orb.local:5432/ostjdb";
 	private String username = "ostjsvc";
 	private String password = "ostjsvc!";
 

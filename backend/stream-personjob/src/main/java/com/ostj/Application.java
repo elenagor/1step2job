@@ -32,11 +32,6 @@ public class Application {
     String password;
 
     public static void main(String[] args) {
-        log.trace("Trace log message");
-        log.debug("Debug log message");
-        log.info("Info log message");
-        log.error("Error log message");
-
         new SpringApplicationBuilder(Application.class).run(args);
     }
 

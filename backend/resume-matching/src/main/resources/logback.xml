@@ -8,7 +8,7 @@
 			<onMismatch>DENY</onMismatch>
 		</filter>
 		<encoder>
-			<pattern>%d{ISO8601} %m%n</pattern>
+			<pattern>%d{ISO8601} %5p %t %c{2}:%L - %m%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="stdout-debug"
@@ -19,7 +19,7 @@
 			<onMismatch>DENY</onMismatch>
 		</filter>
 		<encoder>
-			<pattern>%d{ISO8601} %m%n</pattern>
+			<pattern>%d{ISO8601} %5p %t %c{2}:%L - %m%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="stdout-info"
@@ -30,7 +30,7 @@
 			<onMismatch>DENY</onMismatch>
 		</filter>
 		<encoder>
-			<pattern>%d{ISO8601} %m%n</pattern>
+			<pattern>%d{ISO8601} %5p %t %c{2}:%L - %m%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="stderr"
