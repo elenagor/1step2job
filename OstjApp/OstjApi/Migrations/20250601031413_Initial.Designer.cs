@@ -14,7 +14,7 @@ using Pgvector;
 namespace OstjApi.Migrations
 {
     [DbContext(typeof(OstjDbContext))]
-    [Migration("20250527191915_Initial")]
+    [Migration("20250601031413_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -39,7 +39,8 @@ namespace OstjApi.Migrations
 
                     b.Property<string>("ApplyUrl")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("apply_url");
 
                     b.Property<string>("Description")
@@ -49,15 +50,18 @@ namespace OstjApi.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("external_id");
 
                     b.Property<string>("LocationCity")
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("location_city");
 
                     b.Property<string>("LocationCountry")
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("location_country");
 
                     b.Property<bool?>("LocationIsRemote")
@@ -65,7 +69,8 @@ namespace OstjApi.Migrations
                         .HasColumnName("location_is_remote");
 
                     b.Property<string>("LocationState")
-                        .HasColumnType("text")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
                         .HasColumnName("location_state");
 
                     b.Property<DateTime>("Published")
@@ -82,7 +87,8 @@ namespace OstjApi.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("title");
 
                     b.Property<Vector>("TitleEmbeddings")
@@ -90,7 +96,8 @@ namespace OstjApi.Migrations
                         .HasColumnName("title_embeddings");
 
                     b.Property<string>("Type")
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("type");
 
                     b.HasKey("Id")
@@ -116,13 +123,21 @@ namespace OstjApi.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_user_defined");
 
+                    b.Property<int?>("ProfileId")
+                        .HasColumnType("integer")
+                        .HasColumnName("profile_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_job_titles");
+
+                    b.HasIndex("ProfileId")
+                        .HasDatabaseName("ix_job_titles_profile_id");
 
                     b.ToTable("job_titles", (string)null);
                 });
@@ -138,12 +153,14 @@ namespace OstjApi.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
                         .HasColumnName("code");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("email");
 
                     b.Property<DateTime>("Expires")
@@ -174,25 +191,35 @@ namespace OstjApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("City")
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("city");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("email");
+
+                    b.Property<string>("EnrollmentType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("enrollment_type");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("text")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("phone");
 
                     b.Property<string>("State")
-                        .HasColumnType("text")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
                         .HasColumnName("state");
 
                     b.HasKey("Id")
@@ -214,6 +241,15 @@ namespace OstjApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AcceptRemote")
+                        .HasColumnType("boolean")
+                        .HasColumnName("accept_remote");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("location");
+
                     b.Property<int>("PersonId")
                         .HasColumnType("integer")
                         .HasColumnName("person_id");
@@ -223,10 +259,13 @@ namespace OstjApi.Migrations
                         .HasColumnType("text")
                         .HasColumnName("resume");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title");
+                    b.Property<float?>("SalaryMax")
+                        .HasColumnType("real")
+                        .HasColumnName("salary_max");
+
+                    b.Property<float?>("SalaryMin")
+                        .HasColumnType("real")
+                        .HasColumnName("salary_min");
 
                     b.HasKey("Id")
                         .HasName("pk_profiles");
@@ -290,6 +329,14 @@ namespace OstjApi.Migrations
                     b.ToTable("results", (string)null);
                 });
 
+            modelBuilder.Entity("OstjApi.Models.JobTitle", b =>
+                {
+                    b.HasOne("OstjApi.Models.Profile", null)
+                        .WithMany("JobTitles")
+                        .HasForeignKey("ProfileId")
+                        .HasConstraintName("fk_job_titles_profiles_profile_id");
+                });
+
             modelBuilder.Entity("OstjApi.Models.Profile", b =>
                 {
                     b.HasOne("OstjApi.Models.Person", null)
@@ -333,6 +380,11 @@ namespace OstjApi.Migrations
             modelBuilder.Entity("OstjApi.Models.Person", b =>
                 {
                     b.Navigation("Profiles");
+                });
+
+            modelBuilder.Entity("OstjApi.Models.Profile", b =>
+                {
+                    b.Navigation("JobTitles");
                 });
 #pragma warning restore 612, 618
         }

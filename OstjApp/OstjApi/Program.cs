@@ -38,27 +38,32 @@ app.UseHttpsRedirection();
 //app.UseAntiforgery();
 
 // Minimal API endpoint for uploading resume
-app.MapPost("/api/resume/upload", async (HttpRequest request, IPersonService personService) =>
+app.MapPost("/api/resume/upload/{id}", async([FromRoute] int id, IFormFile file, IPersonService personService) =>
 {
-    if (!request.HasFormContentType)
-        return Results.BadRequest("No form data.");
-
-    var form = await request.ReadFormAsync();
-    var file = form.Files["file"];
     if (file == null || file.Length == 0)
         return Results.BadRequest("No file uploaded.");
 
     using var ms = new MemoryStream();
     await file.CopyToAsync(ms);
 
-    var person = await personService.SavePersonAsync(
-        file.FileName,
-        file.ContentType,
-        ms.ToArray()
-    );
+    try
+    {
+        var person = await personService.SaveProfileFromResumeAsync(
+            id,
+            file.FileName,
+            file.ContentType,
+            ms.ToArray()
+        );
 
-    return Results.Ok(new { person.Id, person.Name, person.Email });
-});
+        return Results.Ok(new { person.Id, person.Name, person.Email });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+
+})
+.DisableAntiforgery();
 
 app.MapPost("/api/auth/sendotc", async ([FromForm] string email, IAuthService authService, IEmailService emailService) =>
 {
@@ -79,7 +84,7 @@ app.MapPost("/api/auth/sendotc", async ([FromForm] string email, IAuthService au
 })
 .DisableAntiforgery();
 
-app.MapPost("/api/auth/login", async ([FromForm] string email,[FromForm] string code, IAuthService authService) =>
+app.MapPost("/api/auth/login", async ([FromForm] string email, [FromForm] string code, IAuthService authService) =>
 {
     if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
         return Results.BadRequest("Email and code are required.");

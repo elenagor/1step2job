@@ -64,10 +64,10 @@
             if (response != null)
             {
                 var claims = new Claim[] {
-                    new Claim("id", response.UserId.ToString()),
+                    new Claim(ClaimTypes.PrimarySid, response.UserId.ToString()),
                     new Claim(ClaimTypes.Name, response.Email!),
                     new Claim(ClaimTypes.Email, response.Email!),
-                    new Claim("role", response.Role ?? "not enrolled"),
+                    new Claim(ClaimTypes.Role, response.Role ?? "not enrolled"),
                 };
 
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "OstjAuth"));

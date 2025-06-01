@@ -36,6 +36,10 @@
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     }
+                    @if (Error != null)
+                    {
+                        <div class="alert alert-danger">@Error</div>
+                    }
                 </div>
             </div>
         </div>
@@ -47,22 +51,21 @@
     IBrowserFile? selectedFile;
     bool isFileSelected = false;
     PersonInfo? personInfo;
-    string? uploadMessage;
+    string? Error;
     bool processing = false;
 
-    ClaimsPrincipal? ClaimsPrincipalUser;
+    int personId = 0;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        ClaimsPrincipalUser = authState.User;
 
-        if (ClaimsPrincipalUser.Identity != null)
+        if (authState.User.Identity != null)
         {
-            var useridentity = ClaimsPrincipalUser.Identity.Name;
+            personId = int.Parse(authState.User.FindFirst(ClaimTypes.PrimarySid)?.Value ?? "0");
         }
     }
-    
+
     private class PersonInfo
     {
         public int Id { get; set; }
@@ -75,7 +78,7 @@
     {
         selectedFile = e.File;
         isFileSelected = selectedFile != null;
-        uploadMessage = null;
+        Error = null;
     }
 
     private async Task HandleFileUpload()
@@ -91,22 +94,26 @@
                 content.Add(fileContent, "file", selectedFile.Name);
                 processing = true;
 
-                var response = await HttpClient.PostAsync("/api/resume/upload", content);
+                var response = await HttpClient.PostAsync($"/api/resume/upload/{personId}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     personInfo = await response.Content.ReadFromJsonAsync<PersonInfo>();
                 }
+                else
+                {
+                    Error = $"Error: {response.ReasonPhrase}";
+                }
                 processing = false;
             }
             catch (Exception ex)
             {
-                uploadMessage = $"Error: {ex.Message}";
+                Error = $"Error: {ex.Message}";
             }
         }
         else
         {
-            uploadMessage = "No file selected.";
+            Error = "No file selected.";
         }
     }
 }

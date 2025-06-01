@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Pgvector.EntityFrameworkCore;
 using OstjApi.Models;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using OstjLib.Contracts;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace OstjApi.Data
 {
@@ -12,6 +15,9 @@ namespace OstjApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("vector");
+            modelBuilder.Entity<Person>()
+                .Property(p => p.EnrollmentType)
+                .HasConversion<string>();
         }
 
         public virtual DbSet<Profile> Profiles { get; set; }

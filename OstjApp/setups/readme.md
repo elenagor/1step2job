@@ -36,3 +36,8 @@ $ docker exec -it ostjdbv /bin/bash
 # psql -U ostjsvc
 # CREATE EXTENSION vector;
 ```
+
+Run llama.cpp (assumes modle is downloaded at ~/projects/models/qwen3-8b/qwen3-8b.gguf, change the path is different)
+```
+$ llama-server -m  ~/projects/models/qwen3-8b/qwen3-8b.gguf -a qwen --port 8000 -ngl 99 -fa -sm layer --presence-penalty 1.5 -c 40960 -n 32768 --no-context-shift --no-webui --pooling mean
+```

@@ -18,39 +18,24 @@ namespace OstjApi.Migrations
                 .Annotation("Npgsql:PostgresExtension:vector", ",,");
 
             migrationBuilder.CreateTable(
-                name: "job_titles",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "text", nullable: false),
-                    embedding = table.Column<Vector>(type: "vector(4096)", nullable: true),
-                    is_user_defined = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_job_titles", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "jobs",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    external_id = table.Column<string>(type: "text", nullable: false),
-                    title = table.Column<string>(type: "text", nullable: false),
+                    external_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     title_embeddings = table.Column<Vector>(type: "vector(4096)", nullable: true),
-                    location_country = table.Column<string>(type: "text", nullable: true),
-                    location_city = table.Column<string>(type: "text", nullable: true),
-                    location_state = table.Column<string>(type: "text", nullable: true),
+                    location_country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_state = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
                     location_is_remote = table.Column<bool>(type: "boolean", nullable: true),
                     published = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
-                    apply_url = table.Column<string>(type: "text", nullable: false),
+                    apply_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     salary_min = table.Column<float>(type: "real", nullable: true),
                     salary_max = table.Column<float>(type: "real", nullable: true),
-                    type = table.Column<string>(type: "text", nullable: true)
+                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,8 +48,8 @@ namespace OstjApi.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    email = table.Column<string>(type: "text", nullable: false),
-                    code = table.Column<string>(type: "text", nullable: false),
+                    email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    code = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false),
                     expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     is_used = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -79,11 +64,12 @@ namespace OstjApi.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    email = table.Column<string>(type: "text", nullable: false),
-                    phone = table.Column<string>(type: "text", nullable: true),
-                    city = table.Column<string>(type: "text", nullable: true),
-                    state = table.Column<string>(type: "text", nullable: true)
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    state = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
+                    enrollment_type = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,8 +82,11 @@ namespace OstjApi.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "text", nullable: false),
                     person_id = table.Column<int>(type: "integer", nullable: false),
+                    accept_remote = table.Column<bool>(type: "boolean", nullable: false),
+                    location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    salary_min = table.Column<float>(type: "real", nullable: true),
+                    salary_max = table.Column<float>(type: "real", nullable: true),
                     resume = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -109,6 +98,27 @@ namespace OstjApi.Migrations
                         principalTable: "persons",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "job_titles",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    embedding = table.Column<Vector>(type: "vector(4096)", nullable: true),
+                    is_user_defined = table.Column<bool>(type: "boolean", nullable: false),
+                    profile_id = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_job_titles", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_job_titles_profiles_profile_id",
+                        column: x => x.profile_id,
+                        principalTable: "profiles",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -147,6 +157,11 @@ namespace OstjApi.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_job_titles_profile_id",
+                table: "job_titles",
+                column: "profile_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_otcs_email_code",

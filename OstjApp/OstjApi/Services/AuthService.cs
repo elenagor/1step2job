@@ -112,7 +112,7 @@ namespace OstjApi.Services
 
                 authResult.User.Email = person.Email;
                 authResult.User.UserId = person.Id;
-                authResult.User.Role = person.EnrollmentType;
+                authResult.User.Role = person.EnrollmentType.ToString();
                 return authResult;
             }
             else if (otc == null)

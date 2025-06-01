@@ -2,6 +2,7 @@ using System.ClientModel;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Embeddings;
 
 namespace OstjApi.Services
 {
@@ -14,13 +15,14 @@ namespace OstjApi.Services
 
     public class AIClient : IAIClient
     {
-        private readonly ChatClient _client;
+        private readonly ChatClient _chatClient;
+        private readonly EmbeddingClient _embeddingClient;
         private readonly ILogger<AIClient> _logger;
 
         public AIClient(IOptions<AIClientSettings> settings, ILogger<AIClient> logger)
         {
             _logger = logger;
-            
+
             var model = settings.Value.Model;
             var uri = settings.Value.ApiUri;
             var apiKey = settings.Value.ApiKey;
@@ -44,14 +46,20 @@ namespace OstjApi.Services
             {
                 Endpoint = new Uri(uri)
             };
-            _client = new(model, new ApiKeyCredential(apiKey), options);
+            _chatClient = new(model, new ApiKeyCredential(apiKey), options);
+            _embeddingClient = new(model, new ApiKeyCredential(apiKey), options);
         }
 
+        public async Task<float[]> GenerateEmbeddingAsync(string text)
+        {
+            var embedding = await _embeddingClient.GenerateEmbeddingAsync(text);
+            return embedding.Value.ToFloats().ToArray();
+        } 
 
         public async Task<string> RunPromptAsync(string prompt)
         {
             var requestBody = new { prompt };
-            ChatCompletion completion = await _client.CompleteChatAsync(prompt);
+            ChatCompletion completion = await _chatClient.CompleteChatAsync(prompt);
             return completion.Content[0].Text;
         }
     }
