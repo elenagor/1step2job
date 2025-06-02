@@ -24,7 +24,7 @@ docker -e ASPNETCORE_HTTP_PORTS=80 \
     ostjapi
 ```
 
-### Run locally
+### Run locally (Need to be performed only once for each environment)
 Run Postges as Docker
 ```
 $ docker pull pgvector/pgvector:pg17
@@ -37,7 +37,36 @@ $ docker exec -it ostjdbv /bin/bash
 # CREATE EXTENSION vector;
 ```
 
+### Run Model
 Run llama.cpp (assumes modle is downloaded at ~/projects/models/qwen3-8b/qwen3-8b.gguf, change the path is different)
 ```
 $ llama-server -m  ~/projects/models/qwen3-8b/qwen3-8b.gguf -a qwen --port 8000 -ngl 99 -fa -sm layer --presence-penalty 1.5 -c 40960 -n 32768 --no-context-shift --no-webui --pooling mean
+```
+
+### Create/update Database
+Navigate to OstjApp
+
+After changing model in the OstjApp/OstjApi project (dotnet code) create a new database migration
+```
+$ dotnet ef migrations add <Name of The Migration>
+```
+
+When entity model has changed by:
+- You after creating a new migrations above
+- You pooled new migration from GIT after Somebody else had Entity Model changes
+- Create a new database
+
+```
+$ dotnet ef database update
+```
+
+To delete database (NOTE: All data will be destroeyd)
+```
+$ dotnet ef database remove
+```
+
+If you want to drop all migrations history and start over
+```
+$ dotnet ef migrations remove
+$ dotnet ef migrations add <Some initial name>
 ```
