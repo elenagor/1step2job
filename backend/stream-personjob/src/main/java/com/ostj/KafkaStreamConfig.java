@@ -63,7 +63,7 @@ public class KafkaStreamConfig {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        log.trace("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, input_topic_name);
+        log.debug("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, input_topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -72,10 +72,11 @@ public class KafkaStreamConfig {
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
         .mapValues(this::processPersonJob)
-        .filter((k,v) -> {log.debug("Will send: {}", v); return v != null;})
+        .filter((k,v) -> {log.debug("Records for match processing: {}", v); return v != null;})
         // Splits pasing result into separate messages preparing for sending to further
 		.flatMapValues(v -> v)
         .mapValues(v -> (ProcessEvent)v)
+        .peek((k, v) -> {log.debug("Sent key={}, value={}", k, v);})
         .to(outputTopic, Produced.with(Serdes.String(), messageSerdersEvent ))
         ;
         return stream;

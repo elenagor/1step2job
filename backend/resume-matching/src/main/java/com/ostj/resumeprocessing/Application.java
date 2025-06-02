@@ -1,5 +1,8 @@
 package com.ostj.resumeprocessing;
 
+import java.util.Arrays;
+import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,42 +16,37 @@ import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
+import com.ostj.utils.ConfigurationHelper;
 
 @SpringBootApplication
 public class Application {
     private static Logger log = LoggerFactory.getLogger(Application.class);
-	@Value(value = "${ostj.openai.apikey}")
-	String apiKey;
+    private Properties props;
+    private ConfigProvider configProvider;
 
-	@Value(value = "${ostj.openai.endpoint}")
-	String endpoint;
-
-	@Value(value = "${ostj.openai.model}")
-	String model;
-
-    @Value(value = "${ostj.db.url}")
-    String jdbcUrl;
-
-    @Value(value = "${ostj.db.username}")
-    String username;
-
-    @Value(value = "${ostj.db.password}")
-    String password;
+    @Value("${config}")
+	String config;
 
     public static void main(String[] args) {
-        log.trace("Trace log message");
-        log.debug("Debug log message");
-        log.info("Info log message");
-        log.error("Error log message");
-
+        log.debug("Start Resume-matching application with args:", Arrays.toString(args));
         new SpringApplicationBuilder(Application.class).run(args);
+    }
+
+    @Bean 
+    public ConfigProvider getConfigProvider(){
+        if (props == null) {
+			props = getPropertiesConfiguration();
+		}
+		log.trace("Start ConfigProvider Bean");
+        configProvider = new ConfigProvider(props);
+        return configProvider;
     }
 
     @Bean
     public SQLAccess getSQLAccess() {
-        log.debug("SQLAccess: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+        log.debug("SQLAccess: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
     	try {
-            return new SQLAccess(jdbcUrl, username, password);
+            return new SQLAccess(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }
@@ -57,8 +55,8 @@ public class Application {
     
     @Bean
     public OpenAIProvider getOpenAIProvider() {
-        log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
-    	return new OpenAIProvider(apiKey, endpoint, model);
+        log.debug("AI Matcher: apiKey=" + configProvider.getApiKey() + ",endpoint=" + configProvider.getEndpoint() + ",model=" + configProvider.getModel());
+    	return new OpenAIProvider(configProvider.getApiKey(), configProvider.getEndpoint(), configProvider.getModel());
     }
 
     @Bean
@@ -68,9 +66,9 @@ public class Application {
 
     @Bean
     public PersonReceiver getPersonReceiver() {
-        log.debug("PersonReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+        log.debug("PersonReceiver: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
     	try {
-            return new PersonReceiver(jdbcUrl, username, password);
+            return new PersonReceiver(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }
@@ -79,9 +77,9 @@ public class Application {
 
     @Bean
     public JobsReceiver getJobsReceiver()  {
-        log.debug("JobsReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+        log.debug("JobsReceiver: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
     	try {
-            return new JobsReceiver(jdbcUrl, username, password);
+            return new JobsReceiver(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }
@@ -92,4 +90,14 @@ public class Application {
     public ResultManager getResultManager()  {
     	return new ResultManager();
     }
+
+    private Properties getPropertiesConfiguration() {
+		if (StringUtils.isEmpty(config)) {
+			log.error("configuratin file is not specified, re-invoke with --config=<file> parameter");
+			throw new RuntimeException("Congifuration file paramenter is not specified");
+		}
+		log.trace("Start Configuration Properties");
+		props = ConfigurationHelper.loadPropertiesFromConfiguration(config);
+		return props;
+	}
 }

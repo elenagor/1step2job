@@ -45,11 +45,11 @@ public class KafkaStreamConfig  {
     private static Logger log = LoggerFactory.getLogger(KafkaStreamConfig.class);
     private static Gson gson = new GsonBuilder().registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
     
+    @Autowired
+    ConfigProvider configProvider;
+
     @Value(value = "${ostj.kstream.topic}")
     String topic_name;
-
-    @Value(value = "${spring.kafka.bootstrap-servers}")
-    String bootstrapAddress;
 
     @Value(value = "${spring.application.name}")
     String appName;
@@ -79,10 +79,10 @@ public class KafkaStreamConfig  {
     KafkaStreamsConfiguration kStreamsConfig() {
         Map<String, Object> props = new HashMap<>();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, appName);
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, configProvider.getBootstrapAddress());
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        log.trace("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, topic_name);
+        log.debug("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, configProvider.getBootstrapAddress(), topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -102,7 +102,7 @@ public class KafkaStreamConfig  {
 		try {
             JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
-            log.trace("Message mapped Value: {}", record.toString());
+            log.debug("Message mapped Value: {}", record.toString());
 		} catch (Throwable e) {
 			log.error("Error parsing json message {}", e);
 		}

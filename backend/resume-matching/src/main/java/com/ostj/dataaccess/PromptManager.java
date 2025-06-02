@@ -19,7 +19,7 @@ public class PromptManager {
 	SQLAccess dbConnector;
 
     public PromptManager(){
-        log.trace("Start PromptManager");
+        log.debug("Start PromptManager");
     }
 
     public PromptManager(SQLAccess dbConnector){
@@ -27,7 +27,7 @@ public class PromptManager {
     }
 
     public String getPrompt(ResumeProcessEvent event) throws Exception{
-        log.trace("Start getPrompt {}", event);
+        log.debug("Start getPrompt {}", event);
         if(event.promptFilePath != null && event.promptFilePath.length() > 0){
             return Utils.getFileContent(event.promptFilePath);
         }

@@ -14,13 +14,14 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 public class OpenAIProvider {
 	private static Logger log = LoggerFactory.getLogger(OpenAIProvider.class);
 
-	String apiKey;
-	String endpoint;
-	String model;
+	private OpenAIClient client = null;
+	private String model;
 
 	public OpenAIProvider(String apiKey, String endpoint, String model) {
-		this.apiKey = apiKey;
-		this.endpoint = endpoint;
+		this.client = OpenAIOkHttpClient.builder()
+			    .apiKey(apiKey)
+			    .baseUrl(endpoint)
+			    .build();
 		this.model = model;
 	}
 
@@ -37,11 +38,6 @@ public class OpenAIProvider {
 		}
 
 		log.trace("AIMatcher: user message={}", user_content);
-
-		OpenAIClient client = OpenAIOkHttpClient.builder()
-			    .apiKey(apiKey)
-			    .baseUrl(endpoint)
-			    .build();
 
 		// ProxyOptions proxyOptions = new ProxyOptions(ProxyOptions.Type.HTTP, new
 		// InetSocketAddress("localhost", 8000));

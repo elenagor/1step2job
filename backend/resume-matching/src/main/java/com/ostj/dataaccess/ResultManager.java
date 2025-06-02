@@ -18,7 +18,7 @@ public class ResultManager {
 	SQLAccess dbConnector;
 
     public ResultManager(){
-        log.trace("Start ResultManager");
+        log.debug("Start ResultManager");
     }
 
     public ResultManager(SQLAccess dbConnector){
