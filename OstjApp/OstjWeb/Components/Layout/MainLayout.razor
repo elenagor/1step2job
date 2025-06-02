@@ -6,7 +6,15 @@
             <AuthorizeView>
                 <Authorized>
                     <div class="hstack flex-row-reverse gap-3">
-                        <div class="p-2">@context.User.Identity?.Name</div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                @context.User.Identity?.Name!
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
                         <div class="vr"></div>
                     </div>
                 </Authorized>
