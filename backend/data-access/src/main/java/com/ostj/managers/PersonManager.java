@@ -29,7 +29,7 @@ public class PersonManager {
                 ",profiles.salary_max " + //
                 ",profiles.resume " + //
                 ",job_titles.title " + //
-                ",job_titles.embedding";
+                ",job_titles.embedding ";
 
     public PersonManager(String jdbcUrl, String username, String password) throws Exception {
         log.info("Start PersonManager");
@@ -37,9 +37,9 @@ public class PersonManager {
     }
 
     public void getPersonData(int personId, Person person) throws Exception {
-        String sqlQuery = "SELECT " + QUERY_PERSON_FIELD +
+        String sqlQuery = "SELECT " + QUERY_PERSON_FIELD + "FROM persons " + //
         "JOIN profiles ON profiles.person_id = persons.id "+//
-        "JOIN job_titles ON job_titles.profile_id = profiles.id"+//
+        "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
         "WHERE profiles.person_id =  ? ;";
 
         List<Object> parameters = Arrays.asList(personId );
@@ -52,9 +52,9 @@ public class PersonManager {
     }
 
     public void getPersonByProfileId( int ProfileId, Person person) throws Exception {
-        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD +//
+        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD + "FROM persons " + //
                         "JOIN profiles ON profiles.person_id = persons.id "+//
-                        "JOIN job_titles ON job_titles.profile_id = profiles.id"+//
+                        "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
                         "WHERE profiles.id = ?;";
 
         List<Object> parameters = Arrays.asList( ProfileId);
@@ -67,9 +67,9 @@ public class PersonManager {
     }
 
     public void getPersonData(int personId, int ProfileId, Person person) throws Exception {
-        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD +//
+        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD + "FROM persons " + //
                         "JOIN profiles ON profiles.person_id = persons.id "+//
-                        "JOIN job_titles ON job_titles.profile_id = profiles.id"+//
+                        "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
                         "WHERE profiles.person_id =  ? AND profiles.id = ?;";
 
         List<Object> parameters = Arrays.asList(personId , ProfileId);
@@ -80,12 +80,12 @@ public class PersonManager {
             throw new Exception(String.format("There is no person by id=%d", personId));
         }
     }
+
     public List<Person>  getPersonByTitle(Array title_embedding) throws Exception {
         List<Person> list = new ArrayList<Person>();
-        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD +//
-                        "FROM persons " + //
-                        "JOIN profiles ON profiles.person_id = persons.id  "+//
-                        "JOIN job_titles ON job_titles.profile_id = profiles.id"+//
+        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD + "FROM persons " + //
+                        "JOIN profiles ON profiles.person_id = persons.id "+//
+                        "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
                         "WHERE job_titles.embedding <#> ? ;";
 
         List<Object> parameters = Arrays.asList( title_embedding );
@@ -116,11 +116,26 @@ public class PersonManager {
     private void addProfilePerson(Map<String, Object> rs, Person person ) throws Exception{
         DataMapper.convertToObject( rs, person, person.getClass() );
         person.id = (int) rs.get("person_id");
-        Profile profile = new Profile();
+        Profile profile = createProfileById( person, (int)rs.get("profile_id"));
         DataMapper.convertToObject( rs, profile, profile.getClass() );
-        profile.id = (int) rs.get("profile_id");
-        person.profiles.add(profile);
         addProfileTitle(rs, profile);
+    }
+    
+    private Profile createProfileById(Person person, int id) {
+        Profile profile = null;
+        for(Profile prfl : person.profiles){
+            if(prfl.id == id)
+            {
+                profile = prfl;
+                break;
+            }
+        }
+        if(profile == null){
+            profile = new Profile();
+            person.profiles.add(profile);  
+        }
+        profile.id = id;
+        return profile;
     }
 
     private void addProfileTitle(Map<String, Object> rs, Profile profile) throws Exception {
