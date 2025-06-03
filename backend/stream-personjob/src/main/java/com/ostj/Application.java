@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
-import com.ostj.managers.JobManager;
+import com.ostj.managers.PositionManager;
 import com.ostj.managers.PersonManager;
 
 @SpringBootApplication
@@ -47,10 +47,10 @@ public class Application {
     }
 
     @Bean
-    public JobManager getJobManager()  {
+    public PositionManager getJobManager()  {
         log.debug("JobsReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
-            return new JobManager(jdbcUrl, username, password);
+            return new PositionManager(jdbcUrl, username, password);
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }

@@ -28,6 +28,9 @@ public class PromptManager {
 
     public String getPrompt(ResumeProcessEvent event) throws Exception{
         log.debug("Start getPrompt {}", event);
+        if(event.PromptId == -1){
+            event.promptFilePath = "prompt.txt"; // default prompt
+        }
         if(event.promptFilePath != null && event.promptFilePath.length() > 0){
             return Utils.getFileContent(event.promptFilePath);
         }

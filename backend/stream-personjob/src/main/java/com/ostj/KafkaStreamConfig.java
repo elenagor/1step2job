@@ -22,11 +22,12 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 
-import com.ostj.entities.Job;
+import com.ostj.entities.Position;
+import com.ostj.entities.Job_title;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
 import com.ostj.events.ProcessEvent;
-import com.ostj.managers.JobManager;
+import com.ostj.managers.PositionManager;
 import com.ostj.managers.PersonManager;
 
 @Configuration
@@ -54,7 +55,7 @@ public class KafkaStreamConfig {
 	PersonManager personManager;
 
     @Autowired
-	JobManager jobManager;
+	PositionManager jobManager;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -95,21 +96,23 @@ public class KafkaStreamConfig {
             }
             if(person.profiles != null){
                 for(Profile profile : person.profiles){
-                    log.debug("Processed title: {}", profile.title);
-                    for( Job job : jobManager.getJobsWithTitle(profile.title)){
-                        log.debug("Found Job: {}", job);
-                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, 1);
-                        list.add(event);
+                    for(Job_title title : profile.job_titles){
+                        log.debug("Processed title: {}", title.title);
+                        for( Position job : jobManager.getJobsWithTitle(title.embeddings)){
+                            log.debug("Found Job: {}", job);
+                            ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
+                            list.add(event);
+                        }
                     }
                 }
             }
             if(key.equalsIgnoreCase("JobId")){
-                Job job = new Job();
+                Position job = new Position();
                 jobManager.getJobFromDB( Integer.parseInt(value), job);
-                for(Person prsn : personManager.getPersonByTitle(job.title)){
+                for(Person prsn : personManager.getPersonByTitle(job.title_embeddings)){
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
-                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, 1);
+                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
                         list.add(event);
                     }
                 }

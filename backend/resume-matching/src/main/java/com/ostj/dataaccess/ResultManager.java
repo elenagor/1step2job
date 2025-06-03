@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
-import com.ostj.dataentity.Result;
+import com.ostj.dataentity.MatchResult;
 
 public class ResultManager {
     private static Logger log = LoggerFactory.getLogger(ResultManager.class);
@@ -25,13 +25,13 @@ public class ResultManager {
         this.dbConnector = dbConnector;
     }
 
-    public int saveMatchResult(Result result) throws Exception {
-        String insertQuery = "INSERT INTO results(person_id, profile_id, job_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
+    public int saveMatchResult(MatchResult result) throws Exception {
+        String insertQuery = "INSERT INTO results(person_id, profile_id, position_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);
 
-        List<Object> parameters = Arrays.asList( result.PersonId, result.ProfileId, result.JobId, result.overall_score, sqlDate, result.Reasoning, details );
+        List<Object> parameters = Arrays.asList( result.Person_Id, result.Profile_Id, result.Position_Id, result.overall_score, sqlDate, result.Reasoning, details );
 
         return dbConnector.update( insertQuery, parameters);
     }

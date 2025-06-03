@@ -10,7 +10,7 @@ import com.ostj.dataaccess.PromptManager;
 //import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.dataentity.Alignment;
-import com.ostj.dataentity.Result;
+import com.ostj.dataentity.MatchResult;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 
 public class SQLAccessTest {
@@ -36,10 +36,10 @@ public class SQLAccessTest {
 	public void testInserDeleteResult() throws Exception {
 		//SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		//ResultManager resultManager = new ResultManager(dbConnector);
-		Result result = new Result();
-		result.PersonId = 1;
-		result.ProfileId = 3;
-		result.JobId = 5;
+		MatchResult result = new MatchResult();
+		result.Person_Id = 1;
+		result.Profile_Id = 1;
+		result.Position_Id = 1;
 		result.overall_score = 0;
 		result.date = new java.util.Date(); // Current date
 		result.key_arias_of_comparison.add(new Alignment());

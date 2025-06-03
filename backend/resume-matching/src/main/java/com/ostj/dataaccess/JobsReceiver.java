@@ -1,21 +1,21 @@
 package com.ostj.dataaccess;
 
-import com.ostj.entities.Job;
+import com.ostj.entities.Position;
 
-import com.ostj.managers.JobManager;
+import com.ostj.managers.PositionManager;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.Utils;
 
 public class JobsReceiver {
 
-    private JobManager dbConnector = null;
+    private PositionManager dbConnector = null;
     
     public JobsReceiver(String jdbcUrl, String username, String password) throws Exception {
-        dbConnector = new JobManager(jdbcUrl,  username,  password);
+        dbConnector = new PositionManager(jdbcUrl,  username,  password);
     }
 
-    public Job getJob(ResumeProcessEvent event) throws Exception{
-        Job job = new Job();
+    public Position getJob(ResumeProcessEvent event) throws Exception{
+        Position job = new Position();
         if(event.jdFilePath != null && event.jdFilePath.length() > 0){
             job.description = Utils.getFileContent(event.jdFilePath);
         }

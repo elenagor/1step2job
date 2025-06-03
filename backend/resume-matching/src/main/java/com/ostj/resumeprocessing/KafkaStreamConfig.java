@@ -29,8 +29,8 @@ import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
-import com.ostj.dataentity.Result;
-import com.ostj.entities.Job;
+import com.ostj.dataentity.MatchResult;
+import com.ostj.entities.Position;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
 
@@ -130,16 +130,16 @@ public class KafkaStreamConfig  {
     private void  processPersonMessage(ResumeProcessEvent record, Person person, String  prompt) throws Exception{
         log.info("Processed person: {}", person.toString());
         for(Profile profile : person.profiles){
-            log.debug("Processed title: {}", profile.title);
-            Job job = jobManager.getJob(record);
-            log.debug("Found Job: {}", job);
-            processResume( prompt,  person,  profile,  job);
+            log.debug("Processed title: {}", profile.job_titles);
+            Position position = jobManager.getJob(record);
+            log.debug("Found Job: {}", position);
+            processResume( prompt,  person,  profile,  position);
         }
     }
-    private void processResume(String prompt, Person person, Profile profile, Job job){
+    private void processResume(String prompt, Person person, Profile profile, Position job){
         try{
             String response = call_openai(prompt, profile, job ) ;
-            Result result = createMatchResultFromOpenAiResponse(person, profile, job, response);
+            MatchResult result = createMatchResultFromOpenAiResponse(person, profile, job, response);
             result.Id = resultManager.saveMatchResult(result);
             log.debug("Saved result to DB {}", result);
             log.info("Saved resultId: {} ", result.Id);
@@ -149,22 +149,22 @@ public class KafkaStreamConfig  {
         }
     }
 
-    private Result createMatchResultFromOpenAiResponse(Person person, Profile profile, Job job, String response){
+    private MatchResult createMatchResultFromOpenAiResponse(Person person, Profile profile, Position job, String response){
         String jsonString = Utils.getJsonContextAsString(response);
         log.trace("Json Response: {}", jsonString);
         JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
-        Result result = gson.fromJson(jsonValue, Result .class);
-        result.PersonId = person.id;
-        result.ProfileId = profile.id;
-        result.JobId = job.id;
+        MatchResult result = gson.fromJson(jsonValue, MatchResult .class);
+        result.Person_Id = person.id;
+        result.Profile_Id = profile.id;
+        result.Position_Id = job.id;
         result.date = new java.util.Date(); // Current date
         result.Reasoning = Utils.getThinksAsText(response);
         log.debug("Result: {}", result);
         return result;
     }
 
-    private String call_openai(String  prompt, Profile profile, Job job) throws Exception{
+    private String call_openai(String  prompt, Profile profile, Position job) throws Exception{
         if(prompt == null)
             throw new MissingArgumentException("prompt");
         if(profile.resume == null)
