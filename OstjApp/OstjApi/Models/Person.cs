@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-using OstjLib.Contracts;
+using Ostj.Constants;
 
 namespace OstjApi.Models
 {

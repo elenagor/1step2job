@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OstjApi.Models
 {
-    public class Result
+    public class PersonPositionMatch
     {
         public int Id  { get; set; }
         public int PersonId { get; set; }
@@ -12,9 +11,9 @@ namespace OstjApi.Models
         public int ProfileId { get; set; }
         [ForeignKey(nameof(ProfileId))]
         public required Profile Profile { get; set; }
-        public int JobId { get; set; }
-        [ForeignKey(nameof(JobId))]
-        public required Job Job { get; set; }
+        public int PositionId { get; set; }
+        [ForeignKey(nameof(PositionId))]
+        public required Position Position { get; set; }
         public required int Score { get; set; }
         public required DateTime Date { get; set; }
         public String? Reasoning { get; set; }

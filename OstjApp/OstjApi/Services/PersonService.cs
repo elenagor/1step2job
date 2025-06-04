@@ -1,11 +1,10 @@
 using OstjApi.Models;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OstjApi.Data;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
-using OstjLib.Contracts;
+using Ostj.Constants;
+
 
 namespace OstjApi.Services
 {
@@ -17,10 +16,22 @@ namespace OstjApi.Services
 
         public async ValueTask<Person?> GetPersonAsync(int id)
         {
-            return await _dbContext.Persons.FindAsync(id);
+            return await _dbContext.Persons
+                .Include(p => p.Profiles)
+                .FirstOrDefaultAsync(p => p.Id == id)
+                   ?? throw new InvalidOperationException($"Person with ID {id} does not exist.");
         }
 
-        public async Task<Person> SaveProfileFromResumeAsync(int personId, string fileName, string contentType, byte[] content)
+        public async ValueTask<ProfileDetails?> GetProfileDetailsAsync(int personId, int profileId)
+        {
+            return await _dbContext.Profiles
+                .Where(p => p.PersonId == personId && p.Id == profileId)
+                .Include(p => p.JobTitles)
+                .FirstOrDefaultAsync()
+                   ?? throw new InvalidOperationException($"Profile with ID {profileId} for person with ID {personId} does not exist.");
+        }
+
+        public async Task<int> SaveProfileFromResumeAsync(int personId, string fileName, string contentType, byte[] content)
         {
             var person = await _dbContext.Persons.FindAsync(personId) ?? throw new InvalidOperationException($"Person with ID {personId} does not exist.");
             var resumeText = GetResumeText(contentType, content);
@@ -31,17 +42,14 @@ namespace OstjApi.Services
                 person.Name = inferedPerson.Name;
             }
 
-            if (inferedPerson.Profiles != null && inferedPerson.Profiles.Count > 0)
+            if (inferedPerson.Profiles != null && inferedPerson.Profiles.Count == 1)
             {
-                foreach (var profile in inferedPerson.Profiles)
-                {
-                    person.Profiles.Add(inferedPerson.Profiles[0]);
-                }
+                person.Profiles.Add(inferedPerson.Profiles[0]);
             }
 
             _dbContext.Persons.Update(person);
             await _dbContext.SaveChangesAsync();
-            return person;
+            return person.Profiles.Last().Id;
         }
 
         private async Task<Person> GetPersonFromResume(string resumeText)
@@ -68,12 +76,12 @@ namespace OstjApi.Services
 
             string json = responseText.Substring(startIdx, endIdx - startIdx + 1);
 
-            var personInfo = JsonSerializer.Deserialize<PersonInfo>(json);
+            var personInfo = JsonSerializer.Deserialize<InferredPersonInfo>(json);
 
             if (personInfo == null
                 || (string.IsNullOrEmpty(personInfo.Name)
                     && string.IsNullOrEmpty(personInfo.Name)
-                    && (personInfo.JobTitles == null || personInfo.JobTitles.Count == 0)))
+                    && (personInfo.JobTitles == null || personInfo.JobTitles.Length == 0)))
                 throw new InvalidOperationException("Provided document does not contain valid person resume information.");
 
             var jobTitles = await GetJobTitlesFromPersonInfo(personInfo);
@@ -82,15 +90,26 @@ namespace OstjApi.Services
             {
                 new() {
                     PersonId = 0, // Will be set after saving
-                    Resume = resumeText,
-                    JobTitles = jobTitles
+                    Name = Constants.DefaultProfileName,
+                    ProfileDetails = new ProfileDetails
+                    {
+                        PersonId = 0, // Will be set after saving
+                        Name = Constants.DefaultProfileName,
+                        AcceptRemote = true,
+                        Location = null,
+                        SalaryMin = null,
+                        SalaryMax = null,
+                        ExtraRequirements = null,
+                        Resume = resumeText,
+                        JobTitles = jobTitles
+                    }
                 }
             };
 
             var person = new Person
             {
-                Name = personInfo.Name,
-                Email = personInfo.Email,
+                Name = personInfo.Name ?? string.Empty,
+                Email = personInfo.Email ?? string.Empty,
                 Phone = personInfo.Phone,
                 EnrollmentType = EnrollmentType.NotEnrolled,
                 Profiles = profiles,
@@ -99,10 +118,10 @@ namespace OstjApi.Services
             return person;
         }
 
-        private async Task<List<JobTitle>> GetJobTitlesFromPersonInfo(PersonInfo personInfo)
+        private async Task<List<JobTitle>> GetJobTitlesFromPersonInfo(InferredPersonInfo personInfo)
         {
             var jobTitles = new List<JobTitle>();
-            if (personInfo.JobTitles == null || personInfo.JobTitles.Count == 0)
+            if (personInfo.JobTitles == null || personInfo.JobTitles.Length == 0)
                 return jobTitles;
 
             foreach (string jobTitle in personInfo.JobTitles)
@@ -113,8 +132,12 @@ namespace OstjApi.Services
                 jobTitles.Add(new JobTitle
                 {
                     Title = jobTitle,
-                    Embedding = new Pgvector.Vector(embedding),
-                    IsUserDefined = false
+                    JobTitleDetails = new JobTitleDetails
+                    {
+                        Title = jobTitle,
+                        Embedding = new Pgvector.Vector(embedding),
+                        IsUserDefined = false
+                    },
                 });
             }
             return jobTitles;
@@ -130,12 +153,11 @@ namespace OstjApi.Services
         }
     }
 
-    public class PersonInfo
+    class InferredPersonInfo
     {
-        public string Name { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public IList<string> JobTitles { get; set; } = [];
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public string[]? JobTitles { get; set; } = [];
     }
-
 }

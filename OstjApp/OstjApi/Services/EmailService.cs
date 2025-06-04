@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using System.Net.Security;
 using Microsoft.Extensions.Options;
 
 namespace OstjApi.Services

@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/resume/upload"
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
@@ -6,6 +6,7 @@
 @rendermode InteractiveServer
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
@@ -22,14 +23,6 @@
                         <button type="submit" class="btn btn-primary w-100"
                             disabled="@(!isFileSelected)">Upload</button>
                     </EditForm>
-                    @if (personInfo != null)
-                    {
-                        <div class="mt-3">
-                            <h6>Uploaded File Info:</h6>
-                            <p><strong>Name:</strong> @personInfo.Name</p>
-                            <p><strong>Email:</strong> @personInfo.Email</p>
-                        </div>
-                    }
                     @if (processing)
                     {
                         <div class="spinner-border text-primary mt-3" role="status">
@@ -50,11 +43,10 @@
 @code {
     IBrowserFile? selectedFile;
     bool isFileSelected = false;
-    PersonInfo? personInfo;
+    int personId = 0;
+    int profileId = 0;
     string? Error;
     bool processing = false;
-
-    int personId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,7 +54,7 @@
 
         if (authState.User.Identity != null)
         {
-            personId = int.Parse(authState.User.FindFirst(ClaimTypes.PrimarySid)?.Value ?? "0");
+            personId = int.Parse(authState.User.FindFirst(ClaimTypes.PrimarySid)?.Value!);
         }
     }
 
@@ -98,7 +90,8 @@
 
                 if (response.IsSuccessStatusCode)
                 {
-                    personInfo = await response.Content.ReadFromJsonAsync<PersonInfo>();
+                    profileId = await response.Content.ReadAsAsync<int>();
+                    Navigation.NavigateTo($"/profile/{profileId}");
                 }
                 else
                 {

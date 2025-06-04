@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.Extensions.Hosting;
+@inject IWebHostEnvironment Env
 
 <div class="page">
     <main>
@@ -27,8 +30,11 @@
     </main>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@if (Env.IsDevelopment())
+{
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+}
