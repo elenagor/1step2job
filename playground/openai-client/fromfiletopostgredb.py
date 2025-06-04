@@ -47,7 +47,7 @@ def save_to_db(result):
     ls_vals = [str(record)]
     s_cols = ', '.join(ls_cols)
     s_vals = '(' + '), ('.join(ls_vals) + ')'
-    query = f"INSERT INTO jobs ({s_cols}) VALUES {s_vals}"
+    query = f"INSERT INTO positions ({s_cols}) VALUES {s_vals}"
     #print(query)
     res = session.execute(text(query))
     #print(str(res))
@@ -56,13 +56,13 @@ def save_to_db(result):
 def update_embeding(result):
     embedding = get_title_embeddings(result["title"])
     session = Session()
-    query = f"UPDATE jobs SET title_embeddings=? WHERE external_id = '{result["ext_id"]}';"
+    query = f"UPDATE positions SET title_embeddings=? WHERE external_id = '{result["ext_id"]}';"
     res = session.execute(text(query), (embedding) )
     session.commit()
 
 
 def exists_in_db(result):
-    sql_expression = text(f"SELECT * FROM jobs WHERE external_id = '{result["ext_id"]}'")
+    sql_expression = text(f"SELECT * FROM positions WHERE external_id = '{result["ext_id"]}'")
     session = Session()
     results = session.execute(sql_expression )
     for record in results:
