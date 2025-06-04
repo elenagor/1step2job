@@ -1,6 +1,5 @@
 package com.ostj.managers;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,20 +48,27 @@ public class PositionManager {
         }
     }
 
-    public List<Position> getJobsWithTitle(Array title_embedding, float embeding_match_treshhold)  throws Exception {
+    public List<Position> getJobsWithTitle(int PersonId, int JobId, int titleId, float embeding_match_treshhold)  throws Exception {
         List<Position> list = new ArrayList<Position>();
-        String sqlQuery ="SELECT * FROM jobs WHERE (title_embeddings <#> ?) > ?;";
+        String sqlQuery ="SELECT persons.id as person_id,profiles.id as profile_id,job_titles.id as job_title_id,jobs.id as position_id " + //
+                        "FROM persons " + //
+                        "JOIN profiles ON profiles.person_id = persons.id " + //
+                        "JOIN job_titles ON job_titles.profile_id = profiles.id " + //
+                        "JOIN jobs ON job_titles.embedding <=> jobs.title_embeddings < ? " + //
+                        "WHERE persons.id = ? and profiles.id = ? and job_titles.id = ? " + //
+                        "ORDER BY (job_titles.embedding <=> jobs.title_embeddings) ;";
 
-        List<Object> parameters = Arrays.asList( title_embedding, embeding_match_treshhold );
+        List<Object> parameters = Arrays.asList( embeding_match_treshhold, PersonId, JobId, titleId  );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){
             for (Map<String, Object> rs : res) {
                 Position job = new Position();
-                DataMapper.convertToObject( rs, job, job.getClass());
+                job.id = (int)rs.get("position_id");
                 list.add(job);
             }
         }
         return list;
-     }
+    }
+    
 }

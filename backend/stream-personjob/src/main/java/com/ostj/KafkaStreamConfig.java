@@ -36,21 +36,20 @@ import com.ostj.managers.PersonManager;
 public class KafkaStreamConfig {
     private static Logger log = LoggerFactory.getLogger(KafkaStreamConfig.class);
 
-    @Value(value = "${ostj.kstream.topic.input}")
-    String input_topic_name;
-
-    @Value(value = "${spring.kafka.bootstrap-servers}")
-    String bootstrapAddress;
-
     @Value(value = "${spring.application.name}")
     String appName;
+
+    @Value(value = "${ostj.kstream.topic.input}")
+    String input_topic_name;
 
     @Value(value = "${ostj.kstream.topic.output}")
     String outputTopic;
 
+    @Autowired
+	ConfigurationHelper configHelper;
 
-    @Value(value = "${ostj.embedding.match.treshhold}")
-    float embeding_match_treshhold;
+    private String bootstrapAddress;
+    private float embeding_match_treshhold;
 
     @Autowired
     Serde<ProcessEvent> messageSerdersEvent;
@@ -63,6 +62,7 @@ public class KafkaStreamConfig {
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
+        bootstrapAddress = configHelper.getProperty("KAFKA_SERVER", "");
         Map<String, Object> props = new HashMap<>();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, appName);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -74,6 +74,8 @@ public class KafkaStreamConfig {
 
     @Bean
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
+        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
+        log.debug("Currently embeding_match_treshhold={}", embeding_match_treshhold);
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
         .mapValues(this::processPersonJob)
@@ -102,7 +104,7 @@ public class KafkaStreamConfig {
                 for(Profile profile : person.profiles){
                     for(Job_title title : profile.job_titles){
                         log.debug("Processed title: {}", title.title);
-                        for( Position job : jobManager.getJobsWithTitle(title.embeddings, embeding_match_treshhold)){
+                        for( Position job : jobManager.getJobsWithTitle(person.id, profile.id, title.id, embeding_match_treshhold)){
                             log.debug("Found Job: {}", job);
                             ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
                             list.add(event);
@@ -113,7 +115,7 @@ public class KafkaStreamConfig {
             if(key.equalsIgnoreCase("JobId")){
                 Position job = new Position();
                 jobManager.getJobFromDB( Integer.parseInt(value), job);
-                for(Person prsn : personManager.getPersonByTitle(job.title_embeddings, embeding_match_treshhold)){
+                for(Person prsn : personManager.getPersonByTitle(job.id, embeding_match_treshhold)){
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
                         ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
