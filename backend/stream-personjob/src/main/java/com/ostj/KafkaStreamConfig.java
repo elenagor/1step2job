@@ -48,6 +48,10 @@ public class KafkaStreamConfig {
     @Value(value = "${ostj.kstream.topic.output}")
     String outputTopic;
 
+
+    @Value(value = "${ostj.embedding.match.treshhold}")
+    float embeding_match_treshhold;
+
     @Autowired
     Serde<ProcessEvent> messageSerdersEvent;
 
@@ -98,7 +102,7 @@ public class KafkaStreamConfig {
                 for(Profile profile : person.profiles){
                     for(Job_title title : profile.job_titles){
                         log.debug("Processed title: {}", title.title);
-                        for( Position job : jobManager.getJobsWithTitle(title.embeddings)){
+                        for( Position job : jobManager.getJobsWithTitle(title.embeddings, embeding_match_treshhold)){
                             log.debug("Found Job: {}", job);
                             ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
                             list.add(event);
@@ -109,7 +113,7 @@ public class KafkaStreamConfig {
             if(key.equalsIgnoreCase("JobId")){
                 Position job = new Position();
                 jobManager.getJobFromDB( Integer.parseInt(value), job);
-                for(Person prsn : personManager.getPersonByTitle(job.title_embeddings)){
+                for(Person prsn : personManager.getPersonByTitle(job.title_embeddings, embeding_match_treshhold)){
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
                         ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);

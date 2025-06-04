@@ -49,11 +49,11 @@ public class PositionManager {
         }
     }
 
-    public List<Position> getJobsWithTitle(Array title_embedding)  throws Exception {
+    public List<Position> getJobsWithTitle(Array title_embedding, float embeding_match_treshhold)  throws Exception {
         List<Position> list = new ArrayList<Position>();
-        String sqlQuery ="SELECT * FROM jobs WHERE jobs.title_embedding <#> ?) ;";
+        String sqlQuery ="SELECT * FROM jobs WHERE (title_embeddings <#> ?) > ?;";
 
-        List<Object> parameters = Arrays.asList( title_embedding );
+        List<Object> parameters = Arrays.asList( title_embedding, embeding_match_treshhold );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){

@@ -28,7 +28,7 @@ public class PositionManagerTest {
 	public void testJob2() throws Exception {
 		PositionManager jobManager = new PositionManager(jdbcUrl, username, password);
 		Position job = new Position();
-		jobManager.getJobFromDB("9055748138", job);
+		jobManager.getJobFromDB("1adaf2aa-d8e9-4585-a719-44f259b3379e", job);
 		log.trace("Response: {}", job.toString());
 		assertTrue(job.description != null);
 	}

@@ -81,14 +81,14 @@ public class PersonManager {
         }
     }
 
-    public List<Person>  getPersonByTitle(Array title_embedding) throws Exception {
+    public List<Person>  getPersonByTitle(Array title_embedding, float embeding_match_treshhold) throws Exception {
         List<Person> list = new ArrayList<Person>();
         String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD + "FROM persons " + //
                         "JOIN profiles ON profiles.person_id = persons.id "+//
                         "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
-                        "WHERE job_titles.embedding <#> ? ;";
+                        "WHERE (job_titles.embedding <=> ?) < ? ;";
 
-        List<Object> parameters = Arrays.asList( title_embedding );
+        List<Object> parameters = Arrays.asList( title_embedding , embeding_match_treshhold );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
         
         if(res != null){
