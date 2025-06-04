@@ -6,11 +6,11 @@ import com.ostj.managers.PositionManager;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.Utils;
 
-public class JobsReceiver {
+public class PositionReceiver {
 
     private PositionManager dbConnector = null;
     
-    public JobsReceiver(String jdbcUrl, String username, String password) throws Exception {
+    public PositionReceiver(String jdbcUrl, String username, String password) throws Exception {
         dbConnector = new PositionManager(jdbcUrl,  username,  password);
     }
 
@@ -20,11 +20,11 @@ public class JobsReceiver {
             job.description = Utils.getFileContent(event.jdFilePath);
         }
         else{
-            if(event.JobExtId != null && event.JobExtId.length() > 0){
-                dbConnector.getJobFromDB(event.JobExtId,  job);
+            if(event.PositionExternalId != null && event.PositionExternalId.length() > 0){
+                dbConnector.getJobFromDB(event.PositionExternalId,  job);
             }
             else{
-                dbConnector.getJobFromDB(event.JobId,  job);
+                dbConnector.getJobFromDB(event.PositionId,  job);
             }
         }
         return job;

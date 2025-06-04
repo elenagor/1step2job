@@ -26,7 +26,7 @@ public class ResultManager {
     }
 
     public int saveMatchResult(MatchResult result) throws Exception {
-        String insertQuery = "INSERT INTO results(person_id, profile_id, position_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
+        String insertQuery = "INSERT INTO person_position_matches(person_id, profile_id, position_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);
@@ -37,7 +37,7 @@ public class ResultManager {
     }
 
     public void deleteMatchResult(int resultId) throws Exception {
-        String query = "DELETE FROM results WHERE id = ? ;";
+        String query = "DELETE FROM person_position_matches WHERE id = ? ;";
         log.debug("Start query DB: {}", query);
 
         List<Object> parameters = Arrays.asList( resultId );

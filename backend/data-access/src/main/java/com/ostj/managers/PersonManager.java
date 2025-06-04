@@ -1,6 +1,5 @@
 package com.ostj.managers;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,14 +80,17 @@ public class PersonManager {
         }
     }
 
-    public List<Person>  getPersonByTitle(Array title_embedding) throws Exception {
+    public List<Person>  getPersonByTitle(int position_id, float embeding_match_treshhold) throws Exception {
         List<Person> list = new ArrayList<Person>();
-        String sqlQuery ="SELECT "+ QUERY_PERSON_FIELD + "FROM persons " + //
-                        "JOIN profiles ON profiles.person_id = persons.id "+//
-                        "JOIN job_titles ON job_titles.profile_id = profiles.id "+//
-                        "WHERE job_titles.embedding <#> ? ;";
+        String sqlQuery ="SELECT persons.id as person_id, profiles.id as profile_id, job_titles.id as job_title_id " +//
+                        "FROM positions " +//
+                        "JOIN job_titles ON positions.title_embeddings <=> job_titles.embedding < ? " +//
+                        "JOIN profiles ON job_titles.profile_id = profiles.id " +//
+                        "JOIN persons ON profiles.person_id = persons.id " + //
+                        "where positions.id = ? "+//
+                        "ORDER BY (positions.title_embeddings <=> job_titles.embedding) ;";
 
-        List<Object> parameters = Arrays.asList( title_embedding );
+        List<Object> parameters = Arrays.asList( embeding_match_treshhold, position_id  );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
         
         if(res != null){

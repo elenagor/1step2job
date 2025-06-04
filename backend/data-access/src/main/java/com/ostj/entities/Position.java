@@ -1,13 +1,11 @@
 package com.ostj.entities;
 
-import java.sql.Array;
 import java.util.Date;
 
 public class Position {
     public int id = -1;
     public String external_id;
     public String title;
-    public Array title_embeddings;
     public String location_country;
     public String location_city;
     public String location_state;

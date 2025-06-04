@@ -48,7 +48,7 @@ Navigate to OstjApp
 
 After changing model in the OstjApp/OstjApi project (dotnet code) create a new database migration
 ```
-$ dotnet ef migrations add <Name of The Migration>
+$ dotnet ef migrations add <Name of The Migration (sort of comment)>
 ```
 
 When entity model has changed by:
@@ -62,7 +62,7 @@ $ dotnet ef database update
 
 To delete database (NOTE: All data will be destroeyd)
 ```
-$ dotnet ef database remove
+$ dotnet ef database drop
 ```
 
 If you want to drop all migrations history and start over

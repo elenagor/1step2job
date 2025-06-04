@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Pgvector.EntityFrameworkCore;
 using OstjApi.Models;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using OstjLib.Contracts;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace OstjApi.Data
 {
@@ -18,18 +14,60 @@ namespace OstjApi.Data
             modelBuilder.Entity<Person>()
                 .Property(p => p.EnrollmentType)
                 .HasConversion<string>();
+                        modelBuilder.HasPostgresExtension("vector");
+
+            #region TableSplitting
+            modelBuilder.Entity<ProfileDetails>(
+                ob =>
+                {
+                    ob.ToTable("profiles");
+                    ob.Property(o => o.Name).HasColumnName("name");
+                    ob.Property(o => o.PersonId).HasColumnName("person_id");
+                    ob.HasMany(o => o.JobTitles)
+                        .WithOne()
+                        .HasForeignKey(o => o.ProfileId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity<Profile>(
+                ob =>
+                {
+                    ob.ToTable("profiles");
+                    ob.Property(o => o.Name).HasColumnName("name");
+                    ob.Property(o => o.PersonId).HasColumnName("person_id");
+                    ob.HasOne(o => o.ProfileDetails).WithOne()
+                        .HasForeignKey<ProfileDetails>(o => o.Id);
+                    ob.Navigation(o => o.ProfileDetails).IsRequired();
+                });
+
+            modelBuilder.Entity<JobTitleDetails>(
+                ob =>
+                {
+                    ob.ToTable("job_titles");
+                    ob.Property(o => o.Title).HasColumnName("title");
+                    ob.Property(o => o.ProfileId).HasColumnName("profile_id");
+                });
+
+            modelBuilder.Entity<JobTitle>(
+                ob =>
+                {
+                    ob.ToTable("job_titles");
+                    ob.Property(o => o.Title).HasColumnName("title");
+                    ob.Property(o => o.ProfileId).HasColumnName("profile_id");
+                    ob.HasOne(o => o.JobTitleDetails).WithOne()
+                        .HasForeignKey<JobTitleDetails>(o => o.Id);
+                    ob.Navigation(o => o.JobTitleDetails).IsRequired();
+                });
+            #endregion
+
         }
 
-        public virtual DbSet<Profile> Profiles { get; set; }
-
         public virtual DbSet<Person> Persons { get; set; }
-
-        public virtual DbSet<Job> Jobs { get; set; }
-
-        public virtual DbSet<Result> Results { get; set; }
-
+        public virtual DbSet<ProfileDetails> Profiles { get; set; }
+        public virtual DbSet<JobTitleDetails> JobTitles { get; set; }
+        public virtual DbSet<Position> Positions { get; set; }
+        public virtual DbSet<PersonPositionMatch> PersonPositionMatches { get; set; }
         public virtual DbSet<Otc> Otcs { get; set; }
 
-        public virtual DbSet<JobTitle> JobTitles { get; set; }
     }
 }

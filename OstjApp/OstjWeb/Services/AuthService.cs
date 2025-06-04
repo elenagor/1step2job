@@ -21,7 +21,7 @@ namespace OstjWeb.Services
                 new KeyValuePair<string, string>("code", code)
             };
             var content = new FormUrlEncodedContent(formData);
-            var result = await _httpClient.PostAsync("auth/login", content);
+            var result = await _httpClient.PostAsync("/api/auth/login", content);
 
             if (result.IsSuccessStatusCode)
             {
@@ -42,7 +42,7 @@ namespace OstjWeb.Services
             };
             var content = new FormUrlEncodedContent(formData);
 
-            var result = await _httpClient.PostAsync("auth/sendotc", content);
+            var result = await _httpClient.PostAsync("/api/auth/sendotc", content);
 
             return result.IsSuccessStatusCode;
         }

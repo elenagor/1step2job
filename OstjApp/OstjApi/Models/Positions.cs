@@ -1,13 +1,10 @@
-using Pgvector.EntityFrameworkCore;
-using System.Reflection.Emit;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 
 namespace OstjApi.Models
 {
-    public class Job
+    public class Position
     {
         public int Id { get; set; }
         [MaxLength(100)]

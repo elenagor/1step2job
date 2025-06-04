@@ -1,0 +1,105 @@
+@page "/profile/{profileId:int?}"
+@page "/"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Ostj.Shared.Contracts
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Profile</PageTitle>
+
+<EditForm Model="personProfile" FormName="ProfileForm" OnValidSubmit="HandleProfileUpdate">
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="row g-5 w-100">
+            <div class="col-sm-4 d-flex alight-items-stretch">
+                <div class="card w-100">
+                    <h5 class="card-header">Account Information</h5>
+                    <div class="card-body">
+                        <p class="card-text mb-3">Welcome, @(personInfo?.Name ?? "")</p>
+                        <p class="card-text mb-3">Email: @(personInfo?.Email ?? "")</p>
+                        <p class="card-text mb-3">Phone: @(personInfo?.Phone ?? "")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8 d-flex alight-items-stretch">
+                <div class="card w-100">
+                    <h5 class="card-header">Position Titles</h5>
+                    <div class="card-body">
+                        @for (int i = 0; i < 3; i++)
+                        {
+                            <InputText class="form-control mb-3" @bind-Value="personProfile.JobTitles[i]" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary w-100" disabled="@(!isChanged)">Update</button>
+</EditForm>
+
+@code
+{
+    [SupplyParameterFromForm(FormName = "ProfileForm")]
+    PersonProfile personProfile { get; set; } = new() {
+        JobTitles = new string[3] { "", "", "" }
+    };
+
+    int personId = 0;
+
+    [Parameter]
+    public int? profileId { get; set; }
+    PersonInfo? personInfo;
+
+    bool isChanged = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.Identity != null)
+        {
+            personId = int.Parse(authState.User.FindFirst(ClaimTypes.PrimarySid)?.Value!);
+            personInfo = await HttpClient.GetFromJsonAsync<PersonInfo>($"/api/person/{personId}");
+            if (personInfo == null)
+            {
+                Navigation.NavigateTo("/logout");
+            }
+            else
+            {
+                int pfId = profileId ?? personInfo.Profiles?.FirstOrDefault()?.Id ?? 0;
+                if (pfId == 0)
+                {
+                    Navigation.NavigateTo("/resume/upload");
+                }
+                var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{profileId}");
+                if (profile == null)
+                {
+                    throw new InvalidOperationException("Profile not found.");
+                }
+                else
+                {
+                    personProfile.Name = profile.Name;
+                    personProfile.AcceptRemote = profile.AcceptRemote;
+                    personProfile.Location = profile.Location;
+                    personProfile.SalaryMin = profile.SalaryMin;
+                    personProfile.SalaryMax = profile.SalaryMax;
+                    personProfile.ExtraRequirements = profile.ExtraRequirements;
+                    for (int i = 0; i < profile.JobTitles.Length && i < personProfile.JobTitles.Length; i++)
+                    {
+                        personProfile.JobTitles[i] = profile.JobTitles[i];
+                    }
+
+                }
+            }
+        }
+    }
+
+    private async Task HandleProfileUpdate(EditContext args)
+    {
+        await HttpClient.PostAsJsonAsync("/api/person/{personId}/profile/{profileId}/update", personProfile);
+    }
+}

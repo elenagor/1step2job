@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Components.Authorization;
 using OstjWeb.Services;
 using OstjWeb.Components;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-//builder.Services.AddScoped<AuthenticationStateProvider, OtcAuthenticationStateProvider>();
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddCookie(options =>
@@ -23,17 +22,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.SlidingExpiration = false;;
 });
 
-builder.Services.AddHttpClient<AuthService>(options =>
-{
-    options.BaseAddress = new Uri("http://localhost:5034/api/");
-});
-
-
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
 if (string.IsNullOrWhiteSpace(apiBaseUrl))
 {
     throw new InvalidOperationException("ApiBaseUrl is not configured.");
 }
+
+builder.Services.AddHttpClient<AuthService>(options =>
+{
+    options.BaseAddress = new Uri(apiBaseUrl);
+});
+
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
 
 var app = builder.Build();
@@ -52,7 +51,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode(o => o.DisableWebSocketCompression = true);
 
 app.Run();
  

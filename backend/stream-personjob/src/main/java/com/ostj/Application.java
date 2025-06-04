@@ -1,5 +1,6 @@
 package com.ostj;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,42 +14,52 @@ import com.ostj.managers.PersonManager;
 @SpringBootApplication
 public class Application {
     private static Logger log = LoggerFactory.getLogger(Application.class);
-    @Value(value = "${ostj.openai.apikey}")
-	String apiKey;
+    private ConfigurationHelper configHelper;
 
-	@Value(value = "${ostj.openai.endpoint}")
-	String endpoint;
+    @Value("${config}")
+	String config;
 
-	@Value(value = "${ostj.openai.model}")
-	String model;
-
-    @Value(value = "${ostj.db.url}")
-    String jdbcUrl;
-
-    @Value(value = "${ostj.db.username}")
-    String username;
-
-    @Value(value = "${ostj.db.password}")
-    String password;
+    private String jdbcUrl;
+    private String username;
+    private String password;
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class).run(args);
     }
 
+    @Bean 
+    public ConfigurationHelper getConfigurationHelper() throws Exception{
+        if (StringUtils.isEmpty(config)) {
+            log.error("configuratin file is not specified, re-invoke with --config=<file> parameter");
+            throw new RuntimeException("Congifuration file paramenter is not specified");
+        }
+        try {
+            configHelper = new ConfigurationHelper(config);
+            jdbcUrl = configHelper.getProperty("DB_URL", "");
+            username = configHelper.getProperty("DB_USER", "");
+            password = configHelper.getProperty("DB_PASSWORD", "");
+            return configHelper;
+
+        } catch (Exception e) {
+            log.error("Error load config file {}", e);
+            throw e;
+        }
+    }
+
     @Bean
-    public PersonManager getPersonManager() {
-        log.debug("PersonReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    public PersonManager getPersonManager() throws Exception {
+        log.debug("PersonManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
             return new PersonManager(jdbcUrl, username, password);
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
+            throw e;
         }
-        return null;
     }
 
     @Bean
     public PositionManager getJobManager()  {
-        log.debug("JobsReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+        log.debug("PositionManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
             return new PositionManager(jdbcUrl, username, password);
         } catch (Exception e) {
@@ -56,11 +67,4 @@ public class Application {
         }
         return null;
     }
-/* 
-    @Bean
-    public AIMatcher getMatcher() {
-        log.debug("AI Matcher: apiKey=" + apiKey + ",endpoint=" + endpoint + ",model=" + model);
-    	return new AIMatcher(apiKey, endpoint, model);
-    }
-*/
 }
