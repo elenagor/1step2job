@@ -23,7 +23,7 @@ public class PositionManager {
     }
 
     public void getJobFromDB(int JobId,  Position job) throws Exception{
-        String sqlQuery ="SELECT * FROM jobs WHERE id = ?;";
+        String sqlQuery ="SELECT * FROM positions WHERE id = ?;";
         List<Object> parameters = Arrays.asList( JobId );
         getJobFromDB(sqlQuery, parameters,  job);
         if(job.id < 0 ){
@@ -31,7 +31,7 @@ public class PositionManager {
         }
     }
     public void getJobFromDB(String JobId,  Position job) throws Exception{
-        String sqlQuery ="SELECT * FROM jobs WHERE external_id = ?;";
+        String sqlQuery ="SELECT * FROM positions WHERE external_id = ?;";
         List<Object> parameters = Arrays.asList(JobId );
         getJobFromDB(sqlQuery, parameters,  job);
         if(job.id < 0 ){
@@ -50,13 +50,13 @@ public class PositionManager {
 
     public List<Position> getJobsWithTitle(int PersonId, int JobId, int titleId, float embeding_match_treshhold)  throws Exception {
         List<Position> list = new ArrayList<Position>();
-        String sqlQuery ="SELECT persons.id as person_id,profiles.id as profile_id,job_titles.id as job_title_id,jobs.id as position_id " + //
+        String sqlQuery ="SELECT persons.id as person_id,profiles.id as profile_id,job_titles.id as job_title_id,positions.id as position_id " + //
                         "FROM persons " + //
                         "JOIN profiles ON profiles.person_id = persons.id " + //
                         "JOIN job_titles ON job_titles.profile_id = profiles.id " + //
-                        "JOIN jobs ON job_titles.embedding <=> jobs.title_embeddings < ? " + //
+                        "JOIN positions ON job_titles.embedding <=> positions.title_embeddings < ? " + //
                         "WHERE persons.id = ? and profiles.id = ? and job_titles.id = ? " + //
-                        "ORDER BY (job_titles.embedding <=> jobs.title_embeddings) ;";
+                        "ORDER BY (job_titles.embedding <=> positions.title_embeddings) ;";
 
         List<Object> parameters = Arrays.asList( embeding_match_treshhold, PersonId, JobId, titleId  );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);

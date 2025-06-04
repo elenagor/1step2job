@@ -83,12 +83,12 @@ public class PersonManager {
     public List<Person>  getPersonByTitle(int position_id, float embeding_match_treshhold) throws Exception {
         List<Person> list = new ArrayList<Person>();
         String sqlQuery ="SELECT persons.id as person_id, profiles.id as profile_id, job_titles.id as job_title_id " +//
-                        "FROM jobs " +//
-                        "JOIN job_titles ON jobs.title_embeddings <=> job_titles.embedding < ? " +//
+                        "FROM positions " +//
+                        "JOIN job_titles ON positions.title_embeddings <=> job_titles.embedding < ? " +//
                         "JOIN profiles ON job_titles.profile_id = profiles.id " +//
                         "JOIN persons ON profiles.person_id = persons.id " + //
-                        "where jobs.id = ? "+//
-                        "ORDER BY (jobs.title_embeddings <=> job_titles.embedding) ;";
+                        "where positions.id = ? "+//
+                        "ORDER BY (positions.title_embeddings <=> job_titles.embedding) ;";
 
         List<Object> parameters = Arrays.asList( embeding_match_treshhold, position_id  );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);

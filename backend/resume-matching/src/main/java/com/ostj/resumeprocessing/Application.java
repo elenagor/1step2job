@@ -11,7 +11,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 import com.ostj.OpenAIProvider;
-import com.ostj.dataaccess.JobsReceiver;
+import com.ostj.dataaccess.PositionReceiver;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
@@ -76,10 +76,10 @@ public class Application {
     }
 
     @Bean
-    public JobsReceiver getJobsReceiver()  {
+    public PositionReceiver getJobsReceiver()  {
         log.debug("JobsReceiver: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
     	try {
-            return new JobsReceiver(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
+            return new PositionReceiver(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }

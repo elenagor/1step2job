@@ -24,7 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ostj.OpenAIProvider;
-import com.ostj.dataaccess.JobsReceiver;
+import com.ostj.dataaccess.PositionReceiver;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
@@ -54,9 +54,6 @@ public class KafkaStreamConfig  {
     @Value(value = "${spring.application.name}")
     String appName;
 
-    @Value(value = "${ostj.match.treshhold}")
-    int match_treshhold;
-
     @Autowired
 	OpenAIProvider resumeMatcher;
 
@@ -70,7 +67,7 @@ public class KafkaStreamConfig  {
 	PersonReceiver personManager;
 
     @Autowired
-	JobsReceiver jobManager;
+	PositionReceiver jobManager;
 
     @Autowired
 	ResultManager resultManager;
