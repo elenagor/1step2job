@@ -24,11 +24,10 @@ class Job_Description_Record:
 def html_to_text(html_content):  
     text_maker = html2text.HTML2Text()
     text_maker.ignore_links = True
-    return text_maker.handle(html_content).replace("\n", " ").replace("*", "").replace("#", "").replace("-", "")
+    return text_maker.handle(html_content).replace("\n", " ").replace("*", "").replace("#", "").replace("-", "").replace("'", "")
 
 def get_title_embeddings(title):
     title_embedding = ostj.get_embedding(title)
-    print(title_embedding)
     return title_embedding
 
 def save_to_db(result):
@@ -42,22 +41,28 @@ def save_to_db(result):
                                     result["has_remote"], 
                                     result["types"][0]["name"]
                                     )
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
-    s_tb_name = "public.jobs"
+    session = Session()
     ls_cols = [ "external_id", "title", "title_embeddings", "published", "description", "apply_url", "location_is_remote", "type"]
     ls_vals = [str(record)]
     s_cols = ', '.join(ls_cols)
     s_vals = '(' + '), ('.join(ls_vals) + ')'
-    query = f"INSERT INTO {s_tb_name} ({s_cols}) VALUES {s_vals}"
-    print(query)
-    print(str(session.execute(text(query))))
+    query = f"INSERT INTO jobs ({s_cols}) VALUES {s_vals}"
+    #print(query)
+    res = session.execute(text(query))
+    #print(str(res))
     session.commit()
 
+def update_embeding(result):
+    embedding = get_title_embeddings(result["title"])
+    session = Session()
+    query = f"UPDATE jobs SET title_embeddings=? WHERE external_id = '{result["ext_id"]}';"
+    res = session.execute(text(query), (embedding) )
+    session.commit()
+
+
 def exists_in_db(result):
-    sql_expression = text(f"SELECT * FROM public.jobs WHERE external_id = '{result["ext_id"]}'")
-    Session = sessionmaker(bind=engine)
+    sql_expression = text(f"SELECT * FROM jobs WHERE external_id = '{result["ext_id"]}'")
     session = Session()
     results = session.execute(sql_expression )
     for record in results:
@@ -72,8 +77,10 @@ def load_and_save_file(full_file_path):
             for result in data["results"]:
                 if exists_in_db(result) == None:
                     save_to_db(result)
+                    #update_embeding(result)
                     count = count + 1
                 else:
+                    update_embeding(result)
                     print(f"Record {result["ext_id"]} exists")
         except Exception as e:
             print(e)
@@ -82,15 +89,19 @@ def load_and_save_file(full_file_path):
 parser = argparse.ArgumentParser()
 parser.add_argument("--inputfilename", help="input file name to load to db", default="")
 parser.add_argument("--inputfolder", help="input directory to store files in db", default="")
-parser.add_argument("dbconnection", help="connection string to postgre db. exsample:postgresql+psycopg2://your_username:your_password@localhost:5432/your_database", default="")
+parser.add_argument("dbhost", help="connection string to postgres", default="")
+parser.add_argument("dbuser", help="connection user to postgres", default="")
+parser.add_argument("dbpassword", help="connection password to postgres", default="")
 args = parser.parse_args()
 
 if (len(args.inputfolder) == 0 and len(args.inputfilename) == 0 ):
     print("Provide input parameters inputfilename or inputfolder")
     exit(1)
 
+dbconn = f"postgresql+psycopg2://{args.dbuser}:{args.dbpassword}@{args.dbhost}:5432/ostjdb"
 # Create a database engine
-engine = create_engine(args.dbconnection)
+engine = create_engine(dbconn)
+Session = sessionmaker(bind=engine)
 
 if len(args.inputfolder) != 0:
     if (not os.path.exists(args.inputfolder)):
