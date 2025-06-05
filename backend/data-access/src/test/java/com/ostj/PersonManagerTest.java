@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+import com.ostj.dataproviders.PersonProvider;
 import com.ostj.entities.Person;
-import com.ostj.managers.PersonManager;
 
 public class PersonManagerTest {
     //private static Logger log = LoggerFactory.getLogger(PersonManagerTest.class);
@@ -18,7 +18,7 @@ public class PersonManagerTest {
 
     @Test
 	public void testGetUserInfoByPersonId() throws Exception {
-		PersonManager personManager = new PersonManager(jdbcUrl, username, password);
+		PersonProvider personManager = new PersonProvider(jdbcUrl, username, password);
 		Person person = new Person();
 		personManager.getPersonData(1, person);
 		assertTrue(person != null);
@@ -27,7 +27,7 @@ public class PersonManagerTest {
 
 	@Test
 	public void testGetUserInfoProfileId() throws Exception {
-		PersonManager personManager = new PersonManager(jdbcUrl, username, password);
+		PersonProvider personManager = new PersonProvider(jdbcUrl, username, password);
 		Person person = new Person();
 		personManager.getPersonByProfileId( 1, person);
 		assertTrue(person != null);
@@ -38,7 +38,7 @@ public class PersonManagerTest {
 
 	@Test
 	public void testGetUserInfoByPersonIDAndProfileId() throws Exception {
-		PersonManager personManager = new PersonManager(jdbcUrl, username, password);
+		PersonProvider personManager = new PersonProvider(jdbcUrl, username, password);
 		Person person = new Person();
 		personManager.getPersonData(1, 1, person);
 		assertTrue(person != null);

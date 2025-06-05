@@ -1,4 +1,4 @@
-package com.ostj.managers;
+package com.ostj.dataproviders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +14,8 @@ import com.ostj.entities.Person;
 import com.ostj.entities.Job_title;
 import com.ostj.entities.Profile;
 
-public class PersonManager {
-    private static Logger log = LoggerFactory.getLogger(PersonManager.class);
+public class PersonProvider {
+    private static Logger log = LoggerFactory.getLogger(PersonProvider.class);
 	private SQLAccess dbConnector;
     private static String QUERY_PERSON_FIELD = "persons.id as person_id " + //
                 ",profiles.id as profile_id " + //
@@ -30,7 +30,7 @@ public class PersonManager {
                 ",job_titles.title " + //
                 ",job_titles.embedding ";
 
-    public PersonManager(String jdbcUrl, String username, String password) throws Exception {
+    public PersonProvider(String jdbcUrl, String username, String password) throws Exception {
         log.info("Start PersonManager");
         this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }

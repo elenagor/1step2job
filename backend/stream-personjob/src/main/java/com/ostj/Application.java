@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
-import com.ostj.managers.PositionManager;
-import com.ostj.managers.PersonManager;
+import com.ostj.dataproviders.PersonProvider;
+import com.ostj.dataproviders.PositionProvider;
 
 @SpringBootApplication
 public class Application {
@@ -47,10 +47,10 @@ public class Application {
     }
 
     @Bean
-    public PersonManager getPersonManager() throws Exception {
+    public PersonProvider getPersonManager() throws Exception {
         log.debug("PersonManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
-            return new PersonManager(jdbcUrl, username, password);
+            return new PersonProvider(jdbcUrl, username, password);
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
             throw e;
@@ -58,10 +58,10 @@ public class Application {
     }
 
     @Bean
-    public PositionManager getJobManager()  {
+    public PositionProvider getJobManager()  {
         log.debug("PositionManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
-            return new PositionManager(jdbcUrl, username, password);
+            return new PositionProvider(jdbcUrl, username, password);
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }

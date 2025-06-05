@@ -23,12 +23,12 @@ import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 
 import com.ostj.entities.Position;
+import com.ostj.dataproviders.PersonProvider;
+import com.ostj.dataproviders.PositionProvider;
 import com.ostj.entities.Job_title;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
 import com.ostj.events.ProcessEvent;
-import com.ostj.managers.PositionManager;
-import com.ostj.managers.PersonManager;
 
 @Configuration
 @EnableKafka
@@ -55,10 +55,10 @@ public class KafkaStreamConfig {
     Serde<ProcessEvent> messageSerdersEvent;
 
     @Autowired
-	PersonManager personManager;
+	PersonProvider personProvider;
 
     @Autowired
-	PositionManager jobManager;
+	PositionProvider positionProvider;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -76,6 +76,7 @@ public class KafkaStreamConfig {
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
         embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
         log.debug("Currently embeding_match_treshhold={}", embeding_match_treshhold);
+
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
         .mapValues(this::processPersonJob)
@@ -90,35 +91,38 @@ public class KafkaStreamConfig {
     }
 
     private List<ProcessEvent> processPersonJob(String key, String value) {
+        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
+        log.debug("Currently embeding_match_treshhold={}", embeding_match_treshhold);
+        
         log.debug("Processed key={}, value={}", key, value);
         List<ProcessEvent> list = new ArrayList<ProcessEvent>();
         Person person = new Person();
         try {
             if(key.equalsIgnoreCase("PersonId")){
-                personManager.getPersonData(Integer.parseInt(value), person);
+                personProvider.getPersonData(Integer.parseInt(value), person);
             }
             if(key.equalsIgnoreCase("ProfileId")){
-                personManager.getPersonByProfileId(Integer.parseInt(value), person);
+                personProvider.getPersonByProfileId(Integer.parseInt(value), person);
             }
             if(person.profiles != null){
                 for(Profile profile : person.profiles){
                     for(Job_title title : profile.job_titles){
                         log.debug("Processed title: {}", title.title);
-                        for( Position job : jobManager.getJobsWithTitle(person.id, profile.id, title.id, embeding_match_treshhold)){
-                            log.debug("Found Job: {}", job);
-                            ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
+                        for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
+                            log.debug("Found position: {}", position);
+                            ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
                             list.add(event);
                         }
                     }
                 }
             }
-            if(key.equalsIgnoreCase("JobId")){
-                Position job = new Position();
-                jobManager.getJobFromDB( Integer.parseInt(value), job);
-                for(Person prsn : personManager.getPersonByTitle(job.id, embeding_match_treshhold)){
+            if(key.equalsIgnoreCase("PositionId")){
+                Position position = new Position();
+                positionProvider.getPositionFromDB( Integer.parseInt(value), position);
+                for(Person prsn : personProvider.getPersonByTitle(position.id, embeding_match_treshhold)){
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
-                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, job.id, -1);
+                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
                         list.add(event);
                     }
                 }

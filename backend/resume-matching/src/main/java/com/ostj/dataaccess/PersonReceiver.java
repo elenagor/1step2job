@@ -1,18 +1,18 @@
 package com.ostj.dataaccess;
 
+import com.ostj.dataproviders.PersonProvider;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
-import com.ostj.managers.PersonManager;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 import com.ostj.utils.Utils;
 
 
 public class PersonReceiver {
 
-    private PersonManager dbConnector = null;
+    private PersonProvider dbConnector = null;
     
     public PersonReceiver(String jdbcUrl, String username, String password) throws Exception {
-        dbConnector = new PersonManager(jdbcUrl,  username,  password);
+        dbConnector = new PersonProvider(jdbcUrl,  username,  password);
     }
         
     public Person getPersonData(ResumeProcessEvent event) throws Exception{

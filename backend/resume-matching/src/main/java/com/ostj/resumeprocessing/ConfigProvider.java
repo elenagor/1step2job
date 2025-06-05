@@ -12,6 +12,11 @@ public class ConfigProvider {
     }
 
     @Bean
+    public String getProperty(String key, String defaultValue){
+        return _props.getProperty(key, defaultValue);
+    }
+
+    @Bean
     public String getApiKey(){
         return _props.getProperty("OPENAI_APIKEY", "");
     }
