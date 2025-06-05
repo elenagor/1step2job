@@ -12,40 +12,85 @@
 
 <PageTitle>Profile</PageTitle>
 
-<EditForm Model="personProfile" FormName="ProfileForm" OnValidSubmit="HandleProfileUpdate">
-    <div class="container vh-100 d-flex justify-content-center align-items-center">
-        <div class="row g-5 w-100">
-            <div class="col-sm-4 d-flex alight-items-stretch">
-                <div class="card w-100">
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <EditForm Model="personProfile" FormName="ProfileForm" OnValidSubmit="HandleProfileUpdate">
+        <div class="row g-3 w-100">
+            <div class="col-6 d-flex alight-items-stretch">
+                <div class="card mb-3 w-100">
                     <h5 class="card-header">Account Information</h5>
                     <div class="card-body">
-                        <p class="card-text mb-3">Welcome, @(personInfo?.Name ?? "")</p>
+                        <p class="card-text mb-3">Name, @(personInfo?.Name ?? "")</p>
                         <p class="card-text mb-3">Email: @(personInfo?.Email ?? "")</p>
                         <p class="card-text mb-3">Phone: @(personInfo?.Phone ?? "")</p>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-8 d-flex alight-items-stretch">
-                <div class="card w-100">
-                    <h5 class="card-header">Position Titles</h5>
+            <div class="col-6 d-flex alight-items-stretch">
+                <div class="card mb-3 g-3 w-100">
+                    <h5 class="card-header">Desired Positions</h5>
                     <div class="card-body">
-                        @for (int i = 0; i < 3; i++)
+                        @for (int i = 0; i < personProfile.JobTitles.Length; i++)
                         {
-                            <InputText class="form-control mb-3" @bind-Value="personProfile.JobTitles[i]" />
+                            var index = i;
+                            <InputText class="form-control mb-3" @bind-Value="personProfile.JobTitles[index]" />
                         }
                     </div>
                 </div>
             </div>
+            <div class="col-6 d-flex alight-items-stretch">
+                <div class="card mb-3 g-3 w-100">
+                    <h5 class="card-header">Desired Location</h5>
+                    <div class="card-body">
+                        <InputText class="form-control mb-3" @bind-Value="personProfile.Location" />
+                        <div class="form-check form-switch">
+                            <InputCheckbox class="form-check-input mb-3" @bind-Value="personProfile.AcceptRemote" />
+                            <label class="form-check-label" for="switchCheckDefault">Agree for Remote</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 d-flex alight-items-stretch">
+                <div class="card mb-3 g-3 w-100">
+                    <h5 class="card-header">Desired Annual Compensation Range in USD</h5>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-sm-3">
+                                <label for="salaryMin" class="col-form-label">Minimal</label>
+                            </div>
+                            <div class="col-auto">
+                                <InputNumber id="salaryMin" class="form-control mb-3" aria-placeholder="e.g. 100000"
+                                    @bind-Value="personProfile.SalaryMin" />
+                            </div>
+                        </div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-sm-3">
+                                <label for="salaryMin" class="col-form-label">Maximum</label>
+                            </div>
+                            <div class="col-auto">
+                                <InputNumber id="salaryMin" class="form-control mb-3" aria-placeholder="e.g. 100000"
+                                    @bind-Value="personProfile.SalaryMax" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" disabled="@(!context.IsModified())">Update</button>
         </div>
-    </div>
-    <button type="submit" class="btn btn-primary w-100" disabled="@(!isChanged)">Update</button>
-</EditForm>
+    </EditForm>
+</div>
+
 
 @code
 {
     [SupplyParameterFromForm(FormName = "ProfileForm")]
-    PersonProfile personProfile { get; set; } = new() {
-        JobTitles = new string[3] { "", "", "" }
+    private PersonProfile personProfile { get; set; } = new()
+    {
+        JobTitles = new string[3] { "", "", "" },
+        AcceptRemote = true,
+        Location = "",
+        SalaryMin = 0,
+        SalaryMax = 0,
+        ExtraRequirements = ""
     };
 
     int personId = 0;
@@ -75,7 +120,7 @@
                 {
                     Navigation.NavigateTo("/resume/upload");
                 }
-                var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{profileId}");
+                var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{pfId}");
                 if (profile == null)
                 {
                     throw new InvalidOperationException("Profile not found.");
@@ -101,5 +146,10 @@
     private async Task HandleProfileUpdate(EditContext args)
     {
         await HttpClient.PostAsJsonAsync("/api/person/{personId}/profile/{profileId}/update", personProfile);
+    }
+
+    private void JobTitleModified(string value)
+    {
+        isChanged = true;
     }
 }

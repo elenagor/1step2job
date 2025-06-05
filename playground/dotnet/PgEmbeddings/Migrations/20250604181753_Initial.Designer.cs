@@ -11,9 +11,9 @@ using Pgvector;
 
 namespace PgEmbeddings.Migrations
 {
-    [DbContext(typeof(JobTitleContext))]
-    [Migration("20250527142959_Resize embeddings")]
-    partial class Resizeembeddings
+    [DbContext(typeof(OstjDbContext))]
+    [Migration("20250604181753_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,30 @@ namespace PgEmbeddings.Migrations
                         .HasName("pk_job_titles");
 
                     b.ToTable("job_titles", (string)null);
+                });
+
+            modelBuilder.Entity("Ostj.Test.Position", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Vector>("Embedding")
+                        .HasColumnType("vector(4096)")
+                        .HasColumnName("embedding");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id")
+                        .HasName("pk_positions");
+
+                    b.ToTable("positions", (string)null);
                 });
 #pragma warning restore 612, 618
         }

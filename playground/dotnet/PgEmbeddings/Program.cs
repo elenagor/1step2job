@@ -16,10 +16,49 @@ namespace Ostj.Test;
 
 public class Program
 {
+    private static readonly OpenAIClientOptions options = new()
+    {
+        Endpoint = new Uri("http://localhost:8000/v1")
+    };
+
     public static void Main(string[] args)
     {
-        using var db = new JobTitleContext();
-        db.Database.EnsureCreated();
+        SeedDatabase();
+
+        Console.WriteLine("Done.");
+    }
+
+    private static void CalculateCosignDistance(OstjDbContext db, EmbeddingClient embeddingClient, string pivotTitle)
+    {
+        var pivotEmbedding = embeddingClient.GenerateEmbedding(pivotTitle).Value.ToFloats().ToArray();
+        Console.WriteLine($"Pivot JobTitile: {pivotTitle}, Embedding: [{string.Join(", ", pivotEmbedding.Take(5))}...]");
+        var items = db.JobTitles
+            .Select(x => new
+            {
+                x.Id,
+                x.Title,
+                CosineDistance = x.Embedding!.CosineDistance(new Pgvector.Vector(pivotEmbedding))
+            })
+            .ToList();
+        foreach (var item in items)
+        {
+            Console.WriteLine($"Id: {item.Id}, Title: {item.Title}, CosineSimilarity: {1 - item.CosineDistance}");
+        }
+    }
+
+    private static void SeedDatabase()
+    {
+        using (var db = new OstjDbContext())
+        {
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+            SeedJobTitles(db);
+            SeedPositions(db);
+        }
+    }
+
+    private static void SeedJobTitles(OstjDbContext db)
+    {
         var promptPath = Path.Combine(AppContext.BaseDirectory, "../../..", "Resources", "ExtractPersonInfoPrompt.txt");
         string promptTemplate = File.ReadAllText(promptPath);
         var resumePath = Path.Combine(AppContext.BaseDirectory, "../../..", "Resources", "Person.txt");
@@ -27,14 +66,8 @@ public class Program
 
         var prompt = promptTemplate.Replace("{resume}", resume);
 
-
-        OpenAIClientOptions options = new OpenAIClientOptions()
-        {
-            Endpoint = new Uri("http://localhost:8000/v1")
-        };
         ChatClient client = new("qwen", new ApiKeyCredential("EMPTY"), options);
         ChatCompletion completion = client.CompleteChat(prompt);
-
 
         Console.WriteLine(completion.Content[0].Text);
         string responseText = completion.Content[0].Text.Trim();
@@ -52,8 +85,9 @@ public class Program
         Console.WriteLine($"JobTitles: {person?.JobTitles}");
 
         EmbeddingClient embeddingClient = new("qwen", new ApiKeyCredential("EMPTY"), options);
-        foreach (var position in person?.JobTitles ?? [])
+        foreach (var t in person?.JobTitles ?? [])
         {
+            var position = t.Trim().ToUpper();
             var embedding = embeddingClient.GenerateEmbedding(position).Value.ToFloats().ToArray();
             var jobTitle = new JobTitle
             {
@@ -64,33 +98,31 @@ public class Program
             Console.WriteLine($"Position: {position}, Embedding: [{string.Join(", ", embedding.Take(5))}...]");
         }
         db.SaveChanges();
-
-        CalculateCosignDistance(db, embeddingClient, "Director of Operations");
-        CalculateCosignDistance(db, embeddingClient, "Software Engineer");
-        CalculateCosignDistance(db, embeddingClient, "Nurse");
-        CalculateCosignDistance(db, embeddingClient, "Data Scientist");
-        CalculateCosignDistance(db, embeddingClient, "Product Manager");
-        CalculateCosignDistance(db, embeddingClient, "Chief Executive Officer");
-
-        Console.WriteLine("Done.");
     }
 
-    private static void CalculateCosignDistance(JobTitleContext db, EmbeddingClient embeddingClient, string pivotTitle)
+    private static void SeedPositions(OstjDbContext db)
     {
-        var pivotEmbedding = embeddingClient.GenerateEmbedding(pivotTitle).Value.ToFloats().ToArray();
-        Console.WriteLine($"Pivot JobTitile: {pivotTitle}, Embedding: [{string.Join(", ", pivotEmbedding.Take(5))}...]");
-        var items = db.JobTitles
-            .Select(x => new
-            {
-                x.Id,
-                x.Title,
-                CosineDistance = x.Embedding!.CosineDistance(new Pgvector.Vector(pivotEmbedding))
-            })
-            .ToList();
-        foreach (var item in items)
+        var positionsPath = Path.Combine(AppContext.BaseDirectory, "../../..", "Resources", "positions.json");
+        var positions = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(positionsPath));
+        if (positions == null || positions.Count == 0)
         {
-            Console.WriteLine($"Id: {item.Id}, Title: {item.Title}, CosineSimilarity: {1 - item.CosineDistance}");
+            Console.WriteLine("No positions found to seed.");
+            return;
         }
+        foreach (var p in positions)
+        {
+            var position = p.Trim().ToUpper();
+            var embeddingClient = new EmbeddingClient("qwen", new ApiKeyCredential("EMPTY"), options);
+            var embedding = embeddingClient.GenerateEmbedding(position.ToUpper()).Value.ToFloats().ToArray();
+            var positionEntity = new Position
+            {
+                Title = position,
+                Embedding = new Pgvector.Vector(embedding)
+            };
+            db.Positions.Add(positionEntity);
+            Console.WriteLine($"Position: {position}, Embedding: [{string.Join(", ", embedding.Take(5))}...]");
+        }
+        db.SaveChanges();
     }
 }
 
@@ -114,12 +146,22 @@ public class JobTitle
     public Pgvector.Vector? Embedding { get; set; }
 }
 
-public class JobTitleContext : DbContext
+public class Position
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+
+    [Column(TypeName = "vector(4096)")]
+    public Pgvector.Vector? Embedding { get; set; }
+}
+
+
+public class OstjDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
-            .UseNpgsql("Host=localhost;Database=ostjdb;Username=ostjsvc;Password=ostjsvc!", option => option.UseVector())
+            .UseNpgsql("Host=localhost;Database=ostjdb_embeddings;Username=ostjsvc;Password=ostjsvc!", option => option.UseVector())
             .UseSnakeCaseNamingConvention();
     }
 
@@ -129,4 +171,5 @@ public class JobTitleContext : DbContext
     }
 
     public DbSet<JobTitle> JobTitles { get; set; }
+    public DbSet<Position> Positions { get; set; }
 }
