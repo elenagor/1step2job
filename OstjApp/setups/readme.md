@@ -37,6 +37,44 @@ $ docker exec -it ostjdbv /bin/bash
 # CREATE EXTENSION vector;
 ```
 
+### Download and build model
+It is recommended to install new UV python package manager from [here](https://docs.astral.sh/uv/#highlights). Follow instructions for you OS.
+
+When UV is installed create Python Virtual Environment. Commands below assume that location for Virtual Environemnts is exists and located in ~/.local/venvs (you can have any other location depending on your needs and OS)
+```
+uv venv --python 3.12 --seed ~/.local/venvs/llm
+```
+The command above will download python3.12 and create virtual environment
+
+To activate VENV 
+- On Mac/Linux
+```
+source ~/.local/venvs/llm/bin/activate
+```
+- On Windows
+```
+%HOME%\.local\venvs\llm\bin\acitvate.bat
+```
+
+Install Huggignface tools
+```
+uv pip install "huggingface-hub[cli]"
+```
+
+Download model (assuming Qwen-4b). List of models you can find [Qwen models](https://huggingface.co/collections/Qwen/qwen3-67dd247413f0e2e4f653967f)
+Create a folder to store model files (hereafter ~/projects/models/qwen3-4b)
+```
+huggingface-cli download "Qwen/Qwen3-4B" --local-dir ~/projects/models/qwen3-4b
+```
+
+Convert downloaded model to GGUF format comatible with llama.cpp (this assuems you have llama.cpp installed on you machine).
+Change directory to location of llama.cpp/bin (e.g. if llama.cpp is installed on Mac with brew, then it would be /opt/homebrew/Cellar/llama.cpp/5310/bin).
+```
+cd /opt/homebrew/Cellar/llama.cpp/5310/bin
+python convert_hf_to_gguf.py ~/projects/models/qwen3-4b --outfile ~/projects/models/qwen3-4b/qwen3-4b.gguf
+```
+
+
 ### Run Model
 Run llama.cpp (assumes modle is downloaded at ~/projects/models/qwen3-8b/qwen3-8b.gguf, change the path is different)
 ```
