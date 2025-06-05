@@ -128,7 +128,7 @@ namespace OstjApi.Services
             {
                 if (string.IsNullOrWhiteSpace(jobTitle))
                     continue;
-                var embedding = await _aiClient.GenerateEmbeddingAsync(jobTitle);
+                var embedding = await GetEmbeddingAsync(jobTitle);
                 jobTitles.Add(new JobTitle
                 {
                     Title = jobTitle,
@@ -141,6 +141,14 @@ namespace OstjApi.Services
                 });
             }
             return jobTitles;
+        }
+
+        private async Task<float[]> GetEmbeddingAsync(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return [];
+
+            return await _aiClient.GenerateEmbeddingAsync(text.ToUpper());
         }
 
         private static string GetResumeText(string contentType, byte[] content)

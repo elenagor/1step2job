@@ -4,6 +4,8 @@ Extract form the resume below person information:
 - Phone number
 - Job Titles (take from 3 most recent jobs)
 
+Note: Generalize Job Titles by removing deatail about industry, specific team role and other information not relevant for job seeking.
+
 Output found information as JSON below:
 ```
 {
