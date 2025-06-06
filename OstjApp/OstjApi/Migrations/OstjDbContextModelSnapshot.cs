@@ -142,8 +142,8 @@ namespace OstjApi.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("email");
 
                     b.Property<string>("EnrollmentType")
@@ -320,12 +320,12 @@ namespace OstjApi.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<int>("PersonId")
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(100)
                         .HasColumnType("integer")
                         .HasColumnName("person_id");
 
@@ -353,19 +353,19 @@ namespace OstjApi.Migrations
                         .HasColumnName("extra_requirements");
 
                     b.Property<string>("Location")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("location");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("text")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<int>("PersonId")
                         .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(100)
                         .HasColumnType("integer")
                         .HasColumnName("person_id");
 
@@ -417,7 +417,7 @@ namespace OstjApi.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_person_position_matches_persons_person_id");
 
-                    b.HasOne("OstjApi.Models.Position", "Job")
+                    b.HasOne("OstjApi.Models.Position", "Position")
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -431,9 +431,9 @@ namespace OstjApi.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_person_position_matches_profile_profile_id");
 
-                    b.Navigation("Job");
-
                     b.Navigation("Person");
+
+                    b.Navigation("Position");
 
                     b.Navigation("Profile");
                 });

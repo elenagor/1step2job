@@ -14,6 +14,7 @@ namespace OstjApi.Services
         private readonly IAIClient _aiClient = aiClient;
         private readonly ILogger<PersonService> _logger = logger;
 
+        #region IPersonService Implementation
         public async ValueTask<Person?> GetPersonAsync(int id)
         {
             return await _dbContext.Persons
@@ -52,6 +53,28 @@ namespace OstjApi.Services
             return person.Profiles.Last().Id;
         }
 
+        public async Task SaveProfileAsync(int personId, ProfileDetails profile)
+        {
+            if (profile == null)
+                throw new ArgumentNullException(nameof(profile), "Profile cannot be null.");
+            if (personId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(personId), "Person ID must be greater than zero.");
+
+            foreach (var jobTitle in profile.JobTitles)
+            {
+                if (jobTitle.JobTitleDetails != null && jobTitle.JobTitleDetails.Embedding == null)
+                {
+                    float[] embedding = await GetEmbeddingAsync(jobTitle.Title);
+                    jobTitle.JobTitleDetails.Embedding = new Pgvector.Vector(embedding);
+                }
+            }
+
+            _dbContext.Profiles.Update(profile);
+            await _dbContext.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Private Methods
         private async Task<Person> GetPersonFromResume(string resumeText)
         {
             string promptTemplate;
@@ -159,6 +182,7 @@ namespace OstjApi.Services
             }
             throw new NotImplementedException();
         }
+        #endregion
     }
 
     class InferredPersonInfo
