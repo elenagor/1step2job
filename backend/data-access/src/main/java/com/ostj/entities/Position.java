@@ -20,4 +20,8 @@ public class Position {
     public String toString(){
         return String.format("Id=%d", id )+", ext_id="+external_id+", title="+title+", location="+location_country+", published="+published+", location_is_remote="+location_is_remote+", type="+type;
     }
+
+
+
+
 }

@@ -75,7 +75,7 @@ public class KafkaStreamConfig {
     @Bean
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
         embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
-        log.debug("Currently embeding_match_treshhold={}", embeding_match_treshhold);
+        log.debug("Start embeding_match_treshhold={}", embeding_match_treshhold);
 
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
@@ -84,7 +84,7 @@ public class KafkaStreamConfig {
         // Splits pasing result into separate messages preparing for sending to further
 		.flatMapValues(v -> v)
         .mapValues(v -> (ProcessEvent)v)
-        .peek((k, v) -> {log.debug("Sent key={}, value={}", k, v);})
+        .peek((k, v) -> {k = String.format("PersonId=%d", v.PersonId); log.debug("Sent key={}, value={}", k, v);})
         .to(outputTopic, Produced.with(Serdes.String(), messageSerdersEvent ))
         ;
         return stream;
@@ -92,7 +92,7 @@ public class KafkaStreamConfig {
 
     private List<ProcessEvent> processPersonJob(String key, String value) {
         embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
-        log.debug("Currently embeding_match_treshhold={}", embeding_match_treshhold);
+        log.debug("Current embeding_match_treshhold={}", embeding_match_treshhold);
         
         log.debug("Processed key={}, value={}", key, value);
         List<ProcessEvent> list = new ArrayList<ProcessEvent>();

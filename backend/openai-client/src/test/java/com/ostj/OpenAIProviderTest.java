@@ -14,7 +14,7 @@ import com.google.gson.JsonParser;
 public class OpenAIProviderTest {
 
 	// private static Logger log = LoggerFactory.getLogger(OpenAIProviderTest.class);
-	OpenAIProvider ai_matcher = new OpenAIProvider("EMPY", "http://localhost:8000/v1", "qwen");
+	OpenAIProvider ai_matcher = new OpenAIProvider("EMPY", "http://llm.1step2job.ai:8000/v1", "qwen");
 	
 	@Test
 	public void testGetUserInfo() throws Exception {
