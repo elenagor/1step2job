@@ -27,7 +27,7 @@ public class DataMapper {
     private static SimpleDateFormat createSimpleDateFormat(String pattern) {
 		SimpleDateFormat df = new SimpleDateFormat(pattern);
 		df.setLenient(false);
-		df.setTimeZone(TimeZone.getTimeZone("UTC")); // should be tenant timezone
+		df.setTimeZone(TimeZone.getTimeZone("UTC")); 
 		return df;
 	}
 
@@ -47,7 +47,7 @@ public class DataMapper {
             log.error("set field error {}", e);
         }
     }
-    private static Date getDate(String dateStr) throws ParseException{
+    public static Date getDate(String dateStr) throws ParseException{
         for (SimpleDateFormat frmt : dateUTCFormats) {
 			try {
 				return frmt.parse(dateStr);

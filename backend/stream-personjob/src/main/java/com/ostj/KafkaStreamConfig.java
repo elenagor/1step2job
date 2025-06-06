@@ -111,7 +111,9 @@ public class KafkaStreamConfig {
                         for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
                             log.debug("Found position: {}", position);
                             ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
-                            list.add(event);
+                            if(isEventNotExist(list, event)){
+                                list.add(event);
+                            }
                         }
                     }
                 }
@@ -123,7 +125,9 @@ public class KafkaStreamConfig {
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
                         ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
-                        list.add(event);
+                        if(isEventNotExist(list, event)){
+                            list.add(event);
+                        }
                     }
                 }
             }
@@ -131,5 +135,14 @@ public class KafkaStreamConfig {
             log.error("Error process key={} and value={}, {}", key, value, e);
         }
         return list.size() > 0 ? list : null;
+    }
+
+    private boolean isEventNotExist(List<ProcessEvent> list, ProcessEvent newEvent) {
+        for(ProcessEvent event: list){
+            if(event.equals(newEvent)){
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -85,6 +85,9 @@ public class KafkaStreamConfig  {
 
     @Bean
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
+        overall_score_treshhold = Integer.parseInt( configProvider.getProperty("MATCH_TRESHHOLD", "5"));
+        log.debug("Start overall_score_treshhold={}", overall_score_treshhold);
+
         KStream<String, String> stream = kStreamBuilder.stream(topic_name);
         stream.mapValues(value -> mapStringValueToEventRecord(value))
         .filter((key, value) -> value != null)
@@ -97,7 +100,7 @@ public class KafkaStreamConfig  {
         log.info("\nStart mapping string to record: value={}",value);
         
         overall_score_treshhold = Integer.parseInt( configProvider.getProperty("MATCH_TRESHHOLD", "5"));
-        log.debug("Currently overall_score_treshhold={}", overall_score_treshhold);
+        log.debug("Current overall_score_treshhold={}", overall_score_treshhold);
 		
         ResumeProcessEvent record = null;
 		try {

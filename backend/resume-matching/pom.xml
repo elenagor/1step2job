@@ -68,15 +68,16 @@
 			<version>42.7.5</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ostj.dataaccess</groupId>
-			<artifactId>data-access</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>openai-client</groupId>
 			<artifactId>openai-client</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ostj.dataaccess</groupId>
+			<artifactId>data-access</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
