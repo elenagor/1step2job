@@ -17,6 +17,7 @@ import com.ostj.dataaccess.PromptManager;
 import com.ostj.dataaccess.ResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.utils.ConfigurationHelper;
+import com.ostj.utils.EmailSender;
 
 @SpringBootApplication
 public class Application {
@@ -89,6 +90,16 @@ public class Application {
     @Bean
     public ResultManager getResultManager()  {
     	return new ResultManager();
+    }
+
+    @Bean
+    public EmailSender getEmailSender(){
+        EmailSender emailSender =  EmailSender.getEmailSender(  configProvider.getProperty("SMTP_ADDRESS", ""),  
+                                            configProvider.getProperty("EMAIL_ACCOUNT_NAME", ""),  
+                                            configProvider.getProperty("EMAIL_ACCOUNT_PASSWORD", ""));
+        emailSender.setPort(configProvider.getProperty("SMTP_PORT", ""));
+        emailSender.setUseSSL(configProvider.getProperty("SMTP_USESSL", ""));
+        return emailSender;
     }
 
     private Properties getPropertiesConfiguration() {

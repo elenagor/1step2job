@@ -35,6 +35,7 @@ import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
 
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
+import com.ostj.utils.EmailSender;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
 import com.ostj.utils.Utils;
 
@@ -54,6 +55,9 @@ public class KafkaStreamConfig  {
     @Value(value = "${spring.application.name}")
     String appName;
 
+    @Value(value = "${ostj.email.sender}")
+    String emailSenderAddress;
+
     @Autowired
 	OpenAIProvider resumeMatcher;
 
@@ -71,6 +75,9 @@ public class KafkaStreamConfig  {
 
     @Autowired
 	ResultManager resultManager;
+
+    @Autowired
+    EmailSender emailSender;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -146,8 +153,9 @@ public class KafkaStreamConfig  {
             MatchResult result = createMatchResultFromOpenAiResponse(person, profile, position, response);
             if(result != null){
                 result.Id = resultManager.saveMatchResult(result);
-                log.debug("Saved result to DB {}", result);
-                log.info("Saved resultId: {} ", result.Id);
+                log.info("Saved match result to DB {}", result);
+                String emailBody = resultManager.createEmailBody(result, person, position);
+                emailSender.withTO(person.email).withBody(emailBody).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
             }
         }
         catch(Exception e){
