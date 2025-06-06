@@ -40,21 +40,7 @@ public class DataMapper {
         try{
             if(rs.containsKey(fieldname.getName().toLowerCase()) && rs.get(fieldname.getName().toLowerCase()) != null){
                 fieldname.setAccessible(true);
-                if(fieldname.getType() == String.class){
-                    fieldname.set(obj, (String)rs.get(fieldname.getName().toLowerCase()) );
-                }
-                if(fieldname.getType() == int.class){
-                    fieldname.set(obj, (int)rs.get(fieldname.getName().toLowerCase()) );
-                }
-                if(fieldname.getType() == boolean.class){
-                    fieldname.set(obj,  (Boolean)rs.get(fieldname.getName().toLowerCase()));
-                }
-                if(fieldname.getType() == float.class){
-                    fieldname.set(obj, Float.parseFloat((String)rs.get(fieldname.getName().toLowerCase()) ));
-                }
-                if(fieldname.getType() == Date.class){
-                    fieldname.set(obj, getDate( (String)rs.get(fieldname.getName().toLowerCase()) ) );
-                }
+                fieldname.set(obj, rs.get(fieldname.getName().toLowerCase()) );
             }
         }
         catch(Exception e){

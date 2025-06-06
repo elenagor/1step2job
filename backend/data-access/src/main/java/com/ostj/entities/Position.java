@@ -1,6 +1,6 @@
 package com.ostj.entities;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Position {
     public int id = -1;
@@ -9,12 +9,12 @@ public class Position {
     public String location_country;
     public String location_city;
     public String location_state;
-    public Date published;
+    public Timestamp published;
     public String description;
     public String apply_url;
     public float salary_min;
     public float salary_max;
-    public String location_is_remote;
+    public boolean location_is_remote;
     public String type;
         
     public String toString(){
