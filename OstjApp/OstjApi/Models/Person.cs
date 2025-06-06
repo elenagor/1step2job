@@ -8,13 +8,13 @@ namespace OstjApi.Models
     public class Person
     {
         public int Id { get; set; }
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxTitleLength)]
         public string Name { get; set; } = string.Empty;
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxNameLength)]
         public string Email { get; set; } = string.Empty;
         [MaxLength(20)]
         public string? Phone { get; set; }
-        [MaxLength(100)]
+        [MaxLength(Constants.MaxNameLength)]
         public string? City { get; set; }
         [MaxLength(2)]
         public string? State { get; set; }

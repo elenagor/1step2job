@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Ostj.Constants;
 
 
 namespace OstjApi.Models
@@ -7,15 +8,15 @@ namespace OstjApi.Models
     public class Position
     {
         public int Id { get; set; }
-        [MaxLength(100)]
+        [MaxLength(Constants.MaxNameLength)]
         public required string ExternalId { get; set; }
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxTitleLength)]
         public required string Title { get; set; }
         [Column(TypeName = "vector(4096)")]
         public Pgvector.Vector? TitleEmbeddings { get; set; }
-        [MaxLength(100)]
+        [MaxLength(Constants.MaxNameLength)]
         public string? LocationCountry { get; set; }
-        [MaxLength(100)]
+        [MaxLength(Constants.MaxNameLength)]
         public string? LocationCity { get; set; }
         [MaxLength(2)]
         public string? LocationState { get; set; }
@@ -26,7 +27,7 @@ namespace OstjApi.Models
         public required string ApplyUrl { get; set; }
         public float? SalaryMin { get; set; }
         public float? SalaryMax { get; set; }
-        [MaxLength(100)]
+        [MaxLength(Constants.MaxNameLength)]
         public string? Type { get; set; }
     }
 }

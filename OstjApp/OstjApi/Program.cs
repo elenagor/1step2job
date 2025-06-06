@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ostj.Shared.Contracts;
 using OstjApi.Data;
+using OstjApi.Models;
 using OstjApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,6 +96,51 @@ app.MapGet("/api/person/{id:int}/profile/{pid:int}", async ([FromRoute] int id, 
             SalaryMax = profile.SalaryMax,
             ExtraRequirements = profile.ExtraRequirements
         });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.DisableAntiforgery();
+
+app.MapPost("/api/person/{id:int}/profile/{pid:int}", async ([FromRoute] int id, [FromRoute] int pid
+            , [FromBody] PersonProfile personProfile, IPersonService personService) =>
+{
+    if (id <= 0)
+        return Results.BadRequest("Invalid person ID.");
+    if (pid <= 0)
+        return Results.BadRequest("Invalid profile ID.");
+        
+    try
+    {
+        var profile = await personService.GetProfileDetailsAsync(id, pid);
+        if (profile == null)
+            return Results.NotFound("Profile not found for the given person ID.");
+
+        profile.Name = personProfile.Name;
+        profile.AcceptRemote = personProfile.AcceptRemote; 
+        profile.Location = personProfile.Location;
+        profile.SalaryMin = personProfile.SalaryMin;
+        profile.SalaryMax = personProfile.SalaryMax;
+        profile.ExtraRequirements = personProfile.ExtraRequirements;
+        for (int i = 0;  i < personProfile.JobTitles.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(personProfile.JobTitles[i]))
+                continue;
+            if (i < profile.JobTitles.Count && personProfile.JobTitles[i] != profile.JobTitles[i].Title)
+            {
+                profile.JobTitles[i].JobTitleDetails = new JobTitleDetails
+                {
+                    Title = personProfile.JobTitles[i],
+                    Embedding = null, 
+                    IsUserDefined = true
+                };
+            }
+        }
+        await personService.SaveProfileAsync(id, profile);
+
+        return Results.Ok();
     }
     catch (Exception ex)
     {

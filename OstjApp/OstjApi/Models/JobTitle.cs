@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Ostj.Constants;
 
 namespace OstjApi.Models
 {
@@ -7,7 +8,7 @@ namespace OstjApi.Models
     {
         public int Id { get; set; }
         public int ProfileId { get; set; } = 0;
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxTitleLength)]
         public required string Title { get; set; }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public JobTitleDetails JobTitleDetails { get; set; }
@@ -18,7 +19,7 @@ namespace OstjApi.Models
     {
         public int Id { get; set; }
         public int ProfileId { get; set; } = 0;
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxTitleLength)]
         public required string Title { get; set; }
         [Column(TypeName = "vector(4096)")]
         public Pgvector.Vector? Embedding { get; set; }

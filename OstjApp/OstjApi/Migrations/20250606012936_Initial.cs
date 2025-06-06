@@ -40,7 +40,7 @@ namespace OstjApi.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     state = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
@@ -82,10 +82,10 @@ namespace OstjApi.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    person_id = table.Column<int>(type: "integer", maxLength: 100, nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
+                    person_id = table.Column<int>(type: "integer", nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     accept_remote = table.Column<bool>(type: "boolean", nullable: false),
-                    location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    location = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     salary_min = table.Column<float>(type: "real", nullable: true),
                     salary_max = table.Column<float>(type: "real", nullable: true),
                     extra_requirements = table.Column<string>(type: "text", nullable: true),
