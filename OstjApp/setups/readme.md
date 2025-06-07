@@ -7,8 +7,9 @@
 
 To build services run navigate to Solution root (OstjApp)
 ```
-cd OstjApi
-dotnet publish --os linux --arch x64 /t:PublishContainer
+cd <ROOT>/OstjApp
+dotnet publish OstjWeb/OstjWeb.csproj /t:PublishContainer
+dotnet publish OstjApi/OstjApi.csproj /t:PublishContainer
 ```
 
 ### Run as docker image
