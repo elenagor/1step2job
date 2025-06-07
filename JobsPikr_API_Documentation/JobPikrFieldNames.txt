@@ -1,0 +1,51 @@
+|Field Name | Description | Data Type | Comments|
+|--- | --- | --- | ---|
+|crawl_timestamp | Timestamp at which job was extracted by JobsPikr | Timestamp (in nanoseconds) | Mandatory field|
+|url | The URL from which this particular job data is extracted | URL | Mandatory field|
+|job_title | Job title as available from source website | String | Mandatory field|
+|category | The category in which a job appears in the source website | String | Extracted if and as available from the source website|
+|company_name | Name of the company which has advertised the job | String | Mandatory field|
+|city | Name of the city | String | Extracted if and as available from the source website|
+|state | Name of the state | String | Extracted if and as available from the source website|
+|country | Name of the country | String | Extracted if and as available from the source website|
+|inferred_city | Normalized city name. Eg: city names like LA, Los Angeles etc. get normalized to a standard value, viz., "Los Angeles" | String | System generated field|
+|inferred_state | Normalized state name | String | System generated field|
+|inferred_country | Normalized country name | String | System generated field|
+|post_date | Date on which the job was published | Date (in YYYY-MM-DD format) | Mandatory field|
+|job_description | Job description text | String | Extracted if and as available from the source website|
+|job_type | Type of the advertised job | String | Extracted as Full Time, Part Time, Contract, Internship or Volunteer; Could be null if it data is unavailable or there are conflicting values listed on the source website|
+|salary_offered | Salary offered for the advertised job | String | Extracted if and as available from the source website. Available only if salary information is provided as a standalone value in the source website which could be extracted; not if it is mentioned as part of a text block (say, within in the job description text)|
+|job_board | Name of the job board from where data is collected | String | Created and added by JobsPikr. For data collected from direct employer websites, the value will be provided as company_website|
+|cursor | An incremental counter value | Integer | Created and added by JobsPikr to help with paginating through API response to access data in smaller chunks.|
+|contact_email | Contact email address | String | Extracted if and as available from the source website. If multiple emails are found, the values will be comma separated (or as an array of string if consuming data in JSON/XML format)|
+|contact_phone_number | Contact phone number | String | Extracted if and as available from the source website|
+|uniq_id | An alpha-numeric value created by JobsPikr to uniquely identify a job posting | String | System generated field|
+|html_job_description | Job description extracted along with HTML elements |  | Extracted if and as available from the source website. Useful in retaining styling w.r.t. the source.|
+|valid_through | Validity date of the advertised job | Date (in YYYY-MM-DD format) | Extracted if and as available from the source website|
+|has_expired | JobsPikr re-crawls URLs for jobs downloaded by a user every 7th day from post_date for 60 days to establish if the job is active or not. | Boolean | Expected values are "true" or "false". Access to the field requires an add-on subscription to Freshness Check (also known as Job Expiry API)|
+|latest_expiry_check_date | Date on which the latest has_expired check was performed | Date (in YYYY-MM-DD format) | System generated field|
+|inferred_iso3_lang_code | 3-character language code to identify the language in which the job is published | String | System generated field|
+|duplicate_status | JobsPikr checks if a job is duplicate of another job collected from a different source website. | String | Possible values are:NA: if duplicate status check is yet to be performed True: if the job is found to be a duplicateFalse: if the job is found to be unique|
+|duplicate_of | uniq_id of jobs that were found to be duplicates. | String | If multiple duplicates are found, the uniq_id values will be comma separated (or as an array of string if consuming data in JSON/XML format). It will be NULL if the duplicate_status is either NA or False.|
+|inferred_department_name | Name of the department to which the job is being advertised for (eg: HR, Sales, Legal and so on) | String | System generated field using a machine-learning model. Only one department name will be returned for a given job. This will be available only if the job is published in English language.The master list of department names can be found here - https://app.jobspikr.com/public_api_details#/reference/departments-list|
+|inferred_department_score | Confidence score for the inferred_department_name generation | Integer | System generated value that ranges from 0 to 100 (100 being the highest/best score)|
+|inferred_job_title | A machine-generated job title depicting just the key information points for a given job. | String | System generated field using a machine-learning model. The field helps in better search performance.|
+|is_remote | Status field to check if the given job is a remote job opportunity or not. | Boolean | Expected values are "true" or "false". This is a system generated field using keywords that points to a remote job opportunity.|
+|inferred_salary_currency | 3-character representation of currency value (as per ISO 4217 standards) | String | System generated field using an ML-model. Inferred_salary_* fields attempts to collect salary information from free text like job tile and description, even if it is not provided as a separate data point that could be extracted. If salary is available as a stand alone data point, inferred_salary_* fields return normalized values.|
+|inferred_salary_time_unit | This field denotes the normalized unit of time in which the salary is mentioned. Eg: Monthly, Yearly, Weekly, Daily, Hourly. | String | System generated field|
+|inferred_salary_from | Represents the salary lower limit of amount if the salary is given as a range; or the salary amount itself if it is provided as a fixed value | Integer | System generated field|
+|inferred_salary_to | Represents the upper limit of salary amount if the salary is given as a range | Integer | System generated field|
+|inferred_skills | List of relevant skills collected from the job title and description | String | System generated field. If multiple skills are found, the values will be comma separated (or as an array of string if consuming data in JSON/XML format). The master list of skill sets could be found here - https://app.jobspikr.com/skill_set_.txt|
+|inferred_company_type | Refers to whether the job is being posted by a direct employer or recruitment agency | String | System generated field using a machine learning model. Will be available only if job is published in English language. Possible values:1. "agency" for recruitment agency2. "company" for direct employer|
+|inferred_company_type_score | Confidence score for the inferred_company_type generation | Integer | System generated value that ranges from 0 to 100 (100 being the highest/best score)|
+|inferred_min_experience | The minimum number of years of past experience required for the job. | Integer | System generated field using a machine learning model. Will be available only if job is published in English language.|
+|inferred_max_experience | The maximum number of years of past experience required for the job. | Integer | System generated field using a machine learning model. Will be available only if job is published in English language.|
+|inferred_seniority_level | Expected seniority level requirement of the job. | String | System generated field using a machine learning model. Will be available only if job is published in English language. Possible values:1. Entry Level - for freshers and junior-level jobs2. Mid Level -  for mid-senior or managerial jobs3. Executive Level - for CXO, Director, VP-level jobs|
+|apply_url | The application url of the job available on the job posting page. | String | Extracted if and as available from the source website |
+|logo_url | The logo url of hiring company from the job posting page. | String | Extracted if and as available from the source website |
+|is_salary_estimated | Status field to check if the given job has a salary that is estimated by the job board. | Boolean | Expected values are "true" or "false". This is a system generated field that indicates whether the salary details are estimated or not.|
+|extra_fields | These are fields that are crawled from specific websites and may not be available across all sources. They depend on site-specific data and vary based on the information that individual sites provide. | String (Array/List) | Extracted if and as available from specific websites. Values could be different for each site. |
+|inferred_education_level | This field represents the education level requirements inferred from the job description. Our system analyzes the text in the job posting to determine the most likely education level required for the role. | String | System-generated field using machine learning. Inferred if available in the job description. |
+|inferred_onet_soc_code | This is the inferred US SOC (Standard Occupational Classification) based on O*NET classification codes. These codes are inferred from the job title and description to provide standardized job role information based on the US classification system. | String | System-generated field based on US SOC classification. Could be null if insufficient data from the job title. |
+|inferred_onet_soc_job_title | This field represents the inferred US SOC (ONET) job title. We derive these titles from the job description and title to match them with the corresponding ONET classifications used in the US. | String | System-generated field using O*NET classification. Derived from job title and description. |
+|inferred_co_website_url | This field contains company metadata, such as industry information, and is mapped using the LinkedIn library. ItΓÇÖs not part of our crawling or inference process. | URL | System-generated field mapped using external data sources like LinkedIn. This field is not crawled directly. | 

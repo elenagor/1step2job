@@ -1,0 +1,13 @@
+Field Name,Data Type
+uniq_id , String 
+job_title , String 
+inferred_country , String 
+inferred_city , String 
+inferred_state , String 
+is_remote , Boolean 
+post_date , Date (in YYYY-MM-DD format) 
+job_description ,  String 
+apply_url , String 
+inferred_salary_from ,  Integer 
+inferred_salary_to ,  Integer 
+job_type , String 

@@ -17,7 +17,6 @@ import freemarker.template.TemplateExceptionHandler;
 
 import com.google.gson.Gson;
 import com.ostj.dataentity.MatchResult;
-import com.ostj.dataentity.MatchResultNotify;
 import com.ostj.entities.Person;
 import com.ostj.entities.Position;
 
@@ -55,13 +54,11 @@ public class ResultManager {
 
     public String createEmailBody(MatchResult result, Person person, Position position) throws Exception{
         Template template = cfg.getTemplate("match-result-email-template.ftlh");
-        MatchResultNotify resultNotify = new MatchResultNotify();
-        resultNotify.published_date = position.published;
-        resultNotify.overall_score = result.overall_score;
-        resultNotify.apply_url = position.apply_url;
-        resultNotify.job_description = position.description;
-        Map<String, MatchResultNotify> data = new HashMap<String, MatchResultNotify>();
-		data.put("resultNotify", resultNotify);
+        Map<String, String> data = new HashMap<String, String>();
+		data.put("published_date", position.published.toString());
+        data.put("overall_score", String.format("%d", result.overall_score));
+        data.put("apply_url", position.apply_url);
+        data.put("job_description", position.description);
         Writer out = new StringWriter();
 		template.process(data, out);
         return out.toString();

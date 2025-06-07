@@ -222,9 +222,6 @@
 		<td align="center"> 
 		<table class="email-content" width="100%" cellpadding="0" cellspacing="0">
 			<tr>
-				<td class="email-masthead"> <img class="email-masthead_logo" height="81" width="38" alt="1step2job" src="data:image/png;base64,???" /> <span class="email-masthead_title">1step2job</span> </td>
-			</tr>
-			<tr>
 				<td class="email-head-footer" />
 			</tr>
 <!-- Email Body -->
@@ -235,9 +232,14 @@
 					<tr>
 						<td class="content-cell"> 
 						<p>
-						<#if resultNotify.published_date??>Date: ${resultNotify.published_date}<#else> today </#if>
-						Found a job ${resultNotify.job_description} with score matching ${resultNotify.overall_score} to apply click 
-						<a href="${resultNotify.apply_url}">here</a>
+						<#if published_date??> ${published_date} : <#else> today </#if>
+						<br>
+						<#if job_description??> ${job_description} <#else> . </#if>
+						</br>
+						<br>
+						<#if overall_score??> score matching = ${overall_score} - to apply click <#else> . </#if>
+						<#if apply_url??><a href="${apply_url}">here</a><#else> ! </#if>
+						</br>
 						</p>
 						</td>
 					</tr>
