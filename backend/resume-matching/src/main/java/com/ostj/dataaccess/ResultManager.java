@@ -55,6 +55,8 @@ public class ResultManager {
     public String createEmailBody(MatchResult result, Person person, Position position) throws Exception{
         Template template = cfg.getTemplate("match-result-email-template.ftlh");
         Map<String, String> data = new HashMap<String, String>();
+        data.put("person_name", person.name);
+        data.put("job_title", position.title);
 		data.put("published_date", position.published.toString());
         data.put("overall_score", String.format("%d", result.overall_score));
         data.put("apply_url", position.apply_url);

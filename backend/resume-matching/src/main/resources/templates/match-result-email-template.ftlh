@@ -232,13 +232,17 @@
 					<tr>
 						<td class="content-cell"> 
 						<p>
-						<#if published_date??> ${published_date} : <#else> today </#if>
+						<#if person_name??>Hello ${person_name} ! <#else> Hello </#if>
 						<br>
-						<#if job_description??> ${job_description} <#else> . </#if>
+							<#if job_title??>We found for you a job: ${job_title} ! <#else>   </#if>
+							<#if published_date??> published on ${published_date} ! <#else>   </#if>
 						</br>
 						<br>
-						<#if overall_score??> score matching = ${overall_score} - to apply click <#else> . </#if>
-						<#if apply_url??><a href="${apply_url}">here</a><#else> ! </#if>
+							<#if job_description??> ${job_description} <#else> . </#if>
+						</br>
+						<br>
+							<#if overall_score??> score matching = ${overall_score} <#else>  </#if>
+							<#if apply_url??>to apply click <a href="${apply_url}">here</a><#else>  </#if>
 						</br>
 						</p>
 						</td>
