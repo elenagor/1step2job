@@ -37,6 +37,10 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseU
 
 var app = builder.Build();
 
+var logger = app.Services.GetRequiredService<ILoggerFactory>()
+    .CreateLogger<Program>();
+logger.LogInformation("OstjWeb started with API base URL: {ApiBaseUrl}", apiBaseUrl);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
