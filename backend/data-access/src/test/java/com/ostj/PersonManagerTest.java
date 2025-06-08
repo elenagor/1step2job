@@ -12,7 +12,7 @@ import com.ostj.entities.Person;
 public class PersonManagerTest {
     //private static Logger log = LoggerFactory.getLogger(PersonManagerTest.class);
 
-    private String jdbcUrl = "jdbc:postgresql://localhost:5432/ostjdb";
+    private String jdbcUrl = "jdbc:postgresql://db.1step2job.ai:5432/ostjdb";
 	private String username = "ostjsvc";
 	private String password = "ostjsvc!";
 

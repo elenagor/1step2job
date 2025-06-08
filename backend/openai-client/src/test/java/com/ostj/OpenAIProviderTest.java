@@ -5,16 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class OpenAIProviderTest {
 
-	// private static Logger log = LoggerFactory.getLogger(OpenAIProviderTest.class);
-	OpenAIProvider ai_matcher = new OpenAIProvider("EMPY", "http://llm.1step2job.ai:8000/v1", "qwen");
+	private static Logger log = LoggerFactory.getLogger(OpenAIProviderTest.class);
+	OpenAIProvider ai_matcher = new OpenAIProvider("EMPY", "http://localhost:8000/v1", "qwen");
 	
 	@Test
 	public void testGetUserInfo() throws Exception {
@@ -37,8 +37,10 @@ public class OpenAIProviderTest {
 		String jsonString = OpenAIProvider.converResponseToJsonString(response);
 		JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
 		assertTrue(jsonValue != null);
+		log.trace("Json Response: {}", jsonValue);
 		String reasoning = OpenAIProvider.converResponseToThinksAsText(response);
 		assertTrue(reasoning != null);
+		log.trace("reasoning: {}", reasoning);
     }
 
 }

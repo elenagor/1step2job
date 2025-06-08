@@ -230,22 +230,45 @@
 				<table class="email-body_inner" align="center" width="100%" cellpadding="0" cellspacing="0">
 <!-- Body content -->
 					<tr>
-						<td class="content-cell"> 
-						<p>
 						<#if person_name??>Hello ${person_name} ! <#else> Hello </#if>
 						<br>
-							<#if job_title??>We found for you a job: ${job_title} ! <#else>   </#if>
-							<#if published_date??> published on ${published_date} ! <#else>   </#if>
+							<#if job_title??>We found for you a job: ${job_title} !  </#if>
+							<#if published_date??> published on ${published_date} !  </#if>
 						</br>
 						<br>
-							<#if job_description??> ${job_description} <#else> . </#if>
+							<#if job_description??> ${job_description} </#if>
 						</br>
+					</tr>
+					<tr>
 						<br>
-							<#if overall_score??> score matching = ${overall_score} <#else>  </#if>
-							<#if apply_url??>to apply click <a href="${apply_url}">here</a><#else>  </#if>
+							<#if overall_score??> score matching = ${overall_score}  </#if>
+							<#if explanation_score??> - explanation: ${explanation_score}  </#if>
 						</br>
-						</p>
-						</td>
+					</tr>
+<!-- Alignment content -->
+					<tr>
+						<#if details??>
+						<table border="1" width="100%">
+							<thead>
+								<tr><th>Title</th><th>Score</th><th>Alignment</th></tr>
+							</thead>
+							<tbody>
+								 <#list details as detail>
+									<tr> <#if detail??>
+										<td><#if detail["title"]??>${detail["title"]}</#if></td>
+										<td><#if detail.score??>${detail.score}</#if></td>
+										<td><#if detail.alignment??>${detail.alignment}</#if></td>
+									</#if> </tr>
+								</#list>
+							</tbody>
+						<table>
+						</#if>
+					</tr>
+<!-- Application Url  -->
+					<tr>
+						<br>
+							<#if apply_url??>To apply click <a href="${apply_url}">here</a>  </#if>
+						</br>
 					</tr>
 				</table>
 				</td>

@@ -5,6 +5,7 @@ Using score 1 to 10 compare resume to job description provided below, produce ou
 Output found information as JSON below:
 {
     "overall_score": <number>,
+    "explanation_score": <text>,
     "key_arias_of_comparison": [
         {
             "title": <text>,

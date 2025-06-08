@@ -13,7 +13,7 @@ import com.ostj.entities.Position;
  * Unit test for simple App.
  */
 public class AppTest {
-    private String jdbcUrl = "jdbc:postgresql://localhost:5432/ostjdb";
+    private String jdbcUrl = "jdbc:postgresql://db.1step2job.ai:5432/ostjdb";
 	private String username = "ostjsvc";
 	private String password = "ostjsvc!";
 

@@ -104,7 +104,7 @@ public class KafkaStreamConfig  {
     }
 
     private ResumeProcessEvent mapStringValueToEventRecord(String value) {
-        log.info("\nStart mapping string to record: value={}",value);
+        log.info("Start mapping string to record: value={}",value);
         
         overall_score_treshhold = Integer.parseInt( configProvider.getProperty("MATCH_TRESHHOLD", "5"));
         log.debug("Current overall_score_treshhold={}", overall_score_treshhold);
@@ -169,7 +169,7 @@ public class KafkaStreamConfig  {
         JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
         MatchResult result = gson.fromJson(jsonValue, MatchResult .class);
-        log.debug("Matched result overall_score={}", result.overall_score);
+        log.debug("Matched result overall_score={}, {}", result.overall_score, result.score_explanation);
         if(result.overall_score >= overall_score_treshhold){
             result.Person_Id = person.id;
             result.Profile_Id = profile.id;

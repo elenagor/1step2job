@@ -113,7 +113,7 @@ public class EmailSender {
 	public void send(String sender) throws Exception {
 		this.sender = sender;
 
-		log.debug("Start send email by {}", this.toString());
+		log.trace("Start send email by {}", this.toString());
 
 		validateInputParameters();
 		Properties prop = System.getProperties();

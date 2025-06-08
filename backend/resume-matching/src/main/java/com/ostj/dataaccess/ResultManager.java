@@ -2,6 +2,7 @@ package com.ostj.dataaccess;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
 import com.google.gson.Gson;
+import com.ostj.dataentity.Alignment;
 import com.ostj.dataentity.MatchResult;
 import com.ostj.entities.Person;
 import com.ostj.entities.Position;
@@ -54,16 +56,30 @@ public class ResultManager {
 
     public String createEmailBody(MatchResult result, Person person, Position position) throws Exception{
         Template template = cfg.getTemplate("match-result-email-template.ftlh");
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, Object> data = new HashMap<String, Object>();
         data.put("person_name", person.name);
         data.put("job_title", position.title);
 		data.put("published_date", position.published.toString());
         data.put("overall_score", String.format("%d", result.overall_score));
         data.put("apply_url", position.apply_url);
         data.put("job_description", position.description);
+        data.put("explanation_score", result.score_explanation);
+        data.put("details", getMapKeyValues(result.key_arias_of_comparison)) ;
         Writer out = new StringWriter();
 		template.process(data, out);
         return out.toString();
+    }
+
+    private List<Map<String, String>> getMapKeyValues(List<Alignment> key_arias_of_comparison) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        for(Alignment alignment : key_arias_of_comparison){
+            Map<String, String> map = new HashMap<>();
+            map.put("title", alignment.title);
+            map.put("score", String.format("%d", alignment.score));
+            map.put("alignment", alignment.alignment);
+            list.add(map);
+        }
+        return list;
     }
 
     public void deleteMatchResult(int resultId) throws Exception {

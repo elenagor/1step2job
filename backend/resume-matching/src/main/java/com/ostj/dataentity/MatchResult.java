@@ -10,6 +10,7 @@ public class MatchResult {
     public int Profile_Id = -1;
     public int Position_Id = -1;
     public int overall_score = 0;
+    public String score_explanation = "";
     public Date date;
     public String Reasoning = "";
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
