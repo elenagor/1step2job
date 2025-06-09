@@ -62,13 +62,21 @@ namespace OstjApi.Services
         {
             var embedding = await _embeddingClient.GenerateEmbeddingAsync(text);
             return embedding.Value.ToFloats().ToArray();
-        } 
+        }
 
         public async Task<string> RunPromptAsync(string prompt)
         {
             var requestBody = new { prompt };
-            ChatCompletion completion = await _chatClient.CompleteChatAsync(prompt);
-            return completion.Content[0].Text;
+            try
+            {
+                ChatCompletion completion = await _chatClient.CompleteChatAsync(prompt);
+                return completion.Content[0].Text;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error while trying to run prompt");
+                return string.Empty;
+            }
         }
     }
 }
