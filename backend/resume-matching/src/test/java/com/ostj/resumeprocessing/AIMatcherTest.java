@@ -51,7 +51,7 @@ public class AIMatcherTest {
 		PositionReceiver positionReceiver = new PositionReceiver(jdbcUrl, username, password);
 		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
 		ResultManager resultManager = new ResultManager(dbConnector);
-		ResumeProcessEvent record = new ResumeProcessEvent(1, "", 1047, -1, "prompt.txt");
+		ResumeProcessEvent record = new ResumeProcessEvent(1, "", 1, -1, "prompt.txt");
 
 		Person person = personReceiver.getPersonData(record);
 		assertTrue(person != null);

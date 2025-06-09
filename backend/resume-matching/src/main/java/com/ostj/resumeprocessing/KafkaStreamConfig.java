@@ -174,7 +174,7 @@ public class KafkaStreamConfig  {
             result.Person_Id = person.id;
             result.Profile_Id = profile.id;
             result.Position_Id = position.id;
-            result.date = new java.util.Date(); // Current date
+            result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
             result.Reasoning = Utils.getThinksAsText(response);
             log.trace("Created MatchResult: {}", result);
             return result;

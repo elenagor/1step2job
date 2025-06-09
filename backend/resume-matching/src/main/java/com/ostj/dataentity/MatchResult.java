@@ -2,7 +2,7 @@ package com.ostj.dataentity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
+import java.sql.Date;
 
 public class MatchResult {
     public int Id = -1;
