@@ -26,10 +26,10 @@ docker -e ASPNETCORE_HTTP_PORTS=80 \
 ```
 
 ### Run locally (Need to be performed only once for each environment)
-Run Postges as Docker
+Run Postges as Docker (replace <localpath> by your local path that you want PostgreSQL datafile to be stored)
 ```
 $ docker pull pgvector/pgvector:pg17
-$ docker run -itd -e POSTGRES_USER=ostjsvc -e POSTGRES_DB=ostjdb -e POSTGRES_PASSWORD=ostjsvc! -p 5432:5432 -v ./data:/<localpath>/data/ostj --name ostjdbv pgvector/pgvector:pg17
+$ docker run -d -e POSTGRES_USER=ostjsvc -e POSTGRES_DB=ostjdb -e POSTGRES_PASSWORD=ostjsvc! -p 5432:5432 -v <localpath>:/var/lib/postgresql/data --name ostjdbv pgvector/pgvector:pg17
 $ docker exec -it ostjdbv /bin/bash
 ```
 **NOTE** The prompt will be changes it '#' as you will be working in Docker container console
