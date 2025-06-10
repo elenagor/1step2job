@@ -2,7 +2,11 @@ package com.ostj.dataaccess;
 
 import java.io.StringWriter;
 import java.io.Writer;
+<<<<<<< HEAD:backend/resume-matching/src/main/java/com/ostj/dataaccess/ResultManager.java
 import java.util.ArrayList;
+=======
+import java.sql.SQLException;
+>>>>>>> fa84e20 (change send email notification):backend/resume-matching/src/main/java/com/ostj/dataaccess/MatchResultManager.java
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,37 +14,38 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
 import com.google.gson.Gson;
+<<<<<<< HEAD:backend/resume-matching/src/main/java/com/ostj/dataaccess/ResultManager.java
 import com.ostj.dataentity.Alignment;
 import com.ostj.dataentity.MatchResult;
+=======
+import com.ostj.entities.MatchResult;
+>>>>>>> fa84e20 (change send email notification):backend/resume-matching/src/main/java/com/ostj/dataaccess/MatchResultManager.java
 import com.ostj.entities.Person;
 import com.ostj.entities.Position;
 
-public class ResultManager {
-    private static Logger log = LoggerFactory.getLogger(ResultManager.class);
+public class MatchResultManager {
+    private static Logger log = LoggerFactory.getLogger(MatchResultManager.class);
     Gson gson = new Gson();
 	static Configuration cfg;
 	static {
 		cfg = new Configuration(Configuration.VERSION_2_3_29);
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-		cfg.setClassForTemplateLoading(ResultManager.class, "/templates/");
+		cfg.setClassForTemplateLoading(MatchResultManager.class, "/templates/");
 	}
+	private SQLAccess dbConnector;
 
-    @Autowired
-	SQLAccess dbConnector;
-
-    public ResultManager(){
-        log.debug("Start ResultManager");
+    public MatchResultManager(){
+        log.debug("Start MatchResultManager");
     }
 
-    public ResultManager(SQLAccess dbConnector){
-        this.dbConnector = dbConnector;
+    public MatchResultManager(String jdbcUrl, String username, String password) throws SQLException{
+        this.dbConnector = new SQLAccess(jdbcUrl, username, password);
     }
 
     public int saveMatchResult(MatchResult result) throws Exception {

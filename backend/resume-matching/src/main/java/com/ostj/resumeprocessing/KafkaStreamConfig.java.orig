@@ -1,5 +1,6 @@
 package com.ostj.resumeprocessing;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,10 +153,10 @@ public class KafkaStreamConfig  {
             String response = call_openai(prompt, profile, position ) ;
             MatchResult result = createMatchResultFromOpenAiResponse(person, profile, position, response);
             if(result != null){
-                result.Id = resultManager.updateMatchResult(result);
+                result.Id = resultManager.saveMatchResult(result);
                 log.info("Saved match result to DB {}", result);
-                //String emailBody = resultManager.createEmailBody(result, person, position);
-                //emailSender.withTO(person.email).withBody(emailBody).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
+                String emailBody = resultManager.createEmailBody(result, person, position);
+                emailSender.withTO(person.email).withBody(emailBody).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
             }
         }
         catch(Exception e){
@@ -174,7 +175,11 @@ public class KafkaStreamConfig  {
             result.Person_Id = person.id;
             result.Profile_Id = profile.id;
             result.Position_Id = position.id;
+<<<<<<< HEAD
             result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+=======
+            result.date = new Date((new java.util.Date()).getTime()); // Current date
+>>>>>>> fa84e20 (change send email notification)
             result.Reasoning = Utils.getThinksAsText(response);
             log.trace("Created MatchResult: {}", result);
             return result;

@@ -1,4 +1,4 @@
-package com.ostj.dataentity;
+package com.ostj.entities;
 
 public class Alignment {
     public String title = "";

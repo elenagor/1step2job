@@ -1,0 +1,94 @@
+package com.ostj.dataaccess;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
+
+import com.google.gson.Gson;
+import com.ostj.entities.Alignment;
+import com.ostj.entities.MatchResult;
+import com.ostj.entities.Person;
+import com.ostj.entities.Position;
+
+public class MatchResultManager {
+    private static Logger log = LoggerFactory.getLogger(MatchResultManager.class);
+    Gson gson = new Gson();
+	static Configuration cfg;
+	static {
+		cfg = new Configuration(Configuration.VERSION_2_3_29);
+		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+		cfg.setClassForTemplateLoading(MatchResultManager.class, "/templates/");
+	}
+	private SQLAccess dbConnector;
+
+    public MatchResultManager(){
+        log.debug("Start MatchResultManager");
+    }
+
+    public MatchResultManager(String jdbcUrl, String username, String password) throws Exception{
+        this.dbConnector = new SQLAccess(jdbcUrl, username, password);
+    }
+
+    public int updateMatchResult(MatchResult result) throws Exception {
+        String insertQuery = "UPDATE person_position_matches "+//
+        "SET  score = ?, date = ?, reasoning = ?, comparison_details = ?" + //
+        "WHERE person_id = ?, profile_id = ?, position_id = ?";
+
+        java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
+        String details = gson.toJson(result.key_arias_of_comparison);
+
+        List<Object> parameters = Arrays.asList( result.overall_score, sqlDate, result.Reasoning, details,
+            result.Person_Id, result.Profile_Id, result.Position_Id
+         );
+
+        return dbConnector.update( insertQuery, parameters);
+    }
+
+    public String createEmailBody(MatchResult result, Person person, Position position) throws Exception{
+        Template template = cfg.getTemplate("match-result-email-template.ftlh");
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("person_name", person.name);
+        data.put("job_title", position.title);
+		data.put("published_date", position.published.toString());
+        data.put("overall_score", String.format("%d", result.overall_score));
+        data.put("apply_url", position.apply_url);
+        data.put("job_description", position.description);
+        data.put("explanation_score", result.score_explanation);
+        data.put("details", getMapKeyValues(result.key_arias_of_comparison)) ;
+        Writer out = new StringWriter();
+		template.process(data, out);
+        return out.toString();
+    }
+
+    private List<Map<String, String>> getMapKeyValues(List<Alignment> key_arias_of_comparison) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        for(Alignment alignment : key_arias_of_comparison){
+            Map<String, String> map = new HashMap<>();
+            map.put("title", alignment.title);
+            map.put("score", String.format("%d", alignment.score));
+            map.put("alignment", alignment.alignment);
+            list.add(map);
+        }
+        return list;
+    }
+
+    public void deleteMatchResult(int resultId) throws Exception {
+        String query = "DELETE FROM person_position_matches WHERE id = ? ;";
+        log.debug("Start query DB: {}", query);
+
+        List<Object> parameters = Arrays.asList( resultId );
+        dbConnector.update(query, parameters) ;
+    }
+}

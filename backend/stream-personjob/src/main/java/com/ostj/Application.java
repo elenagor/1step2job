@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
+import com.ostj.dataaccess.MatchResultReceiver;
 import com.ostj.dataproviders.PersonProvider;
 import com.ostj.dataproviders.PositionProvider;
 
@@ -62,6 +63,17 @@ public class Application {
         log.debug("PositionManager: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
     	try {
             return new PositionProvider(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
+    }
+
+    @Bean
+    public MatchResultReceiver getMatchResultReceiver(){
+        log.debug("MatchResultReceiver: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new MatchResultReceiver(jdbcUrl, username, password);
         } catch (Exception e) {
             log.error("Error connect to DB {}", e);
         }

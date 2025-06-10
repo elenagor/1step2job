@@ -6,9 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+<<<<<<< HEAD
+import com.ostj.dataaccess.ResultManager;
+import com.ostj.dataaccess.SQLAccess;
+import com.ostj.dataentity.Alignment;
+import com.ostj.dataentity.MatchResult;
+=======
 import com.ostj.dataaccess.MatchResultManager;
-import com.ostj.entities.Alignment;
 import com.ostj.entities.MatchResult;
+>>>>>>> fa84e20 (change send email notification)
 import com.ostj.entities.Person;
 import com.ostj.entities.Position;
 

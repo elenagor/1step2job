@@ -1,0 +1,25 @@
+package com.ostj.entities;
+
+import java.util.ArrayList;
+import java.util.List;
+<<<<<<< HEAD:backend/resume-matching/src/main/java/com/ostj/dataentity/MatchResult.java
+=======
+
+>>>>>>> fa84e20 (change send email notification):backend/data-access/src/main/java/com/ostj/entities/MatchResult.java
+import java.sql.Date;
+
+public class MatchResult {
+    public int Id = -1;
+    public int Person_Id = -1;
+    public int Profile_Id = -1;
+    public int Position_Id = -1;
+    public int overall_score = 0;
+    public String score_explanation = "";
+    public Date date;
+    public String Reasoning = "";
+    public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
+        
+    public String toString(){
+        return String.format("Id=%d, PersonId=%d, ProfileId=%d, Position_Id=%d, overall_score=%d, date=%s", Id , Person_Id, Profile_Id, Position_Id, overall_score, date.toString());
+    }
+}

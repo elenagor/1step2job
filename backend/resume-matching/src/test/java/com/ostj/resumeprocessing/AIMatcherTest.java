@@ -15,11 +15,11 @@ import com.google.gson.JsonParser;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
 import com.ostj.utils.Utils;
 import com.ostj.OpenAIProvider;
+import com.ostj.dataaccess.MatchResultManager;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PositionReceiver;
-import com.ostj.dataaccess.ResultManager;
-import com.ostj.dataaccess.SQLAccess;
-import com.ostj.dataentity.MatchResult;
+
+import com.ostj.entities.MatchResult;
 import com.ostj.entities.Person;
 import com.ostj.entities.Position;
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
@@ -49,8 +49,7 @@ public class AIMatcherTest {
 	public void testMatchResumeToJobDescription() throws Exception{
 		PersonReceiver personReceiver = new PersonReceiver(jdbcUrl, username, password);
 		PositionReceiver positionReceiver = new PositionReceiver(jdbcUrl, username, password);
-		SQLAccess dbConnector = new SQLAccess(jdbcUrl, username, password);
-		ResultManager resultManager = new ResultManager(dbConnector);
+		MatchResultManager resultManager = new MatchResultManager(jdbcUrl, username, password);
 		ResumeProcessEvent record = new ResumeProcessEvent(1, "", 1, -1, "prompt.txt");
 
 		Person person = personReceiver.getPersonData(record);

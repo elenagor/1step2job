@@ -3,6 +3,8 @@ package com.ostj.dataentity;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.ostj.entities.Alignment;
+
 public class MatchResultNotify {
     public String person_name;
     public String job_title;

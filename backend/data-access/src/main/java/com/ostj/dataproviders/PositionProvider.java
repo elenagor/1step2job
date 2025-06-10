@@ -18,7 +18,7 @@ public class PositionProvider {
 	private SQLAccess dbConnector;
 
     public PositionProvider(String jdbcUrl, String username, String password) throws Exception {
-        log.info("Start JobManager");
+        log.info("Start PositionProvider");
         this.dbConnector = new SQLAccess(jdbcUrl, username, password );
     }
 

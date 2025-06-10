@@ -1,4 +1,4 @@
-package com.ostj.dataentity;
+package com.ostj.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +10,14 @@ public class MatchResult {
     public int Profile_Id = -1;
     public int Position_Id = -1;
     public int overall_score = 0;
+    public String Status = "";
     public String score_explanation = "";
     public Date date;
     public String Reasoning = "";
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
         
     public String toString(){
-        return String.format("Id=%d, PersonId=%d, ProfileId=%d, Position_Id=%d, overall_score=%d, count of key_arias_of_comparison=%d", Id , Person_Id, Profile_Id, Position_Id, overall_score, key_arias_of_comparison.size());
+        return String.format("Id=%d, PersonId=%d, ProfileId=%d, Position_Id=%d, overall_score=%d, date=%s, Status=%s", 
+        Id , Person_Id, Profile_Id, Position_Id, overall_score, date.toString(), Status);
     }
 }

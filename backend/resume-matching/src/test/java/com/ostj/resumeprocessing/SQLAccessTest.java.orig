@@ -2,14 +2,23 @@ package com.ostj.resumeprocessing;
 
 //import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import java.sql.Date;
 
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//import com.ostj.dataaccess.PromptManager;
+//import com.ostj.dataaccess.ResultManager;
+<<<<<<< HEAD
 //import com.ostj.dataaccess.SQLAccess;
+import com.ostj.dataentity.Alignment;
+import com.ostj.dataentity.MatchResult;
+=======
+import com.ostj.dataaccess.SQLAccess;
 import com.ostj.entities.Alignment;
 import com.ostj.entities.MatchResult;
-
+>>>>>>> fa84e20 (change send email notification)
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
 
 public class SQLAccessTest {
@@ -40,7 +49,11 @@ public class SQLAccessTest {
 		result.Profile_Id = 1;
 		result.Position_Id = 1;
 		result.overall_score = 0;
+<<<<<<< HEAD
 		result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+=======
+		result.date = new Date((new java.util.Date()).getTime());  // Current date
+>>>>>>> fa84e20 (change send email notification)
 		result.key_arias_of_comparison.add(new Alignment());
 		//int resultId = resultManager.saveMatchResult(result);
 		//assertTrue(resultId >= 0);

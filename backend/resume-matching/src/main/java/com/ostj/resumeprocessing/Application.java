@@ -14,7 +14,7 @@ import com.ostj.OpenAIProvider;
 import com.ostj.dataaccess.PositionReceiver;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PromptManager;
-import com.ostj.dataaccess.ResultManager;
+import com.ostj.dataaccess.MatchResultManager;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.utils.ConfigurationHelper;
 import com.ostj.utils.EmailSender;
@@ -88,8 +88,8 @@ public class Application {
     }
 
     @Bean
-    public ResultManager getResultManager()  {
-    	return new ResultManager();
+    public MatchResultManager getResultManager()  {
+    	return new MatchResultManager();
     }
 
     @Bean

@@ -23,6 +23,7 @@ import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 
 import com.ostj.entities.Position;
+import com.ostj.dataaccess.MatchResultReceiver;
 import com.ostj.dataproviders.PersonProvider;
 import com.ostj.dataproviders.PositionProvider;
 import com.ostj.entities.Job_title;
@@ -59,6 +60,9 @@ public class KafkaStreamConfig {
 
     @Autowired
 	PositionProvider positionProvider;
+
+    @Autowired
+    MatchResultReceiver resultManager;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -110,10 +114,7 @@ public class KafkaStreamConfig {
                         log.debug("Processed title: {}", title.title);
                         for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
                             log.debug("Found position: {}", position);
-                            ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
-                            if(isEventNotExist(list, event)){
-                                list.add(event);
-                            }
+                            processEvent(profile, position, list);
                         }
                     }
                 }
@@ -124,10 +125,7 @@ public class KafkaStreamConfig {
                 for(Person prsn : personProvider.getPersonByTitle(position.id, embeding_match_treshhold)){
                     log.debug("Found person: {}", prsn);
                     for(Profile profile : prsn.profiles){
-                        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
-                        if(isEventNotExist(list, event)){
-                            list.add(event);
-                        }
+                        processEvent(profile, position, list);
                     }
                 }
             }
@@ -137,7 +135,15 @@ public class KafkaStreamConfig {
         return list.size() > 0 ? list : null;
     }
 
-    private boolean isEventNotExist(List<ProcessEvent> list, ProcessEvent newEvent) {
+    private void processEvent(Profile profile, Position position, List<ProcessEvent> list){
+        ProcessEvent event = new ProcessEvent(profile.person_id, profile.id, position.id, -1);
+        if(isEventNotExistInList(list, event)){
+            list.add(event);
+        }
+        resultManager.saveMatchResult(event);
+    }
+
+    private boolean isEventNotExistInList(List<ProcessEvent> list, ProcessEvent newEvent) {
         for(ProcessEvent event: list){
             if(event.equals(newEvent)){
                 return false;
