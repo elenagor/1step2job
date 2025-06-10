@@ -9,8 +9,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 import com.ostj.dataaccess.MatchResultReceiver;
+import com.ostj.dataaccess.MatchResultsNotifyBulder;
 import com.ostj.dataproviders.PersonProvider;
 import com.ostj.dataproviders.PositionProvider;
+import com.ostj.utils.EmailSender;
 
 @SpringBootApplication
 public class Application {
@@ -78,5 +80,26 @@ public class Application {
             log.error("Error connect to DB {}", e);
         }
         return null;
+    }
+
+    @Bean
+    public MatchResultsNotifyBulder getMatchResultsNotifyBulder(){
+        log.debug("MatchResultsNotifyBulder: jdbcUrl=" + jdbcUrl + ",username=" + username + ",password=" + password);
+    	try {
+            return new MatchResultsNotifyBulder(jdbcUrl, username, password);
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
+    }
+
+    @Bean
+    public EmailSender getEmailSender(){
+        EmailSender emailSender =  EmailSender.getEmailSender(  configHelper.getProperty("SMTP_ADDRESS", ""),  
+                                            configHelper.getProperty("EMAIL_ACCOUNT_NAME", ""),  
+                                            configHelper.getProperty("EMAIL_ACCOUNT_PASSWORD", ""));
+        emailSender.setPort(configHelper.getProperty("SMTP_PORT", ""));
+        emailSender.setUseSSL(configHelper.getProperty("SMTP_USESSL", ""));
+        return emailSender;
     }
 }

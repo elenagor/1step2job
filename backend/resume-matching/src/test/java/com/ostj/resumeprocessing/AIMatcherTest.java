@@ -15,7 +15,6 @@ import com.google.gson.JsonParser;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
 import com.ostj.utils.Utils;
 import com.ostj.OpenAIProvider;
-import com.ostj.dataaccess.MatchResultManager;
 import com.ostj.dataaccess.PersonReceiver;
 import com.ostj.dataaccess.PositionReceiver;
 
@@ -49,7 +48,6 @@ public class AIMatcherTest {
 	public void testMatchResumeToJobDescription() throws Exception{
 		PersonReceiver personReceiver = new PersonReceiver(jdbcUrl, username, password);
 		PositionReceiver positionReceiver = new PositionReceiver(jdbcUrl, username, password);
-		MatchResultManager resultManager = new MatchResultManager(jdbcUrl, username, password);
 		ResumeProcessEvent record = new ResumeProcessEvent(1, "", 1, -1, "prompt.txt");
 
 		Person person = personReceiver.getPersonData(record);
@@ -72,9 +70,7 @@ public class AIMatcherTest {
 		log.trace("Json Response: {}", jsonValue);
 		 
 		MatchResult result = gson.fromJson(jsonValue, MatchResult .class);
-
-		String emailBody = resultManager.createEmailBody(result, person, position);
-		log.trace("Email Body: {}", emailBody);
+		log.trace("Match result: {}", result);
     }
 
 	

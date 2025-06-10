@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Produced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,7 @@ import com.ostj.entities.Position;
 import com.ostj.entities.MatchResult;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
-
 import com.ostj.resumeprocessing.events.ResumeProcessEvent;
-import com.ostj.utils.EmailSender;
 import com.ostj.utils.StrictEnumTypeAdapterFactory;
 import com.ostj.utils.Utils;
 
@@ -45,7 +44,7 @@ import com.ostj.utils.Utils;
 public class KafkaStreamConfig  {
     private static Logger log = LoggerFactory.getLogger(KafkaStreamConfig.class);
     private static Gson gson = new GsonBuilder().registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
-    private int overall_score_treshhold;
+
     @Autowired
     ConfigProvider configProvider;
 
@@ -55,8 +54,8 @@ public class KafkaStreamConfig  {
     @Value(value = "${spring.application.name}")
     String appName;
 
-    @Value(value = "${ostj.email.sender}")
-    String emailSenderAddress;
+    @Value(value = "${ostj.kstream.topic.output}")
+    String outputTopic;
 
     @Autowired
 	OpenAIProvider resumeMatcher;
@@ -76,9 +75,6 @@ public class KafkaStreamConfig  {
     @Autowired
 	MatchResultManager resultManager;
 
-    @Autowired
-    EmailSender emailSender;
-
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
         Map<String, Object> props = new HashMap<>();
@@ -92,36 +88,46 @@ public class KafkaStreamConfig  {
 
     @Bean
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
-        overall_score_treshhold = Integer.parseInt( configProvider.getProperty("MATCH_TRESHHOLD", "5"));
-        log.debug("Start overall_score_treshhold={}", overall_score_treshhold);
 
         KStream<String, String> stream = kStreamBuilder.stream(topic_name);
         stream.mapValues(value -> mapStringValueToEventRecord(value))
         .filter((key, value) -> value != null)
         .peek((key, value) -> processMessage(key, value))
+        .mapValues(v -> mapInputToOutputEventRecord(v))
+        .filter((key, value) -> value > 0)
+        .peek((k, v) -> {k = "FinishedPersonId"; log.debug("Sent key={}, value={}", k, v);})
+        .to(outputTopic, Produced.with(Serdes.String(), Serdes.Integer() ))
         ;
         return stream;
     }
 
+    private int mapInputToOutputEventRecord(ResumeProcessEvent input){
+        try{
+            if( resultManager.isPersonProcessFinished(input.PersonId) ){
+                return input.PersonId;
+            }
+        } catch (Throwable e) {
+			log.error("Error mapping record to output {}", e);
+		}
+        return -1;
+    }
+
     private ResumeProcessEvent mapStringValueToEventRecord(String value) {
         log.info("Start mapping string to record: value={}",value);
-        
-        overall_score_treshhold = Integer.parseInt( configProvider.getProperty("MATCH_TRESHHOLD", "5"));
-        log.debug("Current overall_score_treshhold={}", overall_score_treshhold);
 		
         ResumeProcessEvent record = null;
 		try {
             JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
-            log.debug("Message mapped Value: {}", record.toString());
+            log.debug("Record mapped Value: {}", record.toString());
 		} catch (Throwable e) {
-			log.error("Error parsing json message {}", e);
+			log.error("Error parsing record as json {}", e);
 		}
 		return record;
 	}
 
     public void processMessage(String key, ResumeProcessEvent record) {
-        log.debug("Start process message key={}, value={}", key, record);
+        log.debug("Start process key={}, value={}", key, record);
         try{
             String  prompt = promptManager.getPrompt(record);
             if(prompt == null){
@@ -136,9 +142,10 @@ public class KafkaStreamConfig  {
         catch(Throwable e){
             log.error("Error: " + e.toString());
         }
+        log.debug("Finish process key={}, value={}", key, record);
     }
 
-    private void  processPersonMessage(ResumeProcessEvent record, Person person, String  prompt) throws Exception{
+    private void processPersonMessage(ResumeProcessEvent record, Person person, String  prompt) throws Exception{
         log.info("Start Process Person: {}", person.toString());
         for(Profile profile : person.profiles){
             log.debug("Process person profile with titles count: {}", profile.job_titles.size());
@@ -146,6 +153,7 @@ public class KafkaStreamConfig  {
             log.debug("Found Posion: {}", position);
             processResume( prompt,  person,  profile,  position);
         }
+        throw new Exception(  String.format("There is no profile of person id=%d ", record.PersonId ));
     }
     private void processResume(String prompt, Person person, Profile profile, Position position){
         try{
@@ -154,8 +162,6 @@ public class KafkaStreamConfig  {
             if(result != null){
                 result.Id = resultManager.updateMatchResult(result);
                 log.info("Saved match result to DB {}", result);
-                //String emailBody = resultManager.createEmailBody(result, person, position);
-                //emailSender.withTO(person.email).withBody(emailBody).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
             }
         }
         catch(Exception e){
@@ -170,16 +176,13 @@ public class KafkaStreamConfig  {
         log.trace("Json Responce: {}", jsonValue);
         MatchResult result = gson.fromJson(jsonValue, MatchResult .class);
         log.debug("Matched result overall_score={}, {}", result.overall_score, result.score_explanation);
-        if(result.overall_score >= overall_score_treshhold){
-            result.Person_Id = person.id;
-            result.Profile_Id = profile.id;
-            result.Position_Id = position.id;
-            result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
-            result.Reasoning = Utils.getThinksAsText(response);
-            log.trace("Created MatchResult: {}", result);
-            return result;
-        }
-        return null;
+        result.Person_Id = person.id;
+        result.Profile_Id = profile.id;
+        result.Position_Id = position.id;
+        result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+        result.Reasoning = Utils.getThinksAsText(response);
+        log.trace("Created MatchResult: {}", result);
+        return result;
     }
 
     private String call_openai(String  prompt, Profile profile, Position position) throws Exception{

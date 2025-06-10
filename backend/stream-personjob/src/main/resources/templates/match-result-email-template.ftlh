@@ -231,33 +231,21 @@
 <!-- Body content -->
 					<tr>
 						<#if person_name??>Hello ${person_name} ! <#else> Hello </#if>
-						<br>
-							<#if job_title??>We found for you a job: ${job_title} !  </#if>
-							<#if published_date??> published on ${published_date} !  </#if>
-						</br>
-						<br>
-							<#if job_description??> ${job_description} </#if>
-						</br>
+						<#if job_title??>We found for you a following jobs  </#if>
 					</tr>
-					<tr>
-						<br>
-							<#if overall_score??> score matching = ${overall_score}  </#if>
-							<#if explanation_score??> - explanation: ${explanation_score}  </#if>
-						</br>
-					</tr>
-<!-- Alignment content -->
+<!-- Positions content -->
 					<tr>
 						<#if details??>
 						<table border="1" width="100%">
 							<thead>
-								<tr><th>Title</th><th>Score</th><th>Alignment</th></tr>
+								<tr><th>Title</th><th>Published Date</th><th>Apply URL</th></tr>
 							</thead>
 							<tbody>
 								 <#list details as detail>
 									<tr> <#if detail??>
 										<td><#if detail["title"]??>${detail["title"]}</#if></td>
-										<td><#if detail.score??>${detail.score}</#if></td>
-										<td><#if detail.alignment??>${detail.alignment}</#if></td>
+										<td><#if detail.published_date??>${detail.published_date}</#if></td>
+										<td><#if detail.apply_url??>${detail.apply_url}</#if></td>
 									</#if> </tr>
 								</#list>
 							</tbody>

@@ -1,4 +1,4 @@
-package com.ostj.events;
+package com.ostj.entities;
 
 public class ProcessEvent {
     public int PersonId = -1;

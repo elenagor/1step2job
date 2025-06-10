@@ -2,7 +2,7 @@ package com.ostj.dataaccess;
 
 import com.ostj.dataproviders.MatchResultProvider;
 import com.ostj.entities.MatchResult;
-import com.ostj.events.ProcessEvent;
+import com.ostj.entities.ProcessEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

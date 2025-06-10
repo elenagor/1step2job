@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -23,13 +24,15 @@ import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 
 import com.ostj.entities.Position;
+import com.ostj.entities.ProcessEvent;
 import com.ostj.dataaccess.MatchResultReceiver;
+import com.ostj.dataaccess.MatchResultsNotifyBulder;
 import com.ostj.dataproviders.PersonProvider;
 import com.ostj.dataproviders.PositionProvider;
 import com.ostj.entities.Job_title;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
-import com.ostj.events.ProcessEvent;
+import com.ostj.utils.EmailSender;
 
 @Configuration
 @EnableKafka
@@ -46,11 +49,15 @@ public class KafkaStreamConfig {
     @Value(value = "${ostj.kstream.topic.output}")
     String outputTopic;
 
+    @Value(value = "${ostj.email.sender}")
+    String emailSenderAddress;
+
     @Autowired
 	ConfigurationHelper configHelper;
 
     private String bootstrapAddress;
     private float embeding_match_treshhold;
+    private int overall_score_treshhold;
 
     @Autowired
     Serde<ProcessEvent> messageSerdersEvent;
@@ -63,6 +70,12 @@ public class KafkaStreamConfig {
 
     @Autowired
     MatchResultReceiver resultManager;
+
+    @Autowired
+    MatchResultsNotifyBulder resultNotifyBuilder;
+
+    @Autowired
+    EmailSender emailSender;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -78,8 +91,9 @@ public class KafkaStreamConfig {
 
     @Bean
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
-        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
-        log.debug("Start embeding_match_treshhold={}", embeding_match_treshhold);
+        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("EMBEDDING_TRESHHOLD", "0.1"));
+        overall_score_treshhold = Integer.parseInt( configHelper.getProperty("MATCH_TRESHHOLD", "5"));
+        log.debug("Start embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
 
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("Recieved key={}, value={}", k, v);})
@@ -95,37 +109,51 @@ public class KafkaStreamConfig {
     }
 
     private List<ProcessEvent> processPersonJob(String key, String value) {
-        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("MATCH_TRESHHOLD", "0.1"));
-        log.debug("Current embeding_match_treshhold={}", embeding_match_treshhold);
+        embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("EMBEDDING_TRESHHOLD", "0.1"));
+        overall_score_treshhold = Integer.parseInt( configHelper.getProperty("MATCH_TRESHHOLD", "5"));
+        log.debug("Current embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
         
         log.debug("Processed key={}, value={}", key, value);
         List<ProcessEvent> list = new ArrayList<ProcessEvent>();
         Person person = new Person();
         try {
-            if(key.equalsIgnoreCase("PersonId")){
+            if(key.equalsIgnoreCase("FinishedPersonId")){
                 personProvider.getPersonData(Integer.parseInt(value), person);
+                String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold);
+                if(StringUtils.isNotBlank(notification)){
+                    emailSender.withTO(person.email).withBody(notification).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
+                    log.debug("Sent email notification for person={}", person);
+                }
+                else{
+                    log.info("There is not match result for notification for person={}", value);
+                }
             }
-            if(key.equalsIgnoreCase("ProfileId")){
-                personProvider.getPersonByProfileId(Integer.parseInt(value), person);
-            }
-            if(person.profiles != null){
-                for(Profile profile : person.profiles){
-                    for(Job_title title : profile.job_titles){
-                        log.debug("Processed title: {}", title.title);
-                        for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
-                            log.debug("Found position: {}", position);
-                            processEvent(profile, position, list);
+            else{
+                if(key.equalsIgnoreCase("PersonId")){
+                    personProvider.getPersonData(Integer.parseInt(value), person);
+                }
+                if(key.equalsIgnoreCase("ProfileId")){
+                    personProvider.getPersonByProfileId(Integer.parseInt(value), person);
+                }
+                if(person.profiles != null){
+                    for(Profile profile : person.profiles){
+                        for(Job_title title : profile.job_titles){
+                            log.debug("Processed title: {}", title.title);
+                            for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
+                                log.debug("Found position: {}", position);
+                                processEvent(profile, position, list);
+                            }
                         }
                     }
                 }
-            }
-            if(key.equalsIgnoreCase("PositionId")){
-                Position position = new Position();
-                positionProvider.getPositionFromDB( Integer.parseInt(value), position);
-                for(Person prsn : personProvider.getPersonByTitle(position.id, embeding_match_treshhold)){
-                    log.debug("Found person: {}", prsn);
-                    for(Profile profile : prsn.profiles){
-                        processEvent(profile, position, list);
+                if(key.equalsIgnoreCase("PositionId")){
+                    Position position = new Position();
+                    positionProvider.getPositionFromDB( Integer.parseInt(value), position);
+                    for(Person prsn : personProvider.getPersonByTitle(position.id, embeding_match_treshhold)){
+                        log.debug("Found person: {}", prsn);
+                        for(Profile profile : prsn.profiles){
+                            processEvent(profile, position, list);
+                        }
                     }
                 }
             }

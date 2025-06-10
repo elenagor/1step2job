@@ -1,4 +1,4 @@
-package com.ostj.resumeprocessing;
+package com.ostj;
 
 import org.junit.jupiter.api.Test;
 
