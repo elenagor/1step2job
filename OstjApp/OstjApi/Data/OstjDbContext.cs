@@ -14,7 +14,7 @@ namespace OstjApi.Data
             modelBuilder.Entity<Person>()
                 .Property(p => p.EnrollmentType)
                 .HasConversion<string>();
-                        modelBuilder.HasPostgresExtension("vector");
+            modelBuilder.HasPostgresExtension("vector");
 
             #region TableSplitting
             modelBuilder.Entity<ProfileDetails>(
@@ -58,6 +58,10 @@ namespace OstjApi.Data
                         .HasForeignKey<JobTitleDetails>(o => o.Id);
                     ob.Navigation(o => o.JobTitleDetails).IsRequired();
                 });
+
+            modelBuilder.Entity<PersonPositionMatch>()
+                .Property(p => p.Score)
+                .HasDefaultValue(-1);
             #endregion
 
         }
