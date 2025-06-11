@@ -5,6 +5,8 @@
 @using System.Security.Claims
 @using Ostj.Shared.Contracts
 @using Ostj.Constants
+@using OstjWeb.Services
+@using OstjWeb.Components.Layout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @inject HttpClient HttpClient
@@ -17,23 +19,14 @@
     <EditForm EditContext="editContext" FormName="ProfileForm" OnValidSubmit="HandleProfileUpdate">
         <div class="row g-3 w-100">
             <div class="col-6 d-flex alight-items-stretch">
-                <div class="card mb-3 w-100">
-                    <h5 class="card-header">Account Information</h5>
-                    <div class="card-body">
-                        <p class="card-text mb-3">Name, @(personInfo?.Name ?? "")</p>
-                        <p class="card-text mb-3">Email: @(personInfo?.Email ?? "")</p>
-                        <p class="card-text mb-3">Phone: @(personInfo?.Phone ?? "")</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 d-flex alight-items-stretch">
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Desired Positions</h5>
                     <div class="card-body">
                         @for (int i = 0; i < PersonProfile.JobTitles.Length; i++)
                         {
                             var index = i;
-                            <InputText class="form-control mb-3" @bind-Value="PersonProfile.JobTitles[index]" maxlength="@_maxTitleLength" />
+                            <InputText class="form-control mb-3" @bind-Value="PersonProfile.JobTitles[index]"
+                                maxlength="@_maxTitleLength" />
                         }
                     </div>
                 </div>
@@ -44,13 +37,14 @@
                     <div class="card-body">
                         <InputText class="form-control mb-3" @bind-Value="PersonProfile.Location" />
                         <div class="form-check form-switch">
-                            <InputCheckbox class="form-check-input mb-3" @bind-Value="PersonProfile.AcceptRemote" maxlength="@_maxLocationLength"/>
+                            <InputCheckbox class="form-check-input mb-3" @bind-Value="PersonProfile.AcceptRemote"
+                                maxlength="@_maxLocationLength" />
                             <label class="form-check-label" for="switchCheckDefault">Agree for Remote</label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-6 d-flex alight-items-stretch">
+            <div class="col-4 d-flex alight-items-stretch">
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Desired Annual Compensation Range in USD</h5>
                     <div class="card-body">
@@ -75,18 +69,37 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 d-flex alight-items-stretch">
+            <div class="col-8 d-flex alight-items-stretch">
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Additional Requrirements</h5>
                     <div class="card-body">
                         <div class="form-floating mb-3">
-                            <InputTextArea class="form-control" id="floatingTextarea" @bind-Value="PersonProfile.ExtraRequirements" style="height: 100px" maxlength="@_maxTextLength"/>
-                            <label for="floatingTextarea">In your free test tell us your additiona requirements (max 5000 chars)</label>
+                            <InputTextArea class="form-control" id="floatingTextarea"
+                                @bind-Value="PersonProfile.ExtraRequirements" style="height: 100px"
+                                maxlength="@_maxTextLength" />
+                            <label for="floatingTextarea">In your free test tell us your additiona requirements (max
+                                5000 chars)</label>
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mb-3" disabled="@(!context.IsModified())">Update</button>
+        </div>
+        @if (errorMessage != null)
+        {
+            <div class="alert alert-danger w-100">@errorMessage</div>
+        }
+        <div class="g-3">
+            <button type="submit" class="btn btn-primary" disabled="@(!context.IsModified() || processing)">
+                @if (processing)
+                {
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    <span role="status">Updating...</span>
+                }
+                else
+                {
+                    <span role="status">Update</span>
+                }
+            </button>
         </div>
     </EditForm>
 </div>
@@ -99,7 +112,6 @@
     private readonly int _maxLocationLength = Constants.MaxNameLength;
     private readonly int _maxTextLength = Constants.MaxTextLength;
     #endregion
-
     #region Form Models
     private EditContext? editContext;
 
@@ -119,15 +131,23 @@
     #endregion
 
     #region Local Variables
+
+    [CascadingParameter]
+    public MainLayout? MainLayout { get; set; }
+
     int personId = 0;
 
     PersonInfo? personInfo;
+
+    bool processing = false;
     #endregion
 
     protected override void OnInitialized()
     {
         editContext = new EditContext(PersonProfile);
     }
+
+    string? errorMessage;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -148,6 +168,9 @@
                 {
                     Navigation.NavigateTo("/resume/upload");
                 }
+                if (MainLayout is not null)
+                    MainLayout.SetPersonName(personInfo.Name!);
+
                 var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{pfId}");
                 if (profile == null)
                 {
@@ -172,8 +195,12 @@
     }
 
     private async Task HandleProfileUpdate(EditContext args)
-    {
-        await HttpClient.PostAsJsonAsync($"/api/person/{personId}/profile/{PersonProfile.Id}", PersonProfile);
+    {   
+        processing = true;     
+        var response = await HttpClient.PostAsJsonAsync($"/api/person/{personId}/profile/{PersonProfile.Id}", PersonProfile);
+        if (!response.IsSuccessStatusCode)
+            errorMessage = $"Error: {response.ReasonPhrase}";
+        processing = false;
         editContext?.MarkAsUnmodified();
     }
 }

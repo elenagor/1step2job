@@ -9,14 +9,14 @@
 
 @attribute [ExcludeFromInteractiveRoutingAttribute]
 
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="row g-5 w-100">
-        <div class="col-sm-12 d-flex alight-items-stretch">
+<div class="container vh-100 d-flex align-items-center">
+    <div class="row g-5 justify-content-center w-100">
+        <div class="col-6">
             <div class="card w-100">
-                <h5 class="card-header">Has account already</h5>
+                <h5 class="card-header">Please introduce you</h5>
                 <div class="card-body">
                     <p class="card-text">Enter your email to begin</p>
-                    <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
+                    <EditForm id="form1" Model="loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
                         <InputText class="form-control mb-3" @bind-Value="loginModel.Email" aria-readonly="@codesent" placeholder="Email" />
                         <ValidationMessage For="()=> loginModel.Email"/>
                         <InputText class="form-control mb-3" @bind-Value="loginModel.Code" disabled="@{!codesent}" placeholder="One-Time Code" />
@@ -25,13 +25,24 @@
                         {
                             <div class="alert alert-danger">@Error</div>
                         }
-                        <button class="btn btn-primary w-100" type="submit">@btnLabel</button>
+                        <button class="btn btn-primary" onclick="submit_click(this)" type="submit">
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true" hidden></span>
+                            <span role="status">@btnLabel</span>
+                        </button>
                     </EditForm>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function submit_click(button) {
+        button.disabled = true;
+        button.getElementsByTagName('span')[0].hidden = false;
+        button.getElementsByTagName('span')[1].innerText = "Sending...";
+        button.form.submit();
+        }
+</script>
 
 @code {
     [SupplyParameterFromForm(FormName = "LoginForm")]
