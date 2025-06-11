@@ -244,19 +244,13 @@
 								 <#list details as detail>
 									<tr> <#if detail??>
 										<td><#if detail["title"]??>${detail["title"]}</#if></td>
-										<td><#if detail.published_date??>${detail.published_date}</#if></td>
-										<td><#if detail.apply_url??>${detail.apply_url}</#if></td>
+										<td><#if detail["published_date']??>${detail["published_date"]}</#if></td>
+										<td><#if detail["apply_url"]??>${detail["apply_url"]}</#if></td>
 									</#if> </tr>
 								</#list>
 							</tbody>
 						<table>
 						</#if>
-					</tr>
-<!-- Application Url  -->
-					<tr>
-						<br>
-							<#if apply_url??>To apply click <a href="${apply_url}">here</a>  </#if>
-						</br>
 					</tr>
 				</table>
 				</td>

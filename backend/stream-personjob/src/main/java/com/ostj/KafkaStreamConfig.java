@@ -121,7 +121,10 @@ public class KafkaStreamConfig {
                 personProvider.getPersonData(Integer.parseInt(value), person);
                 String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold);
                 if(StringUtils.isNotBlank(notification)){
-                    emailSender.withTO(person.email).withBody(notification).withSubject("1Step2Job found a job for you").send(emailSenderAddress);
+                    emailSender.withTO(person.email)
+                                .withBody(notification)
+                                .withSubject("1Step2Job found a job for you")
+                                .send(emailSenderAddress);
                     log.debug("Sent email notification for person={}", person);
                 }
                 else{
