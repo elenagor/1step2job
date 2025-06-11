@@ -28,8 +28,8 @@ public class MatchResultManager {
 
     public int updateMatchResult(MatchResult result) throws Exception {
         String insertQuery = "UPDATE person_position_matches "+//
-        "SET  score = ?, date = ?, reasoning = ?, comparison_details = ?" + //
-        "WHERE person_id = ?, profile_id = ?, position_id = ?";
+        "SET  score = ?, date = ?, reasoning = ?, comparison_details = ? ::json " + //
+        "WHERE person_id = ? AND profile_id = ? AND position_id = ? ;";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);
@@ -42,13 +42,13 @@ public class MatchResultManager {
     }
 
     public boolean isPersonProcessFinished(int person_id) throws SQLException{
-        String query = "SELECT count(*) FROM person_position_matches JOIN persons ON persons.id = person_id WHERE person_id = ? AND score = 0";
+        String query = "SELECT count(*) FROM person_position_matches JOIN persons ON persons.id = person_id WHERE person_id = ? AND score = 0 ;";
         List<Object> parameters = Arrays.asList(person_id);
         List<Map<String, Object>> res = dbConnector.query(query, parameters);
-        int resultCount = 0;
+        long resultCount = 0;
         if(res != null){
             for (Map<String, Object> rs : res) {
-                resultCount = (int) rs.get("count");
+                resultCount = (long) rs.get("count");
             }
         }
         return resultCount == 0 ? true : false;

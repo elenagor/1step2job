@@ -77,7 +77,7 @@ public class Application {
 
     @Bean
     public PositionReceiver getJobsReceiver()  {
-        log.debug("JobsReceiver: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
+        log.debug("PositionReceiver: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
     	try {
             return new PositionReceiver(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
         } catch (Exception e) {
@@ -88,7 +88,13 @@ public class Application {
 
     @Bean
     public MatchResultManager getResultManager()  {
-    	return new MatchResultManager();
+        log.debug("MatchResultManager: jdbcUrl=" + configProvider.getJdbcUrl() + ",username=" + configProvider.getUsername() + ",password=" + configProvider.getPassword());
+    	try {
+    	    return new MatchResultManager(configProvider.getJdbcUrl(), configProvider.getUsername(), configProvider.getPassword());
+        } catch (Exception e) {
+            log.error("Error connect to DB {}", e);
+        }
+        return null;
     }
 
     private Properties getPropertiesConfiguration() {

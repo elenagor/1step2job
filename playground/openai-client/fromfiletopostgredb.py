@@ -27,6 +27,7 @@ def html_to_text(html_content):
     return text_maker.handle(html_content).replace("\n", " ").replace("*", "").replace("#", "").replace("-", "").replace("'", "")
 
 def get_title_embeddings(title):
+    title = title.upper()
     title_embedding = ostj.get_embedding(title)
     return title_embedding
 

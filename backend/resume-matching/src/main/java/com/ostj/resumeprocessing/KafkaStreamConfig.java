@@ -165,7 +165,7 @@ public class KafkaStreamConfig  {
             }
         }
         catch(Exception e){
-            log.error("Error on proces profileId={} jobId={} {}", profile.id, position.id, e);
+            log.error("Error on procces profileId={} jobId={} {}", profile.id, position.id, e);
         }
     }
 
