@@ -11,8 +11,8 @@
 <PageTitle>Home</PageTitle>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="row g-5 w-100">
-        <div class="col-sm-12 mb-3 mb-sm-0 d-flex alight-items-stretch">
+    <div class="row g-5 justify-content-center  w-100">
+        <div class="col-sm-8 mb-3 d-flex alight-items-stretch">
             <div class="card w-100">
                 <h5 class="card-header">Let's start form here</h5>
                 <div class="card-body">
@@ -20,19 +20,22 @@
                     <EditForm Model="@this" OnValidSubmit="HandleFileUpload">
                         <InputFile OnChange="OnInputFileChange" class="form-control mb-3"
                             accept=".pdf,.docx,.doc,.txt" />
-                        <button type="submit" class="btn btn-primary w-100"
-                            disabled="@(!isFileSelected)">Upload</button>
+                        @if (errorMessage != null)
+                        {
+                            <div class="alert alert-danger">@errorMessage</div>
+                        }
+                        <button type="submit" class="btn btn-primary" disabled="@(!isFileSelected || processing)">
+                            @if (processing)
+                            {
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span role="status">Uploading...</span>
+                            }
+                            else
+                            {
+                                <span role="status">Upload</span>
+                            }
+                        </button>
                     </EditForm>
-                    @if (processing)
-                    {
-                        <div class="spinner-border text-primary mt-3" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    }
-                    @if (Error != null)
-                    {
-                        <div class="alert alert-danger">@Error</div>
-                    }
                 </div>
             </div>
         </div>
@@ -45,7 +48,7 @@
     bool isFileSelected = false;
     int personId = 0;
     int profileId = 0;
-    string? Error;
+    string? errorMessage;
     bool processing = false;
 
     protected override async Task OnInitializedAsync()
@@ -70,7 +73,7 @@
     {
         selectedFile = e.File;
         isFileSelected = selectedFile != null;
-        Error = null;
+        errorMessage = null;
     }
 
     private async Task HandleFileUpload()
@@ -95,18 +98,18 @@
                 }
                 else
                 {
-                    Error = $"Error: {response.ReasonPhrase}";
+                    errorMessage = $"Error: {response.ReasonPhrase}";
                 }
                 processing = false;
             }
             catch (Exception ex)
             {
-                Error = $"Error: {ex.Message}";
+                errorMessage = $"Error: {ex.Message}";
             }
         }
         else
         {
-            Error = "No file selected.";
+            errorMessage = "No file selected.";
         }
     }
 }

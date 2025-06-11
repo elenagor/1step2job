@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Hosting;
 @using Microsoft.Extensions.Hosting;
+
 @inject IWebHostEnvironment Env
 
 <div class="page">
@@ -12,7 +13,7 @@
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                @(context.User.Identity?.Name!)
+                                Hi, @(string.IsNullOrWhiteSpace(PersonName) ? context.User.Identity?.Name! : PersonName)
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/logout">Sign out</a></li>
@@ -24,9 +25,11 @@
             </AuthorizeView>
         </div>
 
-        <article class="conten vh-100">
-            @Body
-        </article>
+        <CascadingValue Value="this">
+            <article class="conten vh-100">
+                @Body
+            </article>
+        </CascadingValue>
     </main>
 </div>
 
@@ -38,3 +41,17 @@
         <span class="dismiss">🗙</span>
     </div>
 }
+
+@code
+{
+    string? PersonName { get; set; }
+
+    public void SetPersonName(string name)
+    {
+        if (PersonName != name)
+        {
+            PersonName = name;
+            StateHasChanged();
+        }
+    }
+}    
