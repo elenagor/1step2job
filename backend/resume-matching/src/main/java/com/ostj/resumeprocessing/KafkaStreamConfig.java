@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.cli.MissingArgumentException;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -75,6 +76,11 @@ public class KafkaStreamConfig  {
     @Autowired
 	MatchResultManager resultManager;
 
+    @Autowired
+	Serde<String> newKey;
+    @Autowired
+	Serde<Integer> newValue;
+
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
         Map<String, Object> props = new HashMap<>();
@@ -93,17 +99,18 @@ public class KafkaStreamConfig  {
         stream.mapValues(value -> mapStringValueToEventRecord(value))
         .filter((key, value) -> value != null)
         .peek((key, value) -> processMessage(key, value))
-        .mapValues(v -> mapInputToOutputEventRecord(v))
+        .mapValues((key,value) -> mapInputToOutputEventRecord(key, value))
         .filter((key, value) -> value > 0)
-        .peek((k, v) -> {k = "FinishedPersonId"; log.debug("Sent key={}, value={}", k, v);})
-        .to(outputTopic, Produced.with(Serdes.String(), Serdes.Integer() ))
+        .peek((key, value) -> { log.debug("SEND key={}, value={}", key, value);})
+        .to(outputTopic, Produced.with(newKey, newValue ))
         ;
         return stream;
     }
 
-    private int mapInputToOutputEventRecord(ResumeProcessEvent input){
+    private int mapInputToOutputEventRecord(String k, ResumeProcessEvent input){
         try{
             if( resultManager.isPersonProcessFinished(input.PersonId) ){
+                k = "FinishedPersonId";
                 return input.PersonId;
             }
         } catch (Throwable e) {
@@ -153,7 +160,6 @@ public class KafkaStreamConfig  {
             log.debug("Found Posion: {}", position);
             processResume( prompt,  person,  profile,  position);
         }
-        throw new Exception(  String.format("There is no profile of person id=%d ", record.PersonId ));
     }
     private void processResume(String prompt, Person person, Profile profile, Position position){
         try{
@@ -161,7 +167,7 @@ public class KafkaStreamConfig  {
             MatchResult result = createMatchResultFromOpenAiResponse(person, profile, position, response);
             if(result != null){
                 result.Id = resultManager.updateMatchResult(result);
-                log.info("Saved match result to DB {}", result);
+                log.info("Updated match result to DB {}", result);
             }
         }
         catch(Exception e){
@@ -175,11 +181,11 @@ public class KafkaStreamConfig  {
         JsonObject jsonValue = JsonParser.parseString(jsonString).getAsJsonObject();
         log.trace("Json Responce: {}", jsonValue);
         MatchResult result = gson.fromJson(jsonValue, MatchResult .class);
-        log.debug("Matched result overall_score={}, {}", result.overall_score, result.score_explanation);
+        log.debug("Matched result SCORE={}, {}", result.overall_score, result.score_explanation);
         result.Person_Id = person.id;
         result.Profile_Id = profile.id;
         result.Position_Id = position.id;
-        result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+        result.date = new java.sql.Timestamp(System.currentTimeMillis()); // Current date
         result.Reasoning = Utils.getThinksAsText(response);
         log.trace("Created MatchResult: {}", result);
         return result;

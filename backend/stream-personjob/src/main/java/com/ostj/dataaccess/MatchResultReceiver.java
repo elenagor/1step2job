@@ -25,7 +25,7 @@ public class MatchResultReceiver {
         result.Position_Id = event.PositionId;
         result.Profile_Id = event.ProfileId;
         result.overall_score = 0;
-        result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+        result.date = new java.sql.Timestamp(System.currentTimeMillis()); // Current date
         try {
             resultProvider.saveMatchResult(result);
         } catch (Exception e) {

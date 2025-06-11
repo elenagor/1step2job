@@ -40,7 +40,7 @@ public class SQLAccessTest {
 		result.Profile_Id = 1;
 		result.Position_Id = 1;
 		result.overall_score = 0;
-		result.date = new java.sql.Date(System.currentTimeMillis()); // Current date
+		result.date = new java.sql.Timestamp(System.currentTimeMillis()); // Current date
 		result.key_arias_of_comparison.add(new Alignment());
 		//int resultId = resultManager.saveMatchResult(result);
 		//assertTrue(resultId >= 0);

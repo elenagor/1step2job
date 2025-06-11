@@ -128,7 +128,7 @@ public class KafkaStreamConfig {
                     log.debug("Sent email notification for person={}", person);
                 }
                 else{
-                    log.info("There is not match result for notification for person={}", value);
+                    log.info("There is not match result to notify person={}", value);
                 }
             }
             else{

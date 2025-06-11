@@ -243,9 +243,9 @@
 							<tbody>
 								 <#list details as detail>
 									<tr> <#if detail??>
-										<td><#if detail["title"]??>${detail["title"]}</#if></td>
-										<td><#if detail["published_date']??>${detail["published_date"]}</#if></td>
-										<td><#if detail["apply_url"]??>${detail["apply_url"]}</#if></td>
+										<td><#if detail.title??>${detail.title}</#if></td>
+										<td><#if detail.published_date??>${detail.published_date}</#if></td>
+										<td><#if detail.apply_url??>${detail.apply_url}</#if></td>
 									</#if> </tr>
 								</#list>
 							</tbody>

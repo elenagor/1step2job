@@ -1,8 +1,9 @@
 package com.ostj.entities;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Date;
+
 
 public class MatchResult {
     public int Id = -1;
@@ -12,7 +13,7 @@ public class MatchResult {
     public int overall_score = 0;
     public String Status = "";
     public String score_explanation = "";
-    public Date date;
+    public Timestamp date;
     public String Reasoning = "";
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
         

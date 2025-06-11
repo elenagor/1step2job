@@ -56,7 +56,12 @@ public class MatchResultsNotifyBulder {
                 result.positionList.add(matchPosition);
             }
         }
-        return createEmailBody(  person,  result );
+        if(result.positionList.size() > 0){
+            return createEmailBody(  person,  result );
+        }
+        else{
+            return null;
+        }
     }
 
     public String createEmailBody( Person person, MatchResultNotify result ) throws Exception{
