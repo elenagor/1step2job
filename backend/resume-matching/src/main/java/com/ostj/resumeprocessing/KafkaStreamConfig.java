@@ -96,7 +96,7 @@ public class KafkaStreamConfig  {
         KStream<String, ResumeProcessEvent> stream = kStreamBuilder.stream(topic_name);
         stream.peek((key, value) -> { log.debug("RECEIVE key={}, value={}", key, value);})
         .peek((key, value) -> processMessage(key, value))
-        .filter((key, value) ->  value.PositionId < 0 )
+        .filter((key, value) ->  value.isFinished )
         .peek((key, value) -> { log.debug("SEND key={}, value={}", key, value);})
         .to(outputTopic, Produced.with( Serdes.String(), resumeProcessEvent ))
         ;

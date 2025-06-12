@@ -10,6 +10,7 @@ public class ResumeProcessEvent {
     public int PositionId = -1;
     public String PositionExternalId = "";
     public int PromptId = -1;
+    public boolean isFinished = false;
 
     public ResumeProcessEvent(){
         
@@ -25,6 +26,7 @@ public class ResumeProcessEvent {
 
     public String toString(){
         return "resumeFilePath="+resumeFilePath+", jdFilePath="+jdFilePath+", promptFilePath="+promptFilePath
-        +String.format("PersonId=%d, ProfileId=%d, PositionId=%d, PromptId=%d", PersonId, ProfileId, PositionId, PromptId);
+        +String.format(", PersonId=%d, ProfileId=%d, PositionId=%d, PromptId=%d", PersonId, ProfileId, PositionId, PromptId)
+        +", isFinished="+isFinished;
     }
 }
