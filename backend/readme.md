@@ -55,6 +55,7 @@ cd <KafkaBinDir> or <KafkaBinWindowsDir>
 { "PersonId":"1", "JobId":"1","promptFilePath":"prompt.txt"}
 { "PersonId":"1", "JobId":"1","PromptId":"1"}
 { "PersonId":"1","ProfileId":"1", "JobId":"1","PromptId":"1"}
+{ "PositionId":"1"}
 
 ### For development
 docker build . -t ostj/pjmapper -f ./stream-personjob/Dockerfile

@@ -2,7 +2,7 @@ package com.ostj.dataaccess;
 
 import com.ostj.dataproviders.MatchResultProvider;
 import com.ostj.entities.MatchResult;
-import com.ostj.entities.ProcessEvent;
+import com.ostj.entities.PersonPositionEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class MatchResultReceiver {
         this.resultProvider = new MatchResultProvider(jdbcUrl, username, password);
     }
 
-    public MatchResult saveMatchResult(ProcessEvent event){
+    public MatchResult saveMatchResult(PersonPositionEvent event){
         MatchResult result = new MatchResult();
         result.Person_Id = event.PersonId;
         result.Position_Id = event.PositionId;

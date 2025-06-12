@@ -91,10 +91,12 @@ public class KafkaStreamConfig  {
     }
 
     @Bean
-    public KStream<String,ResumeProcessEvent> kStream(StreamsBuilder kStreamBuilder){
+    public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
 
-        KStream<String, ResumeProcessEvent> stream = kStreamBuilder.stream(topic_name);
+        KStream<String, String> stream = kStreamBuilder.stream(topic_name);
         stream.peek((key, value) -> { log.debug("RECEIVE key={}, value={}", key, value);})
+        .mapValues(v -> mapStringValueToEventRecord(v))
+        .filter((key, value) -> value != null )
         .peek((key, value) -> processMessage(key, value))
         .filter((key, value) ->  value.isFinished )
         .peek((key, value) -> { log.debug("SEND key={}, value={}", key, value);})
@@ -103,10 +105,21 @@ public class KafkaStreamConfig  {
         return stream;
     }
 
+    private ResumeProcessEvent mapStringValueToEventRecord(String value) {
+		log.trace("Message String Value {}", value);
+		try {
+            JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
+			return gson.fromJson(jsonValue, ResumeProcessEvent.class);
+		} catch (Throwable e) {
+			log.error("Error parsing json message {}", e);
+		}
+		return null;
+	}
+
     public void processMessage(String key, ResumeProcessEvent record) {
         log.debug("Start process key={}, value={}", key, record);
         try{
-            if(record.PositionId >= 0){
+            if(!record.isFinished){
                 String  prompt = promptManager.getPrompt(record);
                 if(prompt == null){
                     throw new Exception(  String.format("There is no prompt with id=%d or filename=%s", record.PromptId, record.promptFilePath));

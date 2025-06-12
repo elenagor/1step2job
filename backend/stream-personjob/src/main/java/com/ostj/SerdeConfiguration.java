@@ -5,13 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
-import com.ostj.entities.ProcessEvent;
+import com.ostj.entities.PersonPositionEvent;
 
 @Configuration
 public class SerdeConfiguration {
-    
+
     @Bean
-	public Serde<ProcessEvent> getMessageSerdersEvent() {
-		return new JsonSerde<>(ProcessEvent.class);
+	public Serde<PersonPositionEvent> getPersonPositionEvent() {
+		return new JsonSerde<>(PersonPositionEvent.class);
 	}
+
 }
