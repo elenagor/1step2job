@@ -90,7 +90,7 @@ public class KafkaStreamConfig {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        log.debug("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, input_topic_name);
+        log.info("kStreamsConfig: appName={}, bootstrapAddress={}, topic_name={}", appName, bootstrapAddress, input_topic_name);
         return new KafkaStreamsConfiguration(props);
     }
 
@@ -98,17 +98,16 @@ public class KafkaStreamConfig {
     public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
         embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("EMBEDDING_TRESHHOLD", "0.1"));
         overall_score_treshhold = Integer.parseInt( configHelper.getProperty("MATCH_TRESHHOLD", "5"));
-        log.debug("Start embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
+        log.info("Start embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
 
         KStream<String, String> stream = kStreamBuilder.stream(input_topic_name);
         stream.peek((k, v) -> {log.debug("RECEIVE key={}, value={}", k, v);})
         .mapValues(v -> mapStringValueToEventRecord(v))
-        .filter((key, value) -> value != null )
+        .filter((k, v) -> v != null )
         .mapValues(this::processPersonJob)
-        .filter((k,v) -> {log.debug("Records for match processing: {}", v); return v != null;})
+        .filter((k,v) -> {log.trace("Records for matching process: {}", v); return v != null;})
         // Splits pasing result into separate messages preparing for sending to further
 		.flatMapValues(v -> v)
-        .mapValues(v -> (PersonPositionEvent)v)
         .peek((k, v) -> {log.debug("SEND key={}, value={}", k, v);})
         .to(outputTopic, Produced.with(Serdes.String(), personPositionEvent ))
         ;
@@ -116,12 +115,12 @@ public class KafkaStreamConfig {
     }
 
     private PersonPositionEvent mapStringValueToEventRecord(String value) {
-		log.trace("Message String Value {}", value);
+		log.trace("Input Value {}", value);
 		try {
             JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
 			return gson.fromJson(jsonValue, PersonPositionEvent.class);
 		} catch (Throwable e) {
-			log.error("Error parsing json message {}", e);
+			log.error("Error parsing event {}", e);
 		}
 		return null;
 	}
@@ -129,13 +128,13 @@ public class KafkaStreamConfig {
     private List<PersonPositionEvent> processPersonJob(String key, PersonPositionEvent value) {
         embeding_match_treshhold = Float.parseFloat( configHelper.getProperty("EMBEDDING_TRESHHOLD", "0.1"));
         overall_score_treshhold = Integer.parseInt( configHelper.getProperty("MATCH_TRESHHOLD", "5"));
-        log.debug("Current embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
+        log.info("Current embeding_match_treshhold={}, overall_score_treshhold={}", embeding_match_treshhold, overall_score_treshhold);
         
-        log.debug("Processed key={}, value={}", key, value);
+        log.debug("Processing event={}", value);
         List<PersonPositionEvent> list = new ArrayList<PersonPositionEvent>();
         Person person = new Person();
         try {
-            if(value.isFinished){
+            if( isFinishedTriger(value) ){
                 log.debug("Processed Finished person={}", value.PersonId);
                 personProvider.getPersonData(value.PersonId, person);
                 String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold);
@@ -151,25 +150,25 @@ public class KafkaStreamConfig {
                 }
             }
             else {
-                if(value.PersonId > 0){
+                if( isPersonTriger(value) ){
                     personProvider.getPersonData(value.PersonId, person);
                 }
-                if(value.ProfileId > 0){
+                if( isPersonProfileTriger(value) ){
                     personProvider.getPersonByProfileId(value.ProfileId, person);
                 }
-                if(person.profiles != null && person.profiles.size() > 0 && person.id > 0){
+                if( isPersonAvalibleForProsecc(person) ){
                     for(Profile profile : person.profiles){
                         for(Job_title title : profile.job_titles){
-                            log.debug("Processed title: {}", title.title);
+                            log.debug("Processing person {} title: {}", person.name, title.title);
                             for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
                                 log.debug("Found position: {}", position);
                                 processEvent(profile, position, list);
                             }
                         }
-                        list.add(new PersonPositionEvent(person.id, profile.id, -1, -1 , true));
+                        addFinishProcessEvent(list, person.id, profile.id);
                     }
                 }
-                else if(value.PositionId > 0 ){
+                else if( isJobPositionTriger(value) ){
                     Position position = new Position();
                     positionProvider.getPositionFromDB( value.PositionId, position);
                     log.debug("Processing posintion={}", position);
@@ -177,7 +176,7 @@ public class KafkaStreamConfig {
                         log.debug("Found person: {}", prsn);
                         for(Profile profile : prsn.profiles){
                             processEvent(profile, position, list);
-                            list.add(new PersonPositionEvent(prsn.id, profile.id, -1, -1 , true));
+                            addFinishProcessEvent(list, prsn.id, profile.id);
                         }
                     }
                 }
@@ -186,6 +185,31 @@ public class KafkaStreamConfig {
             log.error("Error process key={} and value={}, {}", key, value, e);
         }
         return list.size() > 0 ? list : null;
+    }
+
+    private boolean isPersonTriger(PersonPositionEvent event){
+        return event.PersonId > 0;
+    }
+
+    private boolean isPersonProfileTriger(PersonPositionEvent event){
+        return event.PersonId > 0;
+    }
+
+    private boolean isJobPositionTriger(PersonPositionEvent event){
+        return event.PersonId > 0;
+    }
+
+    private boolean isPersonAvalibleForProsecc(Person person){
+        return (person.profiles != null && person.profiles.size() > 0 && person.id > 0);
+    }
+
+    private boolean isFinishedTriger(PersonPositionEvent event){
+        return event.isFinished;
+    }
+
+    private void addFinishProcessEvent(List<PersonPositionEvent> list, int person_id, int profile_id){
+        if(list.size() > 0)
+            list.add(new PersonPositionEvent(person_id, profile_id, -1, -1 , true));
     }
 
     private void processEvent(Profile profile, Position position, List<PersonPositionEvent> list){
