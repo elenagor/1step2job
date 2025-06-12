@@ -77,9 +77,7 @@ public class KafkaStreamConfig  {
 	MatchResultManager resultManager;
 
     @Autowired
-	Serde<String> newKey;
-    @Autowired
-	Serde<Integer> newValue;
+    Serde<ResumeProcessEvent> resumeProcessEvent;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -93,58 +91,32 @@ public class KafkaStreamConfig  {
     }
 
     @Bean
-    public KStream<String,String> kStream(StreamsBuilder kStreamBuilder){
+    public KStream<String,ResumeProcessEvent> kStream(StreamsBuilder kStreamBuilder){
 
-        KStream<String, String> stream = kStreamBuilder.stream(topic_name);
-        stream.mapValues(value -> mapStringValueToEventRecord(value))
-        .filter((key, value) -> value != null)
+        KStream<String, ResumeProcessEvent> stream = kStreamBuilder.stream(topic_name);
+        stream.peek((key, value) -> { log.debug("RECEIVE key={}, value={}", key, value);})
         .peek((key, value) -> processMessage(key, value))
-        .mapValues((key,value) -> mapInputToOutputEventRecord(key, value))
-        .filter((key, value) -> value > 0)
+        .filter((key, value) ->  value.PositionId < 0 )
         .peek((key, value) -> { log.debug("SEND key={}, value={}", key, value);})
-        .to(outputTopic, Produced.with(newKey, newValue ))
+        .to(outputTopic, Produced.with( Serdes.String(), resumeProcessEvent ))
         ;
         return stream;
     }
 
-    private int mapInputToOutputEventRecord(String k, ResumeProcessEvent input){
-        try{
-            if( resultManager.isPersonProcessFinished(input.PersonId) ){
-                k = "FinishedPersonId";
-                return input.PersonId;
-            }
-        } catch (Throwable e) {
-			log.error("Error mapping record to output {}", e);
-		}
-        return -1;
-    }
-
-    private ResumeProcessEvent mapStringValueToEventRecord(String value) {
-        log.info("Start mapping string to record: value={}",value);
-		
-        ResumeProcessEvent record = null;
-		try {
-            JsonObject jsonValue = JsonParser.parseString(value).getAsJsonObject();
-			record = gson.fromJson(jsonValue, ResumeProcessEvent.class);
-            log.debug("Record mapped Value: {}", record.toString());
-		} catch (Throwable e) {
-			log.error("Error parsing record as json {}", e);
-		}
-		return record;
-	}
-
     public void processMessage(String key, ResumeProcessEvent record) {
         log.debug("Start process key={}, value={}", key, record);
         try{
-            String  prompt = promptManager.getPrompt(record);
-            if(prompt == null){
-                throw new Exception(  String.format("There is no prompt with id=%d or filename=%s", record.PromptId, record.promptFilePath));
+            if(record.PositionId >= 0){
+                String  prompt = promptManager.getPrompt(record);
+                if(prompt == null){
+                    throw new Exception(  String.format("There is no prompt with id=%d or filename=%s", record.PromptId, record.promptFilePath));
+                }
+                Person person = personReceiver.getPersonData(record);
+                if(person == null){
+                    throw new Exception(  String.format("There is no person with id=%d or filename=%s", record.PersonId, record.resumeFilePath));
+                }
+                processPersonMessage(record, person, prompt);
             }
-            Person person = personReceiver.getPersonData(record);
-            if(person == null){
-                throw new Exception(  String.format("There is no person with id=%d or filename=%s", record.PersonId, record.resumeFilePath));
-            }
-            processPersonMessage(record, person, prompt);
         }
         catch(Throwable e){
             log.error("Error: " + e.toString());
