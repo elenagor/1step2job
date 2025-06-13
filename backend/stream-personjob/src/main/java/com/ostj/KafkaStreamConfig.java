@@ -141,7 +141,7 @@ public class KafkaStreamConfig {
                 if(StringUtils.isNotBlank(notification)){
                     emailSender.withTO(person.email)
                                 .withBody(notification)
-                                .withSubject("1Step2Job found a job for you")
+                                .withSubject("1Step2Job")
                                 .send(emailSenderAddress);
                     log.debug("Sent email notification for person={}", person);
                 }

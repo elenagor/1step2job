@@ -228,29 +228,32 @@
 			<tr>
 				<td class="email-body" width="100%" cellpadding="0" cellspacing="0"> 
 				<table class="email-body_inner" align="center" width="100%" cellpadding="0" cellspacing="0">
-<!-- Body content -->
 					<tr>
-						<#if person_name??>Hello ${person_name} ! <#else> Hello </#if>
-						<#if job_title??>We found for you a following jobs  </#if>
+						<br>
+							<#if person_name??>Hey ${person_name} ! <#else> Hello ! </#if>
+						</br>
 					</tr>
-<!-- Positions content -->
 					<tr>
-						<#if details??>
-						<table border="1" width="100%">
-							<thead>
-								<tr><th>Title</th><th>Published Date</th><th>Apply URL</th></tr>
-							</thead>
-							<tbody>
-								 <#list details as detail>
-									<tr> <#if detail??>
-										<td><#if detail.title??>${detail.title}</#if></td>
-										<td><#if detail.published_date??>${detail.published_date}</#if></td>
-										<td><#if detail.apply_url??>${detail.apply_url}</#if></td>
-									</#if> </tr>
-								</#list>
-							</tbody>
 						<table>
-						</#if>
+							<#list details as detail>
+								<#if detail??>
+									</br>
+									<tr>
+										<#if detail.published_date??>Published ${detail.published_date} </#if>
+										<a href="${detail.apply_url}"> ${detail.title} </a>
+									</tr>
+									</br>
+									<tr>
+										<#if detail.location??>Location: ${detail.location} </#if>
+										<#if detail.type??>, Type: ${detail.type} </#if>
+										<#if detail.is_remote??>, Remote: ${detail.is_remote} </#if>
+										<#if detail.salary_min??>Salary from: ${detail.salary_min} </#if>
+										<#if detail.salary_max??>- to: ${detail.salary_max} </#if>
+									</tr>
+									</br>
+								</#if> 
+							</#list>
+						</table>
 					</tr>
 				</table>
 				</td>
