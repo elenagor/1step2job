@@ -9,17 +9,26 @@ from sqlalchemy import text
 import ostj_client as ostj
 
 class Job_Description_Record:
-    def __init__(self,  ext_id, title, title_embeddings, published, description, application_url, remote, type):
+    def __init__(self,  ext_id, title, title_embeddings, location_country, location_city, location_state, 
+                 published, description, application_url, remote, salary_min, salary_max, type):
         self.external_id = ext_id
         self.title = title
         self.title_embeddings = title_embeddings
+        self.location_country = location_country
+        self.location_city = location_city
+        self.location_state = location_state
         self.published = published
         self.description = description
         self.apply_url = application_url
         self.location_is_remote = remote
+        self.salary_min = salary_min
+        self.salary_max = salary_max
         self.type = type
     def __str__(self):
-        return f"'{self.external_id}', '{self.title}', '{self.title_embeddings}', '{self.published}', '{self.description}', '{self.apply_url}', '{self.location_is_remote}', '{self.type}'"
+        return f"""
+        '{self.external_id}', '{self.title}', '{self.title_embeddings}', '{self.location_country}', '{self.location_city}', '{self.location_state}', 
+        '{self.published}', '{self.description}', '{self.apply_url}', '{self.location_is_remote}', '{self.salary_min}', '{self.salary_max}', '{self.type}'
+        """
 
 def html_to_text(html_content):  
     text_maker = html2text.HTML2Text()
@@ -31,20 +40,41 @@ def get_title_embeddings(title):
     title_embedding = ostj.get_embedding(title)
     return title_embedding
 
+def get_field_value_with_subkey(result, key, subkey):
+    try:
+        return result[key][0][subkey]
+    except Exception as e:
+        return ""
+    
+def get_field_real_value(result, key):
+    try:
+        if result[key] == None:
+            return 0
+        else:
+            return result[key]
+    except Exception as e:
+        return 0
+
 def save_to_db(result):
     record = Job_Description_Record(
                                     result["ext_id"], 
-                                    result["title"], 
+                                    result["title"].replace("'", ""), 
                                     get_title_embeddings(result["title"]),
+                                    get_field_value_with_subkey (result, "countries", "code"),
+                                    get_field_value_with_subkey(result, "cities", "name"),
+                                    get_field_value_with_subkey(result, "states", "code"),
                                     result["published"],
                                     html_to_text(result["description"]),
                                     result["application_url"], 
                                     result["has_remote"], 
-                                    result["types"][0]["name"]
+                                    get_field_real_value(result,"salary_min"), 
+                                    get_field_real_value(result,"salary_max"), 
+                                    get_field_value_with_subkey(result,"types","name")
                                     )
 
     session = Session()
-    ls_cols = [ "external_id", "title", "title_embeddings", "published", "description", "apply_url", "location_is_remote", "type"]
+    ls_cols = [ "external_id", "title", "title_embeddings", "location_country", "location_city", "location_state", 
+               "published", "description", "apply_url", "location_is_remote", "salary_min", "salary_max", "type"]
     ls_vals = [str(record)]
     s_cols = ', '.join(ls_cols)
     s_vals = '(' + '), ('.join(ls_vals) + ')'
@@ -78,11 +108,7 @@ def load_and_save_file(full_file_path):
             for result in data["results"]:
                 if exists_in_db(result) == None:
                     save_to_db(result)
-                    #update_embeding(result)
                     count = count + 1
-                else:
-                    update_embeding(result)
-                    print(f"Record {result["ext_id"]} exists")
         except Exception as e:
             print(e)
     print(str(count) + " records were been saved from file " + full_file_path)
