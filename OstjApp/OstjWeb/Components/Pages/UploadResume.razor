@@ -24,17 +24,7 @@
                         {
                             <div class="alert alert-danger">@errorMessage</div>
                         }
-                        <button type="submit" class="btn btn-primary" disabled="@(!isFileSelected || processing)">
-                            @if (processing)
-                            {
-                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                                <span role="status">Uploading...</span>
-                            }
-                            else
-                            {
-                                <span role="status">Upload</span>
-                            }
-                        </button>
+                        <ActionButton Caption="Upload" InActionCaption="Uploading..." IsInAction="@processing" IsDisabled="@(!isFileSelected)" type="submit" class="btn btn-primary"/>
                     </EditForm>
                 </div>
             </div>

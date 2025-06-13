@@ -1,0 +1,35 @@
+<button @onclick="OnClick" type="submit" class="btn btn-primary" disabled="@(IsInAction || IsDisabled)"
+    @attributes="AdditionalAttributes">
+    @if (IsInAction)
+    {
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">@InActionCaption</span>
+    }
+    else
+    {
+        <span role="status">@Caption</span>
+    }
+</button>
+
+@code
+{
+    #region Parameters
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, Object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public bool IsInAction { get; set; }
+
+    [Parameter]
+    public required string Caption { get; set; }
+
+    [Parameter]
+    public required string InActionCaption { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+    #endregion
+}

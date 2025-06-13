@@ -89,17 +89,7 @@
             <div class="alert alert-danger w-100">@errorMessage</div>
         }
         <div class="g-3">
-            <button type="submit" class="btn btn-primary" disabled="@(!context.IsModified() || processing)">
-                @if (processing)
-                {
-                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                    <span role="status">Updating...</span>
-                }
-                else
-                {
-                    <span role="status">Update</span>
-                }
-            </button>
+            <ActionButton Caption="Update" InActionCaption="Updating..." IsInAction="@processing" IsDisabled="@(!context.IsModified())" type="submit" class="btn btn-primary"/>
         </div>
     </EditForm>
 </div>
