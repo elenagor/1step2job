@@ -42,6 +42,8 @@ public class MatchResultsNotifyBulder {
     public String createEmailBody( Person person, int overall_score_treshhold ) throws Exception{
         MatchResultNotify result = new MatchResultNotify();
         String query = "SELECT score, persons.name, positions.title, positions.apply_url, positions.published " + //
+                        ", CONCAT(positions.location_country, ' ', positions.location_state, ' ', positions.location_city) AS location " + //
+                        ",positions.type, positions.location_is_remote, positions.salary_min, positions.salary_max " +//
                         "FROM person_position_matches " + //
                         "JOIN persons ON persons.id = person_id " + //
                         "JOIN positions ON positions.id = position_id " + //
@@ -81,6 +83,11 @@ public class MatchResultsNotifyBulder {
             map.put("title", position.title);
             map.put("published_date", position.published.toString());
             map.put("apply_url", position.apply_url);
+            map.put("location", position.location);
+            map.put("type", position.type);
+            map.put("is_remote", String.format("%b", position.location_is_remote));
+            map.put("salary_min", String.format("%f",position.salary_min));
+            map.put("salary_max", String.format("%f",position.salary_max));
             list.add(map);
         }
         return list;
