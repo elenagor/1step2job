@@ -106,9 +106,10 @@ def load_and_save_file(full_file_path):
             print(str(data["count"]) + " records in request " + full_file_path)
             count = 0
             for result in data["results"]:
-                if exists_in_db(result) == None:
-                    save_to_db(result)
-                    count = count + 1
+                if get_field_value_with_subkey (result, "countries", "code") == 'US':
+                    if exists_in_db(result) == None:
+                        save_to_db(result)
+                        count = count + 1
         except Exception as e:
             print(e)
     print(str(count) + " records were been saved from file " + full_file_path)
