@@ -13,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ostj.convertors.DataMapper;
+import com.ostj.entities.Job_title;
 import com.ostj.entities.MatchPosition;
 import com.ostj.entities.MatchResultNotify;
 import com.ostj.entities.Person;
+import com.ostj.entities.Profile;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -62,21 +64,43 @@ public class MatchResultsNotifyBulder {
             return createEmailBody(  person,  result );
         }
         else{
-            return null;
+            return createEmailBody(person) ;
         }
+    }
+
+    public String createEmailBody( Person person ) throws Exception{
+        Template template = cfg.getTemplate("no-result-email-template.ftlh");
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("person_name", person.name);
+        data.put("profiles", createProfileMapKeyValues(person.profiles)) ;
+        Writer out = new StringWriter();
+		template.process(data, out);
+        return out.toString();
+    }
+
+    private List<Map<String, String>> createProfileMapKeyValues(List<Profile> profiles) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        for(Profile profile : profiles){
+            for(Job_title title : profile.job_titles){
+                Map<String, String> map = new HashMap<>();
+                map.put("title", title.title);
+                list.add(map);
+            }
+        }
+        return list;
     }
 
     public String createEmailBody( Person person, MatchResultNotify result ) throws Exception{
         Template template = cfg.getTemplate("match-result-email-template.ftlh");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("person_name", person.name);
-        data.put("details", getMapKeyValues(result.positionList)) ;
+        data.put("details", createMatchPositionMapKeyValues(result.positionList)) ;
         Writer out = new StringWriter();
 		template.process(data, out);
         return out.toString();
     }
 
-    private List<Map<String, String>> getMapKeyValues(List<MatchPosition> matchPositions) {
+    private List<Map<String, String>> createMatchPositionMapKeyValues(List<MatchPosition> matchPositions) {
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         for(MatchPosition position : matchPositions){
             Map<String, String> map = new HashMap<>();

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -138,16 +137,9 @@ public class KafkaStreamConfig {
                 log.debug("Processed Finished person={}", value.PersonId);
                 personProvider.getPersonData(value.PersonId, person);
                 String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold);
-                if(StringUtils.isNotBlank(notification)){
-                    emailSender.withTO(person.email)
-                                .withBody(notification)
-                                .withSubject("1Step2Job")
-                                .send(emailSenderAddress);
-                    log.debug("Sent email notification for person={}", person);
-                }
-                else{
-                    log.info("There is not match result to notify person={}", value);
-                }
+                emailSender.withTO(person.email).withBody(notification).withSubject("1Step2Job")
+                            .send(emailSenderAddress);
+                log.debug("Sent email notification for person={}", person);
             }
             else {
                 if( isPersonTriger(value) ){
@@ -165,8 +157,8 @@ public class KafkaStreamConfig {
                                 processEvent(profile, position, list);
                             }
                         }
-                        addFinishProcessEvent(list, person.id, profile.id);
                     }
+                    addFinishProcessEvent(list, person.id, -1);
                 }
                 else if( isJobPositionTriger(value) ){
                     Position position = new Position();
@@ -208,8 +200,7 @@ public class KafkaStreamConfig {
     }
 
     private void addFinishProcessEvent(List<PersonPositionEvent> list, int person_id, int profile_id){
-        if(list.size() > 0)
-            list.add(new PersonPositionEvent(person_id, profile_id, -1, -1 , true));
+        list.add(new PersonPositionEvent(person_id, profile_id, -1, -1 , true));
     }
 
     private void processEvent(Profile profile, Position position, List<PersonPositionEvent> list){

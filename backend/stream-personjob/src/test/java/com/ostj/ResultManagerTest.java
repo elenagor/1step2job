@@ -18,7 +18,7 @@ public class ResultManagerTest {
 	public void testCreateEmailBody() throws Exception{
 		MatchResultsNotifyBulder resultManager = new MatchResultsNotifyBulder(jdbcUrl, username, password);
 		Person person = new Person();
-        person.id = 1;
+        person.id = 7;
         person.name = "Test";
         String emailBody = resultManager.createEmailBody( person, 0);
         log.trace("emailBody: {}", emailBody);
