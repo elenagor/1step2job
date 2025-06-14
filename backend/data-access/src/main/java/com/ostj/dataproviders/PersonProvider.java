@@ -87,7 +87,7 @@ public class PersonProvider {
                         "JOIN job_titles ON positions.title_embeddings <=> job_titles.embedding < ? " +//
                         "JOIN profiles ON job_titles.profile_id = profiles.id " +//
                         "JOIN persons ON profiles.person_id = persons.id " + //
-                        "where positions.id = ? "+//
+                        "WHERE positions.id = ? "+//
                         "ORDER BY (positions.title_embeddings <=> job_titles.embedding) ;";
 
         List<Object> parameters = Arrays.asList( embeding_match_treshhold, position_id  );

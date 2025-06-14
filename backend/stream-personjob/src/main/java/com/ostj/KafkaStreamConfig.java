@@ -32,7 +32,7 @@ import com.ostj.dataaccess.MatchResultReceiver;
 import com.ostj.dataaccess.MatchResultsNotifyBulder;
 import com.ostj.dataproviders.PersonProvider;
 import com.ostj.dataproviders.PositionProvider;
-import com.ostj.entities.Job_title;
+import com.ostj.entities.MatchResultNotify;
 import com.ostj.entities.Person;
 import com.ostj.entities.Profile;
 import com.ostj.utils.EmailSender;
@@ -136,10 +136,12 @@ public class KafkaStreamConfig {
             if( isFinishedTriger(value) ){
                 log.debug("Processed Finished person={}", value.PersonId);
                 personProvider.getPersonData(value.PersonId, person);
-                String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold);
+                List<MatchResultNotify> result = new ArrayList<MatchResultNotify>();
+                String notification = resultNotifyBuilder.createEmailBody(person, overall_score_treshhold, result);
                 emailSender.withTO(person.email).withBody(notification).withSubject("1Step2Job")
                             .send(emailSenderAddress);
                 log.debug("Sent email notification for person={}", person);
+                resultManager.updateMatchResultToSent(result);
             }
             else {
                 if( isPersonTriger(value) ){
@@ -150,12 +152,10 @@ public class KafkaStreamConfig {
                 }
                 if( isPersonAvalibleForProsecc(person) ){
                     for(Profile profile : person.profiles){
-                        for(Job_title title : profile.job_titles){
-                            log.debug("Processing person {} title: {}", person.name, title.title);
-                            for( Position position : positionProvider.getPositionsByTitleComaring(person.id, profile.id, title.id, embeding_match_treshhold)){
-                                log.debug("Found position: {}", position);
-                                processEvent(profile, position, list);
-                            }
+                        log.debug("Processing person {} with profile {}", person.name, profile);
+                        for( Position position : positionProvider.getPositionsByTitleComaring(profile, embeding_match_treshhold)){
+                            log.debug("Found position: {}", position);
+                            processEvent(profile, position, list);
                         }
                     }
                     addFinishProcessEvent(list, person.id, -1);
@@ -184,11 +184,11 @@ public class KafkaStreamConfig {
     }
 
     private boolean isPersonProfileTriger(PersonPositionEvent event){
-        return event.PersonId > 0;
+        return event.ProfileId > 0;
     }
 
     private boolean isJobPositionTriger(PersonPositionEvent event){
-        return event.PersonId > 0;
+        return event.PositionId > 0;
     }
 
     private boolean isPersonAvalibleForProsecc(Person person){

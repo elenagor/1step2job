@@ -1,16 +1,12 @@
 package com.ostj.entities;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class MatchResultNotify {
+    public int id = -1;
     public String person_name;
-    public List<MatchPosition> positionList = new ArrayList<MatchPosition>();
-
+    public Position position;
 
     public String toString(){
-        return String.format("person_name=%s, count of match position=%d", person_name, positionList.size());
+        return String.format("person_name=%s, count of match position=%d", person_name, position);
     }
 }

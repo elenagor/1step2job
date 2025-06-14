@@ -1,5 +1,6 @@
 package com.ostj.dataproviders;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -84,5 +85,13 @@ public class MatchResultProvider {
                 DataMapper.convertToObject( rs, result, result.getClass() );
             }
         }
+    }
+
+    public int updateMatchResult(boolean value, String condition) throws SQLException {
+        String insertQuery = "UPDATE person_position_matches SET  is_sent = ? WHERE id in (?) ;";
+
+        List<Object> parameters = Arrays.asList( value, condition );
+
+        return dbConnector.update( insertQuery, parameters);
     }
 }
