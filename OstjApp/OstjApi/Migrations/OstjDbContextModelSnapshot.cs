@@ -258,11 +258,6 @@ namespace OstjApi.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_remote");
 
-                    b.Property<string>("LocationCountry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("location_country");
-
                     b.Property<DateTime>("Published")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("published");

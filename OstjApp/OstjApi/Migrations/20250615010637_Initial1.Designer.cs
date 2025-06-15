@@ -15,7 +15,7 @@ using Pgvector;
 namespace OstjApi.Migrations
 {
     [DbContext(typeof(OstjDbContext))]
-    [Migration("20250615004414_Initial1")]
+    [Migration("20250615010637_Initial1")]
     partial class Initial1
     {
         /// <inheritdoc />
@@ -260,11 +260,6 @@ namespace OstjApi.Migrations
                     b.Property<bool?>("IsRemote")
                         .HasColumnType("boolean")
                         .HasColumnName("is_remote");
-
-                    b.Property<string>("LocationCountry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("location_country");
 
                     b.Property<DateTime>("Published")
                         .HasColumnType("timestamp with time zone")

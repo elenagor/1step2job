@@ -15,8 +15,6 @@ namespace OstjApi.Models
         [Column(TypeName = "vector(4096)")]
         public Pgvector.Vector? TitleEmbeddings { get; set; }
         [MaxLength(Constants.MaxNameLength)]
-        public string? LocationCountry { get; set; }
-        [MaxLength(Constants.MaxNameLength)]
         public Location? Location { get; set; }
         public bool? IsRemote { get; set; }
         public DateTime Published { get; set; }

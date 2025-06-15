@@ -22,10 +22,10 @@
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Desired Positions</h5>
                     <div class="card-body">
-                        @for (int i = 0; i < PersonProfile.JobTitles.Length; i++)
+                        @for (int i = 0; i < (PersonProfile?.JobTitles?.Length ?? 0); i++)
                         {
                             var index = i;
-                            <InputText class="form-control mb-3" @bind-Value="PersonProfile.JobTitles[index]"
+                            <InputText class="form-control mb-3" @bind-Value="PersonProfile!.JobTitles[index]"
                                 maxlength="@_maxTitleLength" />
                         }
                     </div>
@@ -36,11 +36,11 @@
                     <h5 class="card-header">Desired Location</h5>
                     <div class="card-body">
                         <div class="input-group mb-3">
-                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.City" placeholder="City" aria-label="City"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.City" placeholder="City" aria-label="City"/>
                             <span class="input-group-text">, </span>
-                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.StateOrRegion" placeholder="State" aria-label="State"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.StateOrRegion" placeholder="State" aria-label="State"/>
                             <span class="input-group-text">, </span>
-                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.Country" placeholder="Country" aria-label="Country"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.Country" placeholder="Country" aria-label="Country"/>
                         </div>
                         <div class="form-check form-switch">
                             <InputCheckbox class="form-check-input mb-3" @bind-Value="PersonProfile.AcceptRemote"

@@ -58,7 +58,6 @@ namespace OstjApi.Migrations
                     external_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     title_embeddings = table.Column<Vector>(type: "vector(4096)", nullable: true),
-                    location_country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     is_remote = table.Column<bool>(type: "boolean", nullable: true),
                     published = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
@@ -67,7 +66,7 @@ namespace OstjApi.Migrations
                     salary_max = table.Column<float>(type: "real", nullable: true),
                     type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     location_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    location_country1 = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     location_state_or_region = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
