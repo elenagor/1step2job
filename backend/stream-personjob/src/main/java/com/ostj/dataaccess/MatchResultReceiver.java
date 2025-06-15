@@ -2,7 +2,10 @@ package com.ostj.dataaccess;
 
 import com.ostj.dataproviders.MatchResultProvider;
 import com.ostj.entities.MatchResult;
+import com.ostj.entities.MatchResultNotify;
 import com.ostj.entities.PersonPositionEvent;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,5 +35,18 @@ public class MatchResultReceiver {
             log.error("Save init match result in DB failed ", e);
         }
         return result;
+    }
+
+    public void updateMatchResultToSent(List<MatchResultNotify> results) {
+        StringBuffer sb = new StringBuffer();
+        for(MatchResultNotify result : results){
+            sb.append( String.format("%d,", result.id));
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        try {
+            resultProvider.updateMatchResult(true, sb.toString());
+        } catch (Exception e) {
+            log.error("Update match result in DB failed ", e);
+        }
     }
 }

@@ -16,6 +16,7 @@ public class MatchResult {
     public Timestamp date;
     public String Reasoning = "";
     public List<Alignment> key_arias_of_comparison = new ArrayList<Alignment>();
+    public boolean is_sent = false;
         
     public String toString(){
         return String.format("Id=%d, PersonId=%d, ProfileId=%d, Position_Id=%d, overall_score=%d, date=%s, Status=%s", 

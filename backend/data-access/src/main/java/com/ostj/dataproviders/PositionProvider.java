@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.ostj.convertors.DataMapper;
 import com.ostj.dataaccess.SQLAccess;
 import com.ostj.entities.Position;
+import com.ostj.entities.Profile;
 
 public class PositionProvider {
     private static Logger log = LoggerFactory.getLogger(PositionProvider.class);
@@ -48,17 +49,20 @@ public class PositionProvider {
         }
     }
 
-    public List<Position> getPositionsByTitleComaring(int PersonId, int positionId, int titleId, float embeding_match_treshhold)  throws Exception {
+    public List<Position> getPositionsByTitleComaring(Profile profile, float embeding_match_treshhold)  throws Exception {
         List<Position> list = new ArrayList<Position>();
-        String sqlQuery ="SELECT persons.id as person_id, profiles.id as profile_id, job_titles.id as job_title_id, positions.id as position_id " + //
-                        "FROM persons " + //
-                        "JOIN profiles ON profiles.person_id = persons.id " + //
-                        "JOIN job_titles ON job_titles.profile_id = profiles.id " + //
-                        "JOIN positions ON job_titles.embedding <=> positions.title_embeddings < ? " + //
-                        "WHERE persons.id = ? and profiles.id = ? and job_titles.id = ? " + //
-                        "ORDER BY (job_titles.embedding <=> positions.title_embeddings) ;";
+        String sqlQuery ="SELECT persons.id as person_id, profiles.id as profile_id, job_titles.id as job_title_id, positions.id as position_id " + 
+                        "FROM persons " + 
+                        "JOIN profiles ON profiles.person_id = persons.id " + 
+                        "JOIN job_titles ON job_titles.profile_id = profiles.id " + 
+                        "JOIN positions ON job_titles.embedding <=> positions.title_embeddings < ? " + 
+                        "WHERE (persons.id = ? and profiles.id = ? " + 
+"AND ((profiles.accept_remote IS NOT NULL AND positions.location_is_remote = profiles.accept_remote) OR positions.location_is_remote = false)" + 
+"AND ((profiles.salary_min IS NOT NULL AND profiles.salary_min <= positions.salary_min) OR profiles.salary_min IS NULL)" + 
+"AND ((profiles.salary_max IS NOT NULL AND profiles.salary_max <= positions.salary_max) OR profiles.salary_max IS NULL)" +
+                        ") ORDER BY (job_titles.embedding <=> positions.title_embeddings) ;";
 
-        List<Object> parameters = Arrays.asList( embeding_match_treshhold, PersonId, positionId, titleId  );
+        List<Object> parameters = Arrays.asList( embeding_match_treshhold, profile.person_id, profile.id  );
         List<Map<String, Object>> res = dbConnector.query(sqlQuery, parameters);
 
         if(res != null){

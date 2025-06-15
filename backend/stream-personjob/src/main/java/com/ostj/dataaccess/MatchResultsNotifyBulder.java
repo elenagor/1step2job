@@ -13,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ostj.convertors.DataMapper;
-import com.ostj.entities.MatchPosition;
+import com.ostj.entities.Job_title;
 import com.ostj.entities.MatchResultNotify;
 import com.ostj.entities.Person;
+import com.ostj.entities.Position;
+import com.ostj.entities.Profile;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -39,55 +41,79 @@ public class MatchResultsNotifyBulder {
         this.dbConnector = new SQLAccess(jdbcUrl, username, password);
     }
 
-    public String createEmailBody( Person person, int overall_score_treshhold ) throws Exception{
-        MatchResultNotify result = new MatchResultNotify();
-        String query = "SELECT score, persons.name, positions.title, positions.apply_url, positions.published " + //
-                        ", CONCAT(positions.location_country, ' ', positions.location_state, ' ', positions.location_city) AS location " + //
+    public String createEmailBody( Person person, int overall_score_treshhold, List<MatchResultNotify> resultList ) throws Exception{
+        String query = "SELECT person_position_matches.id, score, is_sent, persons.name, positions.title, positions.apply_url, positions.published " + //
+                        ",positions.location_country, positions.location_state, positions.location_city " + //
                         ",positions.type, positions.location_is_remote, positions.salary_min, positions.salary_max " +//
                         "FROM person_position_matches " + //
                         "JOIN persons ON persons.id = person_id " + //
                         "JOIN positions ON positions.id = position_id " + //
-                        "WHERE person_id = ? and score > ? ;" ;
+                        "WHERE is_sent = false and person_id = ? and score > ? ;" ;
         List<Object> parameters = Arrays.asList( person.id , overall_score_treshhold);
         List<Map<String, Object>> res = dbConnector.query(query, parameters);
         if(res != null){
             for (Map<String, Object> rs : res) {
+                MatchResultNotify result = new MatchResultNotify();
+                result.id = (int)rs.get("id");
                 result.person_name = (String)rs.get("name");
-                MatchPosition matchPosition = new MatchPosition();
+                Position matchPosition = new Position();
                 DataMapper.convertToObject( rs, matchPosition, matchPosition.getClass() );
-                result.positionList.add(matchPosition);
+                result.position = matchPosition;
+                resultList.add(result);
             }
         }
-        if(result.positionList.size() > 0){
-            return createEmailBody(  person,  result );
+        if(resultList.size() > 0){
+            return createEmailBody(  person,  resultList );
         }
         else{
-            return null;
+            return createEmailBody(person) ;
         }
     }
 
-    public String createEmailBody( Person person, MatchResultNotify result ) throws Exception{
-        Template template = cfg.getTemplate("match-result-email-template.ftlh");
+    public String createEmailBody( Person person ) throws Exception{
+        Template template = cfg.getTemplate("no-result-email-template.ftlh");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("person_name", person.name);
-        data.put("details", getMapKeyValues(result.positionList)) ;
+        data.put("profiles", createProfileMapKeyValues(person.profiles)) ;
         Writer out = new StringWriter();
 		template.process(data, out);
         return out.toString();
     }
 
-    private List<Map<String, String>> getMapKeyValues(List<MatchPosition> matchPositions) {
+    private List<Map<String, String>> createProfileMapKeyValues(List<Profile> profiles) {
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-        for(MatchPosition position : matchPositions){
+        for(Profile profile : profiles){
+            for(Job_title title : profile.job_titles){
+                Map<String, String> map = new HashMap<>();
+                map.put("title", title.title);
+                list.add(map);
+            }
+        }
+        return list;
+    }
+
+    public String createEmailBody( Person person, List<MatchResultNotify> resultList ) throws Exception{
+        Template template = cfg.getTemplate("match-result-email-template.ftlh");
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("person_name", person.name);
+        data.put("details", createMatchPositionMapKeyValues(resultList)) ;
+        Writer out = new StringWriter();
+		template.process(data, out);
+        return out.toString();
+    }
+
+    private List<Map<String, String>> createMatchPositionMapKeyValues(List<MatchResultNotify> results) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        for(MatchResultNotify result : results){
             Map<String, String> map = new HashMap<>();
-            map.put("title", position.title);
-            map.put("published_date", position.published.toString());
-            map.put("apply_url", position.apply_url);
-            map.put("location", position.location);
-            map.put("type", position.type);
-            map.put("is_remote", String.format("%b", position.location_is_remote));
-            map.put("salary_min", String.format("%f",position.salary_min));
-            map.put("salary_max", String.format("%f",position.salary_max));
+            map.put("title", result.position.title);
+            map.put("published_date", result.position.published.toString());
+            map.put("apply_url", result.position.apply_url);
+            map.put("location", String.format("%s %s %s", result.position.location_country, result.position.location_state, result.position.location_city));
+            map.put("type", result.position.type);
+            map.put("is_remote", String.format("%b", result.position.location_is_remote));
+            map.put("salary_min", String.format("$%.2f",result.position.salary_min));
+            map.put("salary_max", String.format("$%.2f",result.position.salary_max));
             list.add(map);
         }
         return list;

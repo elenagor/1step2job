@@ -230,33 +230,9 @@
 				<table class="email-body_inner" align="center" width="100%" cellpadding="0" cellspacing="0">
 					<tr>
 						<br>
-							<#if person_name??>Hey ${person_name} ! <#else> Hello ! </#if>
+							<#if person_name??>Hey ${person_name} ! <#else> Hello ! </#if> There is no new position for your profile
+							. Click <a href="www.1step2job.ai"> here </a> to update it.
 						</br>
-					</tr>
-					<tr>
-						<table>
-							<#list details as detail>
-								<#if detail??>
-									</br>
-									<tr>
-										<#if detail.published_date??>Published ${detail.published_date} </#if>
-										<a href="${detail.apply_url}"> ${detail.title} </a>
-									</tr>
-									</br>
-									<tr>
-										<#if detail.location??>Location: ${detail.location} </#if>
-										<#if detail.type??>, Type: ${detail.type} </#if>
-										<#if detail.is_remote??>, Remote: ${detail.is_remote} </#if>
-										<#if detail.salary_min??>Salary from: ${detail.salary_min} </#if>
-										<#if detail.salary_max??>- to: ${detail.salary_max} </#if>
-									</tr>
-									</br>
-								</#if> 
-							</#list>
-						</table>
-					</tr>
-					<tr>
-						<p> Click <a href="www.1step2job.ai"> here </a> to see more </p>
 					</tr>
 				</table>
 				</td>
