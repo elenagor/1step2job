@@ -64,7 +64,7 @@ def save_to_db(result):
                                     get_field_value_with_subkey(result, "cities", "name"),
                                     get_field_value_with_subkey(result, "states", "code"),
                                     result["published"],
-                                    html_to_text(result["description"]),
+                                    result["description"],
                                     result["application_url"], 
                                     result["has_remote"], 
                                     get_field_real_value(result,"salary_min"), 
