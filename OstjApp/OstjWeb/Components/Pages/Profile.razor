@@ -136,6 +136,8 @@
     #endregion
 
     #region Local Variables
+    [CascadingParameter]
+    public MainLayout? MainLayout { get; set; }
 
     int personId = 0;
 
@@ -171,6 +173,8 @@
                 {
                     Navigation.NavigateTo("/resume/upload");
                 }
+                if (MainLayout is not null)
+                    MainLayout.SetPersonName(personInfo!.Name!);
 
                 var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{pfId}");
                 if (profile == null)
