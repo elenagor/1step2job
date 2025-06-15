@@ -109,9 +109,9 @@ public class MatchResultsNotifyBulder {
             map.put("title", result.position.title);
             map.put("published_date", result.position.published.toString());
             map.put("apply_url", result.position.apply_url);
-            map.put("location", String.format("%s %s %s", result.position.location_country, result.position.location_state, result.position.location_city));
+            map.put("location", String.format("%s %s %s", result.position.location_country, result.position.location_state_or_region, result.position.location_city));
             map.put("type", result.position.type);
-            map.put("is_remote", String.format("%b", result.position.location_is_remote));
+            map.put("is_remote", String.format("%b", result.position.is_remote));
             map.put("salary_min", String.format("$%.2f",result.position.salary_min));
             map.put("salary_max", String.format("$%.2f",result.position.salary_max));
             list.add(map);
