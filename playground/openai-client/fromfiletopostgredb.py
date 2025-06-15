@@ -64,7 +64,7 @@ def save_to_db(result):
                                     get_field_value_with_subkey(result, "cities", "name"),
                                     get_field_value_with_subkey(result, "states", "code"),
                                     result["published"],
-                                    result["description"],
+                                    result["description"].replace("'", ""),
                                     result["application_url"], 
                                     result["has_remote"], 
                                     get_field_real_value(result,"salary_min"), 
@@ -73,8 +73,8 @@ def save_to_db(result):
                                     )
 
     session = Session()
-    ls_cols = [ "external_id", "title", "title_embeddings", "location_country", "location_city", "location_state", 
-               "published", "description", "apply_url", "location_is_remote", "salary_min", "salary_max", "type"]
+    ls_cols = [ "external_id", "title", "title_embeddings", "location_country", "location_city", "location_state_or_region", 
+               "published", "description", "apply_url", "is_remote", "salary_min", "salary_max", "type"]
     ls_vals = [str(record)]
     s_cols = ', '.join(ls_cols)
     s_vals = '(' + '), ('.join(ls_vals) + ')'

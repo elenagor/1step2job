@@ -59,6 +59,9 @@ public class KafkaStreamConfig  {
     @Value(value = "${ostj.kstream.topic.output}")
     String outputTopic;
 
+    @Value(value = "${ostj.match.retry}")
+    int retry_callai;
+
     @Autowired
 	OpenAIProvider resumeMatcher;
 
@@ -150,16 +153,17 @@ public class KafkaStreamConfig  {
     private void processResume(String prompt, Person person, Profile profile, Position position){
         log.debug("Start process resume person={}, profileId={}, positionId={}",person.id, profile.id, position.id);
         try{
-            int step = 0;
             MatchResult result = null;
-            do{
-                step++;
+            for(int step = 1; step <= retry_callai; step++){
                 String response = call_openai(prompt, profile, position ) ;
                 result = createMatchResultFromOpenAiResponse(person, profile, position, response);
-                if(step > 3){
+                if(result == null){
+                    log.debug("problem to process person={} - retry step={}", person, step);
+                }
+                else{
                     break;
                 }
-            } while(result != null);
+            } 
             if(result != null){
                 result.Id = resultManager.updateMatchResult(result);
                 log.debug("Updated match result to DB {}", result);
