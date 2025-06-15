@@ -206,8 +206,9 @@ public class KafkaStreamConfig {
     private void processEvent(Profile profile, Position position, List<PersonPositionEvent> list){
         PersonPositionEvent event = new PersonPositionEvent(profile.person_id, profile.id, position.id, -1, false);
         if(isEventNotExistInList(list, event)){
-            list.add(event);
-            resultManager.saveMatchResult(event);
+            if( resultManager.saveMatchResult(event) ){
+                list.add(event);
+            }
         }
     }
 

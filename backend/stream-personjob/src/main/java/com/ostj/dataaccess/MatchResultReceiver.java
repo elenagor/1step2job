@@ -22,7 +22,7 @@ public class MatchResultReceiver {
         this.resultProvider = new MatchResultProvider(jdbcUrl, username, password);
     }
 
-    public MatchResult saveMatchResult(PersonPositionEvent event){
+    public boolean saveMatchResult(PersonPositionEvent event){
         MatchResult result = new MatchResult();
         result.Person_Id = event.PersonId;
         result.Position_Id = event.PositionId;
@@ -31,10 +31,11 @@ public class MatchResultReceiver {
         result.date = new java.sql.Timestamp(System.currentTimeMillis()); // Current date
         try {
             resultProvider.saveMatchResult(result);
+            return true;
         } catch (Exception e) {
             log.error("Save init match result in DB failed ", e);
         }
-        return result;
+        return false;
     }
 
     public void updateMatchResultToSent(List<MatchResultNotify> results) {
