@@ -22,10 +22,10 @@
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Desired Positions</h5>
                     <div class="card-body">
-                        @for (int i = 0; i < (PersonProfile?.JobTitles?.Length ?? 0); i++)
+                        @for (int i = 0; i < PersonProfile.JobTitles.Length; i++)
                         {
                             var index = i;
-                            <InputText class="form-control mb-3" @bind-Value="PersonProfile!.JobTitles[index]"
+                            <InputText class="form-control mb-3" @bind-Value="PersonProfile.JobTitles[index]"
                                 maxlength="@_maxTitleLength" />
                         }
                     </div>
@@ -36,11 +36,14 @@
                     <h5 class="card-header">Desired Location</h5>
                     <div class="card-body">
                         <div class="input-group mb-3">
-                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.City" placeholder="City" aria-label="City"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.City"
+                                placeholder="City" aria-label="City" />
                             <span class="input-group-text">, </span>
-                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.StateOrRegion" placeholder="State" aria-label="State"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location.StateOrRegion"
+                                placeholder="State" aria-label="State" />
                             <span class="input-group-text">, </span>
-                            <InputText class="form-control" @bind-Value="PersonProfile!.Location!.Country" placeholder="Country" aria-label="Country"/>
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location.Country"
+                                placeholder="Country" aria-label="Country" />
                         </div>
                         <div class="form-check form-switch">
                             <InputCheckbox class="form-check-input mb-3" @bind-Value="PersonProfile.AcceptRemote"
@@ -95,7 +98,8 @@
             <div class="alert alert-danger w-100">@errorMessage</div>
         }
         <div class="g-3">
-            <ActionButton Caption="Update" InActionCaption="Updating..." IsInAction="@processing" IsDisabled="@(!context.IsModified())" type="submit" class="btn btn-primary"/>
+            <ActionButton Caption="Update" InActionCaption="Updating..." IsInAction="@processing"
+                IsDisabled="@(!context.IsModified())" type="submit" class="btn btn-primary" />
         </div>
     </EditForm>
 </div>
@@ -116,6 +120,12 @@
     {
         JobTitles = new string[3] { "", "", "" },
         AcceptRemote = true,
+        Location = new()
+        {
+            Country = string.Empty,
+            StateOrRegion = string.Empty,
+            City = string.Empty
+        },
         SalaryMin = 0,
         SalaryMax = 0,
         ExtraRequirements = ""
@@ -126,9 +136,6 @@
     #endregion
 
     #region Local Variables
-
-    [CascadingParameter]
-    public MainLayout? MainLayout { get; set; }
 
     int personId = 0;
 
@@ -151,20 +158,19 @@
         if (authState.User.Identity != null)
         {
             personId = int.Parse(authState.User.FindFirst(ClaimTypes.PrimarySid)?.Value!);
-            personInfo = await HttpClient.GetFromJsonAsync<PersonInfo>($"/api/person/{personId}");
-            if (personInfo == null)
+            var res = await HttpClient.GetAsync($"/api/person/{personId}");
+            if (!res.IsSuccessStatusCode)
             {
                 Navigation.NavigateTo("/logout");
             }
             else
             {
-                int pfId = profileId ?? personInfo.Profiles?.FirstOrDefault()?.Id ?? 0;
+                personInfo = await res.Content.ReadFromJsonAsync<PersonInfo>();
+                int pfId = profileId ?? personInfo!.Profiles?.FirstOrDefault()?.Id ?? 0;
                 if (pfId == 0)
                 {
                     Navigation.NavigateTo("/resume/upload");
                 }
-                if (MainLayout is not null)
-                    MainLayout.SetPersonName(personInfo.Name!);
 
                 var profile = await HttpClient.GetFromJsonAsync<PersonProfile>($"/api/person/{personId}/profile/{pfId}");
                 if (profile == null)
@@ -190,8 +196,8 @@
     }
 
     private async Task HandleProfileUpdate(EditContext args)
-    {   
-        processing = true;     
+    {
+        processing = true;
         var response = await HttpClient.PostAsJsonAsync($"/api/person/{personId}/profile/{PersonProfile.Id}", PersonProfile);
         if (!response.IsSuccessStatusCode)
             errorMessage = $"Error: {response.ReasonPhrase}";

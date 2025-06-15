@@ -19,10 +19,15 @@ namespace OstjApi.Services
         #region IPersonService Implementation
         public async ValueTask<Person?> GetPersonAsync(int id)
         {
-            return await _dbContext.Persons
+            var person = await _dbContext.Persons
                 .Include(p => p.Profiles)
-                .FirstOrDefaultAsync(p => p.Id == id)
-                   ?? throw new InvalidOperationException($"Person with ID {id} does not exist.");
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (person == null)
+            {
+                _logger.LogError("Person with id {id} is not found", id);
+                return null;
+            }
+            return person;
         }
 
         public async ValueTask<ProfileDetails?> GetProfileDetailsAsync(int personId, int profileId)
