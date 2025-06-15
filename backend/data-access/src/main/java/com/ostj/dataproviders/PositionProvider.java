@@ -57,9 +57,9 @@ public class PositionProvider {
                         "JOIN job_titles ON job_titles.profile_id = profiles.id " + 
                         "JOIN positions ON job_titles.embedding <=> positions.title_embeddings < ? " + 
                         "WHERE (persons.id = ? and profiles.id = ? " + 
-"AND ((profiles.accept_remote IS NOT NULL AND positions.location_is_remote = profiles.accept_remote) OR positions.location_is_remote = false)" + 
-"AND ((profiles.salary_min IS NOT NULL AND profiles.salary_min <= positions.salary_min) OR profiles.salary_min IS NULL)" + 
-"AND ((profiles.salary_max IS NOT NULL AND profiles.salary_max <= positions.salary_max) OR profiles.salary_max IS NULL)" +
+"AND ((profiles.accept_remote IS NOT NULL AND positions.is_remote = profiles.accept_remote) OR positions.is_remote = false) " + 
+"AND ((profiles.salary_min IS NOT NULL AND profiles.salary_min <= positions.salary_min) OR profiles.salary_min IS NULL) " + 
+"AND ((profiles.salary_max IS NOT NULL AND profiles.salary_max <= positions.salary_max) OR profiles.salary_max IS NULL) " +
                         ") ORDER BY (job_titles.embedding <=> positions.title_embeddings) ;";
 
         List<Object> parameters = Arrays.asList( embeding_match_treshhold, profile.person_id, profile.id  );

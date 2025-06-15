@@ -23,12 +23,14 @@ public class MatchResultProvider {
     }
 
     public int saveMatchResult(MatchResult result) throws Exception {
-        String insertQuery = "INSERT INTO person_position_matches(person_id, profile_id, position_id, score, date, reasoning, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ? ::json);";
+        String insertQuery = "INSERT INTO person_position_matches("+
+        "person_id, profile_id, position_id, score, date, reasoning, is_sent, comparison_details)VALUES (?, ?, ?, ?, ?, ?, ?, ? ::json);";
 
         java.sql.Date sqlDate = new java.sql.Date(result.date.getTime());
         String details = gson.toJson(result.key_arias_of_comparison);
 
-        List<Object> parameters = Arrays.asList( result.Person_Id, result.Profile_Id, result.Position_Id, result.overall_score, sqlDate, result.Reasoning, details );
+        List<Object> parameters = Arrays.asList( 
+            result.Person_Id, result.Profile_Id, result.Position_Id, result.overall_score, sqlDate, result.Reasoning, false, details );
 
         return dbConnector.update( insertQuery, parameters);
     }

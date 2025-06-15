@@ -43,8 +43,8 @@ public class MatchResultsNotifyBulder {
 
     public String createEmailBody( Person person, int overall_score_treshhold, List<MatchResultNotify> resultList ) throws Exception{
         String query = "SELECT person_position_matches.id, score, is_sent, persons.name, positions.title, positions.apply_url, positions.published " + //
-                        ",positions.location_country, positions.location_state, positions.location_city " + //
-                        ",positions.type, positions.location_is_remote, positions.salary_min, positions.salary_max " +//
+                        ",positions.location_country, positions.location_state_or_region, positions.location_city " + //
+                        ",positions.type, positions.is_remote, positions.salary_min, positions.salary_max " +//
                         "FROM person_position_matches " + //
                         "JOIN persons ON persons.id = person_id " + //
                         "JOIN positions ON positions.id = position_id " + //

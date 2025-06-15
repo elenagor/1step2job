@@ -17,17 +17,19 @@ import com.ostj.entities.Profile;
 public class PersonProvider {
     private static Logger log = LoggerFactory.getLogger(PersonProvider.class);
 	private SQLAccess dbConnector;
-    private static String QUERY_PERSON_FIELD = "persons.id as person_id " + //
-                ",profiles.id as profile_id " + //
-                ",job_titles.id as job_title_id " + //
-                ",persons.name " + //
-                ",persons.email " + //
-                ",profiles.accept_remote " + //
-                ",profiles.location " + //
-                ",profiles.salary_min " + //
-                ",profiles.salary_max " + //
-                ",profiles.resume " + //
-                ",job_titles.title " + //
+    private static String QUERY_PERSON_FIELD = "persons.id as person_id " + 
+                ",profiles.id as profile_id " + 
+                ",job_titles.id as job_title_id " + 
+                ",persons.name " + 
+                ",persons.email " + 
+                ",profiles.accept_remote " + 
+                ",profiles.location_city " + 
+                ",profiles.location_country " + 
+                ",profiles.location_state_or_region " + 
+                ",profiles.salary_min " + 
+                ",profiles.salary_max " + 
+                ",profiles.resume " + 
+                ",job_titles.title " + 
                 ",job_titles.embedding ";
 
     public PersonProvider(String jdbcUrl, String username, String password) throws Exception {

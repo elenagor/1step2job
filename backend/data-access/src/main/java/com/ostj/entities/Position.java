@@ -25,7 +25,7 @@ public class Position {
         +", location_city="+location_city 
         +", location_state_or_region="+location_state_or_region 
         +", published="+published
-        +", location_is_remote="+is_remote
+        +", is_remote="+is_remote
         + String.format(", salary_min=%f", salary_min )
         + String.format(", salary_max=%f", salary_max )
         +", type="+type;
