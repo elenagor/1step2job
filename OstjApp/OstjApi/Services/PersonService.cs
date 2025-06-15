@@ -4,6 +4,8 @@ using OstjApi.Data;
 using System.Reflection;
 using System.Text.Json;
 using Ostj.Constants;
+using Ostj.Shared.Contracts;
+using Humanizer;
 
 
 namespace OstjApi.Services
@@ -72,6 +74,75 @@ namespace OstjApi.Services
             _dbContext.Profiles.Update(profile);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async ValueTask<List<PersonPositionMatch>> GetPositionsForProfile(int personId, int profileId)
+        {
+            var positions = await _dbContext.PersonPositionMatches
+                .Include(p => p.Position)
+                .Where(x => x.PersonId == personId && x.ProfileId == profileId)
+                .ToListAsync();
+
+            if (positions == null || positions.Count == 0)
+            {
+                return [
+                    new PersonPositionMatch() {
+                        Id = 1,
+                        PersonId = 1,
+                        Person = null,
+                        PositionId = 1,
+                        Score = 9,
+                        Date = DateTime.Now.AddDays(-1),
+
+                        Position = new Position() {
+                            Id = 1,
+                            Title = "Software Engineer",
+                            ExternalId = "1",
+                            Location = new OstjApi.Models.Location() {
+                                Country = "US",
+                                StateOrRegion = "PA",
+                                City = "Pittsburgh",
+                            },
+                            IsRemote = null,
+                            Description = """
+                            This company, a leading project developer with a focus on renewable energy and infrastructure serving utilities, businesses, and communities, is dedicated to generating value through investments in sustainable energy infrastructure for its partners, stakeholders, energy consumers, and local communities. Our client actively engages in a wide range of industries and commercial ventures, providing innovative, integrated business solutions to clients worldwide through a global network. As the Director of Project Development, you will oversee the company's portfolio of solar projects by coordinating and reviewing the work of various development functions, consultants, and other team members who are part of a remote, distributed workforce. To accomplish 
+                            the project and business goal, this role will collaborate closely with the interconnectivity, permitting, real estate, and engineering teams. 
+
+                            Join a workplace where brilliant individuals with a desire for challenge, creativity, and passion propagate their goals around the globe. 
+
+                            Key responsibilities for this role will include (but not limited to): 
+                            • Work with the VP on the company’s overall strategy and development efforts in the Midwest or East Region 
+                            • Oversee the processes for zoning, environmental protection, permitting, entitlements for land use, and compliance. 
+                            • Identify, oversee, and lead collaboration partners and outside consultants. 
+                            • Create workable, economically sound new and ongoing solar projects. 
+                            • Establish a target scope of work and monitor project progress to ensure it is on time and on budget. 
+                            • Supervise the development of solar energy projects from the feasibility stage through the start of construction. 
+                            • Stay up to date on U.S. renewable energy opportunities as well as national industry trends that may have an impact on future 
+                            solar and renewable energy development opportunities and their competitiveness. 
+
+                            Required and desired skillsets, experience and qualifications for this role: 
+                            • Bachelor's Degree is necessary. 
+                            • Experience with project development for at least 8-10 years, preferably in the solar, renewable energy, or real estate 
+                            development industries 
+                            • Experience with team building and leadership 
+                            • Skilled in project management with the ability to identify and resolve potential project flaws and prioritize critical path tasks 
+                            • Strong project management background with the capacity to spot potential project defects, address them, and determine the 
+                            tasks that should be prioritized on the critical path. 
+                            • Knowledge of market trends for renewable energy sources and how they affect the development of solar projects. 
+                            • Capability to manage many priorities concurrently and flourish in rapidly changing environments 
+                            • Ability to utilize Excel spreadsheets, create excel trackers and be able to use Word and Powerpoint for reporting/presentations 
+                            via teams or in person                            
+                        """,
+                        ApplyUrl = "https://somecompany.com",
+                        SalaryMin = 100000,
+                        SalaryMax = 200000,
+                        }
+                    }
+                ];
+
+            }
+            return positions;
+        }
+
         #endregion
 
         #region Private Methods
@@ -119,7 +190,7 @@ namespace OstjApi.Services
                         PersonId = 0, // Will be set after saving
                         Name = Constants.DefaultProfileName,
                         AcceptRemote = true,
-                        Location = null,
+                        Location = new (),
                         SalaryMin = null,
                         SalaryMax = null,
                         ExtraRequirements = null,

@@ -35,7 +35,13 @@
                 <div class="card mb-3 g-3 w-100">
                     <h5 class="card-header">Desired Location</h5>
                     <div class="card-body">
-                        <InputText class="form-control mb-3" @bind-Value="PersonProfile.Location" />
+                        <div class="input-group mb-3">
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.City" placeholder="City" aria-label="City"/>
+                            <span class="input-group-text">, </span>
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.StateOrRegion" placeholder="State" aria-label="State"/>
+                            <span class="input-group-text">, </span>
+                            <InputText class="form-control" @bind-Value="PersonProfile.Location!.Country" placeholder="Country" aria-label="Country"/>
+                        </div>
                         <div class="form-check form-switch">
                             <InputCheckbox class="form-check-input mb-3" @bind-Value="PersonProfile.AcceptRemote"
                                 maxlength="@_maxLocationLength" />
@@ -110,7 +116,6 @@
     {
         JobTitles = new string[3] { "", "", "" },
         AcceptRemote = true,
-        Location = "",
         SalaryMin = 0,
         SalaryMax = 0,
         ExtraRequirements = ""

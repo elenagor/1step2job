@@ -15,9 +15,6 @@ namespace OstjApi.Models
         [MaxLength(20)]
         public string? Phone { get; set; }
         [MaxLength(Constants.MaxNameLength)]
-        public string? City { get; set; }
-        [MaxLength(2)]
-        public string? State { get; set; }
         public EnrollmentType EnrollmentType { get; set; } = EnrollmentType.NotEnrolled;
         public IList<Profile> Profiles { get; set; } = [];
     }

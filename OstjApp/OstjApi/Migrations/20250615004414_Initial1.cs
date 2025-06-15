@@ -9,7 +9,7 @@ using Pgvector;
 namespace OstjApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initial1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,9 +42,7 @@ namespace OstjApi.Migrations
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    state = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    enrollment_type = table.Column<string>(type: "text", nullable: false)
+                    enrollment_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,15 +59,16 @@ namespace OstjApi.Migrations
                     title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     title_embeddings = table.Column<Vector>(type: "vector(4096)", nullable: true),
                     location_country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    location_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    location_state = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    location_is_remote = table.Column<bool>(type: "boolean", nullable: true),
+                    is_remote = table.Column<bool>(type: "boolean", nullable: true),
                     published = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     apply_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     salary_min = table.Column<float>(type: "real", nullable: true),
                     salary_max = table.Column<float>(type: "real", nullable: true),
-                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_country1 = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_state_or_region = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,11 +84,13 @@ namespace OstjApi.Migrations
                     person_id = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     accept_remote = table.Column<bool>(type: "boolean", nullable: false),
-                    location = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     salary_min = table.Column<float>(type: "real", nullable: true),
                     salary_max = table.Column<float>(type: "real", nullable: true),
                     extra_requirements = table.Column<string>(type: "text", nullable: true),
-                    resume = table.Column<string>(type: "text", nullable: false)
+                    resume = table.Column<string>(type: "text", nullable: false),
+                    location_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    location_state_or_region = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -133,9 +134,10 @@ namespace OstjApi.Migrations
                     person_id = table.Column<int>(type: "integer", nullable: false),
                     profile_id = table.Column<int>(type: "integer", nullable: false),
                     position_id = table.Column<int>(type: "integer", nullable: false),
-                    score = table.Column<int>(type: "integer", nullable: false),
+                    score = table.Column<int>(type: "integer", nullable: false, defaultValue: -1),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     reasoning = table.Column<string>(type: "text", nullable: true),
+                    is_sent = table.Column<bool>(type: "boolean", nullable: false),
                     comparison_details = table.Column<ComparisonDetail[]>(type: "json", nullable: false)
                 },
                 constraints: table =>

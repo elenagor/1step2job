@@ -17,10 +17,8 @@ namespace OstjApi.Models
         [MaxLength(Constants.MaxNameLength)]
         public string? LocationCountry { get; set; }
         [MaxLength(Constants.MaxNameLength)]
-        public string? LocationCity { get; set; }
-        [MaxLength(2)]
-        public string? LocationState { get; set; }
-        public bool? LocationIsRemote { get; set; }
+        public Location? Location { get; set; }
+        public bool? IsRemote { get; set; }
         public DateTime Published { get; set; }
         public required string Description { get; set; }
         [MaxLength(500)]

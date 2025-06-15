@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using OstjApi.Models;
 
@@ -15,6 +16,9 @@ namespace OstjApi.Data
                 .Property(p => p.EnrollmentType)
                 .HasConversion<string>();
             modelBuilder.HasPostgresExtension("vector");
+
+            modelBuilder.Entity<ProfileDetails>().ComplexProperty(p => p.Location).IsRequired();
+            modelBuilder.Entity<Position>().ComplexProperty(p => p.Location).IsRequired();
 
             #region TableSplitting
             modelBuilder.Entity<ProfileDetails>(
@@ -62,6 +66,7 @@ namespace OstjApi.Data
             modelBuilder.Entity<PersonPositionMatch>()
                 .Property(p => p.Score)
                 .HasDefaultValue(-1);
+
             #endregion
 
         }

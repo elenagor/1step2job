@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Ostj.Shared.Contracts;
 using OstjApi.Data;
 using OstjApi.Models;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OstjDbContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), option => option.UseVector())
+        .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
         .UseSnakeCaseNamingConvention());
 
 //builder.Services.AddAntiforgery();
@@ -70,40 +72,6 @@ app.MapGet("/api/person/{id:int}", async ([FromRoute] int id, IPersonService per
 })
 .DisableAntiforgery();
 
-app.MapGet("/api/person/{id:int}/profile/{pid:int}", async ([FromRoute] int id, [FromRoute] int pid, IPersonService personService) =>
-{
-    if (id <= 0)
-        return Results.BadRequest("Invalid person ID.");
-    if (pid <= 0)
-        return Results.BadRequest("Invalid profile ID.");
-        
-    try
-    {
-        var profile = await personService.GetProfileDetailsAsync(id, pid);
-        if (profile == null)
-            return Results.NotFound("Profile not found for the given person ID.");
-
-        return Results.Ok(new PersonProfile
-        {
-            Id = profile.Id,
-            Name = profile.Name,
-            JobTitles = [.. profile.JobTitles
-                .Take(3)
-                .Select(jt => jt.Title)],
-            AcceptRemote = profile.AcceptRemote,
-            Location = profile.Location,
-            SalaryMin = profile.SalaryMin,
-            SalaryMax = profile.SalaryMax,
-            ExtraRequirements = profile.ExtraRequirements
-        });
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-})
-.DisableAntiforgery();
-
 app.MapPost("/api/person/{id:int}/profile/{pid:int}", async ([FromRoute] int id, [FromRoute] int pid
             , [FromBody] PersonProfile personProfile, IPersonService personService) =>
 {
@@ -119,8 +87,13 @@ app.MapPost("/api/person/{id:int}/profile/{pid:int}", async ([FromRoute] int id,
             return Results.NotFound("Profile not found for the given person ID.");
 
         profile.Name = personProfile.Name;
-        profile.AcceptRemote = personProfile.AcceptRemote; 
-        profile.Location = personProfile.Location;
+        profile.AcceptRemote = personProfile.AcceptRemote;
+        profile.Location = new()
+        {
+            Country = personProfile.Location?.Country ?? string.Empty,
+            StateOrRegion = personProfile.Location?.StateOrRegion ?? string.Empty,
+            City = personProfile.Location?.City ?? string.Empty,
+        };
         profile.SalaryMin = personProfile.SalaryMin;
         profile.SalaryMax = personProfile.SalaryMax;
         profile.ExtraRequirements = personProfile.ExtraRequirements;
@@ -207,6 +180,45 @@ app.MapPost("/api/auth/login", async ([FromForm] string email, [FromForm] string
 
     // Optionally, generate and return a JWT or session token here
     return Results.Ok(authResult.User);
+})
+.DisableAntiforgery();
+
+app.MapGet("/api/person/{id:int}/positions/{pid:int}", async ([FromRoute] int id, [FromRoute] int pid, IPersonService personService) =>
+{
+    if (id <= 0)
+        return Results.BadRequest("Invalid person ID.");
+    if (pid <= 0)
+        return Results.BadRequest("Invalid profile ID.");
+        
+    try
+    {
+        var matches = await personService.GetPositionsForProfile(id, pid);
+        if (matches == null || matches.Count == 0)
+            return Results.Ok(new List<PositionInfo>());
+        var positionInfos = matches.Select(match => new PositionInfo()
+        {
+            Id = match.Id,
+            ExternalId = match.Position.ExternalId,
+            Title = match.Position.Title,
+            Description = match.Position.Description,
+            Location = new LocationInfo()
+            {
+                Country = match.Position.Location?.Country,
+                StateOrRegion = match.Position.Location?.StateOrRegion,
+                City = match.Position.Location?.City
+            },
+            IsRemote = match.Position.IsRemote,
+            ApplyUrl = match.Position.ApplyUrl,
+            SalaryMin = match.Position.SalaryMin,
+            SalaryMax = match.Position.SalaryMax,
+            Published = match.Position.Published
+        }).ToList();
+        return Results.Ok(positionInfos);
+    } 
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 })
 .DisableAntiforgery();
 

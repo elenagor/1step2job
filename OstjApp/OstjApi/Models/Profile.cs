@@ -23,7 +23,7 @@ namespace OstjApi.Models
         public List<JobTitle> JobTitles { get; set; } = [];
         public bool AcceptRemote { get; set; } = true;
         [MaxLength(Constants.MaxNameLength)]
-        public string? Location { get; set; }
+        public Location Location { get; set; } = new();
         public float? SalaryMin { get; set; }
         public float? SalaryMax { get; set; }
         public string? ExtraRequirements { get; set; }

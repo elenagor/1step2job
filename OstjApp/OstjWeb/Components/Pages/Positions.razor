@@ -1,0 +1,15 @@
+@page "/positions/{profileId:int?}"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Ostj.Shared.Contracts
+@using Ostj.Constants
+@using OstjWeb.Services
+@using OstjWeb.Components.Layout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Positions</PageTitle>

@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Hosting;
 @using Microsoft.Extensions.Hosting;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @inject IWebHostEnvironment Env
 
@@ -46,6 +47,11 @@
 {
     string? PersonName { get; set; }
 
+    protected override async Task OnInitializedAsync() 
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
     public void SetPersonName(string name)
     {
         if (PersonName != name)
@@ -55,3 +61,8 @@
         }
     }
 }    
+    using System.Configuration.Assemblies;
+
+#nullable disable
+#line default
+#line hidden
